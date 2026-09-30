@@ -1,10 +1,10 @@
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const upcoming = [
-  "Authentication (Supabase Auth)",
-  "Database schema (Prisma + Supabase Postgres)",
-  "Learning goals",
   "Learning roadmaps",
   "Resources, notes, dashboard, AI features",
 ];
@@ -24,11 +24,19 @@ export default function Home() {
         <CardHeader>
           <CardTitle>Application status</CardTitle>
           <CardDescription>
-            The project foundation is in place. Features are built phase by phase.
+            Authentication is ready. Sign in to reach the protected application area.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <ul className="list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+        <CardContent className="space-y-4">
+          <div className="flex gap-3">
+            <Button asChild>
+              <Link href="/login">Sign in</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/register">Create account</Link>
+            </Button>
+          </div>
+          <ul className="text-muted-foreground list-disc space-y-1 pl-5 text-sm">
             {upcoming.map((item) => (
               <li key={item}>{item}</li>
             ))}

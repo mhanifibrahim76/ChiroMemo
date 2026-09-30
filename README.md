@@ -36,6 +36,15 @@ This project is designed to be continued without chat history. Read, in order:
 
 Work one phase at a time. The current phase is marked in `docs/ROADMAP.md`.
 
+## Current pages
+
+| Route       | Access                     |
+| ----------- | -------------------------- |
+| `/`         | public                     |
+| `/login`    | public                     |
+| `/register` | public                     |
+| `/dashboard`| requires a signed-in user  |
+
 ## Rules that matter
 
 - Gemini is called from server code only; keys never reach the client.

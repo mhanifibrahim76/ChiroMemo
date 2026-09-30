@@ -42,9 +42,10 @@ server-side only) · Recharts · lucide-react · zod · Vercel.
 
 ## Current state
 
-Phase 1 (project foundation) and Phase 2 (database and Prisma) complete. The
-Prisma schema, config and client singleton exist; the initial migration has not
-been applied to a live database yet. No application features implemented.
+Phases 1-3 complete (foundation, database and Prisma, authentication).
+Register, login, logout, session refresh and a protected `/dashboard` placeholder
+exist. Not verified against a live Supabase project, and the initial migration is
+still not applied. No feature pages beyond auth exist yet.
 
 ## Environment variables
 

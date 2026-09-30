@@ -129,3 +129,101 @@ Modified: `src/lib/env.ts`, `package.json`, `package-lock.json`, `.gitignore`,
 Phase 3 — Authentication: Supabase Auth with `@supabase/ssr` (register, login,
 logout, session refresh and route protection via `proxy.ts`, app shell layout).
 Apply the pending migration first.
+
+## 2026-09-30 — Phase 3: authentication
+
+### Current Phase
+
+Phase 3 — Authentication (complete)
+
+### Completed
+
+- Added the Supabase SSR clients: `src/lib/supabase/server.ts` (Server
+  Components, Server Actions, Route Handlers) and `src/lib/supabase/client.ts`
+  (Client Components, public config only). Both use the `getAll`/`setAll`
+  cookie API required by `@supabase/ssr` 0.12; the older `get`/`set`/`remove`
+  API is deprecated.
+- Added `src/proxy.ts` (Next.js 16 renamed `middleware.ts` to `proxy.ts`, and a
+  file named `middleware.ts` is never called). It calls
+  `supabase.auth.getClaims()` to refresh the token, writes refreshed cookies to
+  both the request and the response, applies the anti-caching headers, redirects
+  unauthenticated visitors away from protected routes, and sends signed-in users
+  away from `/login` and `/register`.
+- Added the auth Server Actions in `src/lib/auth/actions.ts`
+  (`registerAction`, `loginAction`, `logoutAction`) with zod validation in
+  `src/lib/validations/auth.ts`.
+- Added `requireUser()` in `src/lib/auth/session.ts`: re-verifies the token with
+  `getClaims()` and returns the application user. Used by the app layout and the
+  dashboard.
+- Added `src/lib/users.ts` with `ensureAppUser()`, an idempotent
+  `prisma.user.upsert` keyed by the Supabase Auth id, so the Auth user and
+  `public.User` always share one id and repeated requests cannot duplicate it.
+- Added pages `/login`, `/register` and the protected `/dashboard` placeholder,
+  plus the `(auth)` and `(app)` route groups, two form components and the app
+  shell header with a sign-out button.
+- Split `src/lib/env.ts` into `getSupabasePublicEnv()` and `getServerEnv()`, so
+  the auth flow no longer requires the AI key.
+- Changed `src/lib/db.ts` to a lazy `getPrismaClient()`. It previously built the
+  client at import time, which made `next build` fail whenever a route
+  transitively imported it without database credentials.
+- The Prisma schema was **not** changed: `User.id` already stores the Supabase
+  Auth user id.
+
+### Files Changed
+
+Created: `src/proxy.ts`, `src/lib/supabase/client.ts`, `src/lib/supabase/server.ts`,
+`src/lib/auth/actions.ts`, `src/lib/auth/session.ts`, `src/lib/auth/types.ts`,
+`src/lib/users.ts`, `src/lib/validations/auth.ts`, `src/components/auth/login-form.tsx`,
+`src/components/auth/register-form.tsx`, `src/app/(auth)/layout.tsx`,
+`src/app/(auth)/login/page.tsx`, `src/app/(auth)/register/page.tsx`,
+`src/app/(app)/layout.tsx`, `src/app/(app)/dashboard/page.tsx`.
+
+Modified: `src/lib/env.ts`, `src/lib/db.ts`, `src/app/page.tsx`, `.env.example`,
+`docs/ARCHITECTURE.md`, `docs/ROADMAP.md`, `docs/SESSION_LOG.md`.
+
+### Authentication Flow
+
+```
+register/login form
+  → src/lib/auth/actions.ts (zod, then Supabase Auth)
+  → session stored in cookies by @supabase/ssr
+  → src/proxy.ts refreshes the token on every request
+  → /dashboard page calls requireUser() → getClaims() verifies the JWT
+  → ensureAppUser() upserts public.User with id = auth.users.id
+```
+
+### Verification
+
+| Command | Result |
+| ------- | ------ |
+| `npm run typecheck` | pass |
+| `npm run lint` | pass |
+| `npm run build` | pass — `/dashboard` and `/login` server-rendered on demand, Proxy registered |
+| `next start` with placeholder Supabase values, `GET /dashboard` | `307` to `/login?redirectTo=%2Fdashboard` |
+| `next start`, `GET /login`, `/register`, `/` | `200` |
+
+### Runtime Verification
+
+**Not tested against a real Supabase project** — no credentials exist, and none
+were invented. Confirmed statically and with placeholder values: the Proxy
+redirects an unauthenticated request for `/dashboard` to `/login`, the auth
+pages render, and the build is clean. Still unverified: a real sign-up, the
+confirmation email, sign-in, sign-out, token refresh, session persistence, and
+that `public.User.id` equals the Auth id in a real database. The Phase 2
+migration is also still unapplied.
+
+### Known Issues
+
+- No live Supabase credentials, so the whole auth flow is unverified at runtime.
+- The `init` migration from Phase 2 is still not applied; registering needs the
+  `public.User` table to exist. Apply it with `npm run db:deploy` first.
+- `src/lib/supabase/client.ts` is not used by any page yet. It exists for the
+  browser-side Supabase features of later phases.
+- `PROTECTED_PREFIXES` in `src/proxy.ts` must be extended when new protected
+  areas are added; the `(app)` route group alone does not protect a route.
+
+### Next Task
+
+Phase 4 — Learning Goal Management: create, list, view, update, archive and
+delete learning goals with Server Actions, zod validation, and
+`LearningActivity` events, behind the existing `requireUser()` protection.

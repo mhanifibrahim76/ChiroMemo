@@ -16,14 +16,21 @@ function createPrismaClient() {
   });
 }
 
-// Reuse one client across hot reloads in development, otherwise every reload
-// would open a new connection pool.
+// The client is created on first use, not at import time, so that importing a
+// server module never requires a live database. This keeps `next build` working
+// without database credentials and defers the configuration error to the first
+// query.
 const globalForPrisma = globalThis as unknown as {
-  prisma: ReturnType<typeof createPrismaClient> | undefined;
+  prismaClient: PrismaClient | undefined;
 };
 
-export const prisma = globalForPrisma.prisma ?? createPrismaClient();
+/** Returns the single shared Prisma client for this process. */
+export function getPrismaClient() {
+  if (!globalForPrisma.prismaClient) {
+    // Reused across hot reloads in development, otherwise every reload would
+    // open a new connection pool.
+    globalForPrisma.prismaClient = createPrismaClient();
+  }
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  return globalForPrisma.prismaClient;
 }

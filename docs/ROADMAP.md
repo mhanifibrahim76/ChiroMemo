@@ -6,8 +6,8 @@ phase automatically, and do not implement features from later phases early.
 | #   | Phase                                | Status      | Commit                     |
 | --- | ------------------------------------ | ----------- | -------------------------- |
 | 1   | Project foundation                   | **Complete** | `8efa255` |
-| 2   | Database and Prisma                  | **Complete** | `feat: add database schema and prisma` |
-| 3   | Authentication                       | Not started | `feat: add authentication` |
+| 2   | Database and Prisma                  | **Complete** | `f719153` |
+| 3   | Authentication                       | **Complete** | `feat: add authentication` |
 | 4   | Learning goals                       | Not started | `feat: add learning goals` |
 | 5   | Learning roadmaps                    | Not started | `feat: add learning roadmap` |
 | 6   | Learning resources                   | Not started | `feat: add resource management` |
@@ -32,9 +32,12 @@ generated `init` migration. The migration SQL exists but has **not** been applie
 to a live Supabase database — no credentials were available. First task of the
 next session: run `npm run db:deploy` with a real `DATABASE_URL`.
 
-**Phase 3 — Authentication**
-Supabase Auth with `@supabase/ssr`: register, login, logout, session refresh via
-`proxy.ts`/middleware, route protection, app shell layout.
+**Phase 3 — Authentication (done)**
+Supabase Auth with `@supabase/ssr`: server and browser clients, register, login,
+logout, session refresh in `src/proxy.ts`, `requireUser()` on protected pages,
+and the `public.User` record keyed by the Supabase Auth id. Pages: `/login`,
+`/register`, `/dashboard` (protected placeholder). Not verified against a live
+Supabase project, because no credentials were available.
 
 **Phase 4 — Learning goals**
 CRUD for goals, status, target date, list/detail pages, server actions + zod.
