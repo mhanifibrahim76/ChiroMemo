@@ -10,10 +10,25 @@ const serverEnvSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
 });
 
-export const serverEnv = serverEnvSchema.parse({
-  DATABASE_URL: process.env.DATABASE_URL,
-  GEMINI_API_KEY: process.env.GEMINI_API_KEY,
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-});
+let cached: z.infer<typeof serverEnvSchema> | undefined;
+
+/**
+ * Reads and validates the server-only environment variables.
+ *
+ * Parsing is lazy and cached so that importing a server module does not fail
+ * when an unrelated variable is not configured yet. The first call throws with
+ * a readable message listing every missing or invalid variable.
+ */
+export function getServerEnv() {
+  if (!cached) {
+    cached = serverEnvSchema.parse({
+      DATABASE_URL: process.env.DATABASE_URL,
+      GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+    });
+  }
+
+  return cached;
+}

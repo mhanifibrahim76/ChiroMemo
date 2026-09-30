@@ -42,7 +42,9 @@ server-side only) · Recharts · lucide-react · zod · Vercel.
 
 ## Current state
 
-Phase 1 (project foundation) complete. No application features implemented yet.
+Phase 1 (project foundation) and Phase 2 (database and Prisma) complete. The
+Prisma schema, config and client singleton exist; the initial migration has not
+been applied to a live database yet. No application features implemented.
 
 ## Environment variables
 
@@ -57,9 +59,14 @@ Defined in `.env.example`, validated in `src/lib/env.ts`:
 ## Commands
 
 ```bash
-npm run dev        # dev server
-npm run build      # production build
-npm run start      # serve production build
-npm run lint       # eslint
-npm run typecheck  # tsc --noEmit
+npm run dev            # dev server
+npm run build          # production build
+npm run start          # serve production build
+npm run lint           # eslint
+npm run typecheck      # tsc --noEmit
+npm run db:validate    # prisma validate
+npm run db:generate    # prisma generate
+npm run db:migrate     # prisma migrate dev   (local)
+npm run db:deploy      # prisma migrate deploy (production / apply init)
+npm run db:studio      # prisma studio
 ```

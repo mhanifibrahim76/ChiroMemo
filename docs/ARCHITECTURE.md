@@ -32,10 +32,13 @@ src/
     layout/           app shell components (from Phase 3+)
   lib/
     utils.ts          cn() class-name helper
-    env.ts            zod-validated server env (server-only)
+    env.ts            zod-validated server env (server-only, lazy)
+    db.ts             Prisma 7 client singleton (server-only, pg driver adapter)
   hooks/              client hooks
+  generated/prisma/   generated Prisma Client (git-ignored, `npm run db:generate`)
+prisma/               schema.prisma, migrations
+prisma.config.ts      Prisma 7 CLI config (schema path, migrations path, db url)
 docs/                 project memory (this folder)
-prisma/               Prisma schema + migrations (Phase 2)
 ```
 
 Intended route groups (created when the phase needs them):
@@ -52,8 +55,14 @@ Intended route groups (created when the phase needs them):
   server session; never accept a `userId` from the client as authority.
 - **Validation at the boundary.** zod schema per Server Action / route input, and
   per AI response (AI output is untrusted).
-- **Secrets stay server-side.** `src/lib/env.ts` is `server-only`. Gemini and the
-  Supabase service-role key are never imported into client modules.
+- **Secrets stay server-side.** `src/lib/env.ts` is `server-only` and parses
+  lazily through `getServerEnv()`, so importing a server module does not fail
+  because an unrelated variable is not configured yet. Gemini and the Supabase
+  service-role key are never imported into client modules.
+- **One Prisma client.** `src/lib/db.ts` exports a `server-only` singleton that
+  caches itself on `globalThis` in development so hot reloads do not open a new
+  connection pool. It is imported from Server Components, Server Actions and
+  Route Handlers only.
 - **UI primitives from shadcn/ui.** Add new primitives with
   `npx shadcn@latest add <component>`; do not hand-roll new primitives.
 - **Path alias** `@/*` -> `src/*`.
@@ -66,7 +75,7 @@ Intended route groups (created when the phase needs them):
 | Framework          | next 16.3 (App Router, RSC, Turbopack) |
 | Language           | typescript 5.9, strict                  |
 | Styling            | tailwindcss 4.3, shadcn/ui (radix-nova) |
-| Database           | prisma 7.10 -> Supabase Postgres        |
+| Database           | prisma 7.10 + @prisma/adapter-pg + pg  -> Supabase Postgres |
 | Auth               | @supabase/ssr + supabase-js             |
 | File storage       | Supabase Storage                        |
 | AI                 | @google/genai (Gemini API)              |

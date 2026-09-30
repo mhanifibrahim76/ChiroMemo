@@ -5,8 +5,8 @@ phase automatically, and do not implement features from later phases early.
 
 | #   | Phase                                | Status      | Commit                     |
 | --- | ------------------------------------ | ----------- | -------------------------- |
-| 1   | Project foundation                   | **Complete** | `feat: initialize project` |
-| 2   | Database and Prisma                  | Not started | `feat: add database schema` |
+| 1   | Project foundation                   | **Complete** | `8efa255` |
+| 2   | Database and Prisma                  | **Complete** | `feat: add database schema and prisma` |
 | 3   | Authentication                       | Not started | `feat: add authentication` |
 | 4   | Learning goals                       | Not started | `feat: add learning goals` |
 | 5   | Learning roadmaps                    | Not started | `feat: add learning roadmap` |
@@ -25,10 +25,12 @@ phase automatically, and do not implement features from later phases early.
 Next.js App Router + TypeScript strict + Tailwind v4 + shadcn/ui initialised,
 core UI primitives installed, env template and validation added, docs written.
 
-**Phase 2 — Database and Prisma**
-Write `prisma/schema.prisma` from `docs/DATABASE.md`, configure the Supabase
-Postgres connection, run the first migration, seed nothing yet. Add the Prisma
-client singleton in `src/lib/db.ts`.
+**Phase 2 — Database and Prisma (done)**
+`prisma/schema.prisma` with 8 models and 4 enums, `prisma.config.ts` (Prisma 7
+config), `src/lib/db.ts` client singleton with the `pg` driver adapter, and a
+generated `init` migration. The migration SQL exists but has **not** been applied
+to a live Supabase database — no credentials were available. First task of the
+next session: run `npm run db:deploy` with a real `DATABASE_URL`.
 
 **Phase 3 — Authentication**
 Supabase Auth with `@supabase/ssr`: register, login, logout, session refresh via
