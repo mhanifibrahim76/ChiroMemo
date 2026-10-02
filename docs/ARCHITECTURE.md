@@ -11,13 +11,28 @@ Next.js (App Router, runs on Vercel)
    |-- UI:            src/app/** , src/components/**
    |-- Server:        Server Components, Server Actions, Route Handlers
    |-- Validation:    zod schemas
-   |-- Data:          Prisma Client        -> Supabase Postgres
+   |-- Data:          Supabase Data API -> Postgres + RLS   (current, Phase 3.5)
    |-- Auth:          Supabase Auth (SSR, cookies)
    |-- Files:         Supabase Storage (bucket for documents)
    `-- AI:            Gemini API via @google/genai (server code only)
 ```
 
 There is **no separate Express backend**. Next.js is the full-stack application.
+
+The runtime data path is:
+
+```
+Next.js (Server Components / Server Actions / Route Handlers)
+    ↓
+Supabase Auth            (session + verified claims)
+    ↓
+Supabase Data API        (typed client: src/lib/supabase/server.ts)
+    ↓
+PostgreSQL + RLS         (auth.uid() scopes every query)
+```
+
+Prisma was the data path during Phase 2 and has since been **removed**; it is no
+longer a dependency, a script, or a data-access layer.
 
 ## Authentication (Phase 3)
 
@@ -34,9 +49,9 @@ Supabase Auth  ──►  session in cookies (sb-<project-ref>-auth-token)
    |                             (getClaims + getAll/setAll cookies)
    |
    +--► src/lib/auth/session.ts  requireUser(): re-verifies the token and
-   |                             returns the public.User row
+   |                             returns the public.users row
    |                                 |
-   |                                 +--► public.User.id === auth.users.id
+   |                                 +--► public.users.id === auth.users.id
    v
 /dashboard (protected)
 ```
@@ -53,15 +68,16 @@ Supabase Auth  ──►  session in cookies (sb-<project-ref>-auth-token)
 - The Proxy is a convenience redirect, not the security boundary. Every
   protected page calls `requireUser()` as well, because a Server Action can be
   invoked directly without passing through the Proxy.
-- `public.User.id` is the Supabase Auth user id. The row is created with an
-  idempotent `upsert` in `src/lib/users.ts`, so repeated requests cannot create
-  a duplicate or a mismatched id.
+- `public.users.id` is the Supabase Auth user id. The row is created with an
+  idempotent upsert in `src/lib/users.ts` using `ignoreDuplicates`, so repeated
+  requests cannot create a duplicate or a mismatched id, and an existing row is
+  never overwritten.
 - Auth errors are mapped to friendly messages in the Server Actions, so raw
   Supabase or database errors never reach the browser.
-- Environment variables used by authentication:
-  `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (public) and
-  `DATABASE_URL` (registering creates the `public.User` row).
-  `SUPABASE_SERVICE_ROLE_KEY` and `GEMINI_API_KEY` are not used here.
+- Environment variables used by authentication: `NEXT_PUBLIC_SUPABASE_URL` and
+  `NEXT_PUBLIC_SUPABASE_ANON_KEY` (both public). `SUPABASE_SERVICE_ROLE_KEY` and
+  `GEMINI_API_KEY` are not used by the auth flow; `DATABASE_URL` is no longer
+  required and has been removed from `src/lib/env.ts`.
 
 ## Project layout (current)
 
@@ -80,18 +96,19 @@ src/
   lib/
     utils.ts           cn() class-name helper
     env.ts             zod-validated env (server-only, lazy)
-    db.ts              Prisma 7 client, lazy singleton (getPrismaClient)
     supabase/client.ts Supabase client for Client Components
-    supabase/server.ts Supabase client for Server Components/Actions
+    supabase/server.ts Supabase client for Server Components/Actions,
+                       typed with the generated Database generic
+    supabase/database.types.ts
+                       Supabase-generated types for the `public` schema.
+                       Used as the `Database` generic on the server client.
     auth/actions.ts    register / login / logout Server Actions
     auth/session.ts    requireUser(), safeRedirectPath()
     auth/types.ts      form state type
-    users.ts           ensureAppUser() - public.User upsert
+    users.ts           ensureAppUser() - public.users upsert via Supabase Data API
     validations/auth.ts zod schemas for the auth forms
   hooks/               client hooks
-  generated/prisma/    generated Prisma Client (git-ignored, `npm run db:generate`)
-prisma/                schema.prisma, migrations
-prisma.config.ts       Prisma 7 CLI config (schema path, migrations path, db url)
+supabase/migrations/   authoritative SQL migrations (Supabase native) - source of truth
 docs/                  project memory (this folder)
 ```
 
@@ -115,11 +132,10 @@ Route groups:
   server module does not fail because an unrelated variable is missing, and the
   auth flow does not require the AI key. Gemini and the Supabase service-role
   key are never imported into client modules.
-- **One Prisma client.** `src/lib/db.ts` exports `getPrismaClient()`, a
-  `server-only` lazy singleton cached on `globalThis`, so hot reloads do not
-  open a new connection pool and importing a module never needs a live
-  database. Use it from Server Components, Server Actions and Route Handlers
-  only.
+- **One data-access layer.** All reads and writes go through the typed Supabase
+  client from `src/lib/supabase/server.ts`, using the user's own session so RLS
+  applies. Never introduce a second ORM or a direct Postgres connection; there is
+  no database connection string in the application anymore.
 - **Verify, never trust cookies.** Authorize with `getClaims()`/`getUser()`.
 - **Add new pages to the Proxy lists.** Protected route prefixes live in
   `PROTECTED_PREFIXES` in `src/proxy.ts`; a new protected area must be added
@@ -136,7 +152,7 @@ Route groups:
 | Framework          | next 16.3 (App Router, RSC, Turbopack) |
 | Language           | typescript 5.9, strict                  |
 | Styling            | tailwindcss 4.3, shadcn/ui (radix-nova) |
-| Database           | prisma 7.10 + @prisma/adapter-pg + pg  -> Supabase Postgres |
+| Database           | supabase-js (Data API) + RLS -> Supabase Postgres |
 | Auth               | @supabase/ssr + supabase-js             |
 | File storage       | Supabase Storage                        |
 | AI                 | @google/genai (Gemini API)              |
@@ -151,14 +167,44 @@ Route groups:
   visitors away from protected routes. It is a convenience layer: protected
   pages must also call `requireUser()`.
 - Only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` reach the
-  browser. `SUPABASE_SERVICE_ROLE_KEY`, `DATABASE_URL` and `GEMINI_API_KEY` are
-  read exclusively from `server-only` modules and are validated by zod.
+  browser. `SUPABASE_SERVICE_ROLE_KEY` and `GEMINI_API_KEY` are read exclusively
+  from `server-only` modules and are validated by zod. `DATABASE_URL` is no
+  longer read by the application and is no longer validated.
 - The service-role key is not needed by the authentication flow. If a future
   feature does not need to bypass RLS, do not introduce it.
 - `redirectTo` query values are validated by `safeRedirectPath()`, so a crafted
   link cannot redirect a user to an external site after signing in.
-- RLS is enabled on Supabase tables; the Prisma connection uses the
-  `DATABASE_URL` role and every query is filtered by user id in application code.
+- RLS is the security boundary for the Supabase Data API: it is enabled on all 8
+  tables in `public` with per-user policies based on `auth.uid()`. This is now
+  **live and verified** in the database, not just designed — 30 policies, every
+  one `TO authenticated`, RLS enabled but not forced. `anon` has no table
+  grants. Application-level `user_id` filtering is a second layer, not the only
+  one. `roadmap_steps` inherits ownership from `roadmaps` through an `EXISTS`
+  subquery, and every policy on a nullable cross-entity reference
+  (`roadmaps.goal_id`, `resources.goal_id`, `notes.resource_id`,
+  `summaries.resource_id`) verifies that the referenced row belongs to the same
+  user, so a cross-user reference cannot be inserted.
+- Supabase Auth and `public.users` remain **two separate entities**.
+  `public.users.id` mirrors `auth.users.id` by application convention — there is
+  no foreign key to `auth.users`, no sync trigger, and no column default; the
+  value is supplied by the application.
+- **Every application query now runs as the signed-in user.** Since Prisma and
+  the `DATABASE_URL` role are gone, the application cannot bypass RLS: there is no
+  owner-role connection string in the code at all. This removes the previous
+  caveat that RLS was "enabled but not forced, so the owner role could still
+  read the tables". The Supabase service-role key remains the only RLS bypass,
+  and it is still not used by the authentication flow.
+- `src/lib/users.ts` writes `public.users` through the **Supabase Data API** using
+  the authenticated client from `src/lib/supabase/server.ts`, typed with the
+  generated `Database` generic. `ignoreDuplicates: true` means the insert maps to
+  `ON CONFLICT DO NOTHING`, so the row is created once and never overwritten.
+- `src/lib/supabase/server.ts` is used for **both** Auth (`getClaims()`,
+  `getUser()`) and data access. `src/lib/supabase/database.types.ts` is imported
+  by that client as its `Database` generic, so table and column names are
+  typechecked. `src/lib/supabase/client.ts` is still unused.
+- RLS is enabled but not `FORCE`d on the tables; that only affects the
+  table-owner and service-role paths, neither of which the application uses.
+  `FORCE` remains an open decision (see `docs/DATABASE.md`).
 
 ## Deployment
 

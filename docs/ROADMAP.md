@@ -6,8 +6,9 @@ phase automatically, and do not implement features from later phases early.
 | #   | Phase                                | Status      | Commit                     |
 | --- | ------------------------------------ | ----------- | -------------------------- |
 | 1   | Project foundation                   | **Complete** | `8efa255` |
-| 2   | Database and Prisma                  | **Complete** | `f719153` |
+| 2   | Database schema                       | **Complete** | `f719153` |
 | 3   | Authentication                       | **Complete** | `feat: add authentication` |
+| 3.5 | Supabase native schema + RLS         | **Complete** | `chore: native supabase schema and rls` |
 | 4   | Learning goals                       | Not started | `feat: add learning goals` |
 | 5   | Learning roadmaps                    | Not started | `feat: add learning roadmap` |
 | 6   | Learning resources                   | Not started | `feat: add resource management` |
@@ -25,19 +26,40 @@ phase automatically, and do not implement features from later phases early.
 Next.js App Router + TypeScript strict + Tailwind v4 + shadcn/ui initialised,
 core UI primitives installed, env template and validation added, docs written.
 
-**Phase 2 — Database and Prisma (done)**
-`prisma/schema.prisma` with 8 models and 4 enums, `prisma.config.ts` (Prisma 7
-config), `src/lib/db.ts` client singleton with the `pg` driver adapter, and a
-generated `init` migration. The migration SQL exists but has **not** been applied
-to a live Supabase database — no credentials were available. First task of the
-next session: run `npm run db:deploy` with a real `DATABASE_URL`.
+**Phase 2 — Database schema (done, superseded)**
+Originally delivered as `prisma/schema.prisma` with 8 models and 4 enums,
+`prisma.config.ts`, a `src/lib/db.ts` client singleton and a generated `init`
+migration. All of that Prisma infrastructure was later **deleted** in Phase 3.5
+and replaced by `supabase/migrations/`, which is the authoritative schema.
 
 **Phase 3 — Authentication (done)**
 Supabase Auth with `@supabase/ssr`: server and browser clients, register, login,
 logout, session refresh in `src/proxy.ts`, `requireUser()` on protected pages,
-and the `public.User` record keyed by the Supabase Auth id. Pages: `/login`,
-`/register`, `/dashboard` (protected placeholder). Not verified against a live
-Supabase project, because no credentials were available.
+and the `public.users` record keyed by the Supabase Auth id. Pages: `/login`,
+`/register`, `/dashboard` (protected placeholder).
+
+**Phase 3.5 — Supabase native schema + RLS (done)**
+The database moved from Prisma-owned schema to Supabase native + RLS as the
+security boundary, and Prisma was removed. `uuid` user ids taken from
+`auth.users.id`, snake_case tables/columns, `timestamptz`, and one authoritative
+init migration in `supabase/migrations/` with RLS enabled on all 8 tables.
+
+The initial migration was **applied** to the Supabase project and the result was
+verified read-only (Q1-Q18, all PASS): 8 tables, 4 enums, 11 foreign keys
+(7 `CASCADE`, 4 `SET NULL`), and RLS enabled and not forced on all 8 tables with
+30 policies, every one `TO authenticated`. The database held **0 rows** in all 8
+tables at verification.
+
+Completed in this phase: applied the migration; verified the schema; generated
+Supabase database types into `src/lib/supabase/database.types.ts`; moved
+`src/lib/users.ts` to the Supabase Data API using the authenticated client; and
+removed Prisma (client, schema, config, generated output, packages, `db:*`
+scripts, and the `DATABASE_URL` env requirement).
+
+The application now runs entirely on `Supabase Auth -> Supabase Data API ->
+PostgreSQL + RLS`, with no ORM and no direct database connection. The earlier
+failure mode — Prisma expecting `User` / `userId` / `createdAt` identifiers
+against a snake_case schema — no longer exists.
 
 **Phase 4 — Learning goals**
 CRUD for goals, status, target date, list/detail pages, server actions + zod.

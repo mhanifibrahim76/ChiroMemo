@@ -16,7 +16,6 @@ const supabasePublicEnvSchema = z.object({
 
 /** Server secrets. Never sent to the browser. */
 const serverEnvSchema = z.object({
-  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   GEMINI_API_KEY: z.string().min(1, "GEMINI_API_KEY is required"),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
 });
@@ -43,7 +42,6 @@ export function getSupabasePublicEnv() {
 export function getServerEnv() {
   if (!serverEnv) {
     serverEnv = serverEnvSchema.parse({
-      DATABASE_URL: process.env.DATABASE_URL,
       GEMINI_API_KEY: process.env.GEMINI_API_KEY,
       SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     });

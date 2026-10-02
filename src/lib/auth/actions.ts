@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { safeRedirectPath } from "@/lib/auth/session";
 import type { AuthFormState } from "@/lib/auth/types";
 import { createClient } from "@/lib/supabase/server";
-import { ensureAppUser } from "@/lib/users";
 import { fieldErrorsFrom, loginSchema, registerSchema } from "@/lib/validations/auth";
 
 export async function loginAction(
@@ -77,19 +76,20 @@ export async function registerAction(
     return { error: "We could not create your account. Please try again." };
   }
 
-  // `data.user.id` is the Supabase Auth id and is reused as the primary key of
-  // the application user, so the two records can never drift apart.
-  if (data.user) {
-    await ensureAppUser({ id: data.user.id, email, name });
-  }
-
   if (!data.session) {
-    // Email confirmation is enabled: there is no session yet.
+    // Email confirmation is enabled: there is no session yet, so the caller is
+    // not authenticated and RLS would reject an insert into `public.users`. The
+    // application row is created lazily by `requireUser()` on the first
+    // authenticated request instead, which also keeps `name` intact because it is
+    // read back from the user's Auth metadata rather than re-submitted.
     return {
       message: "Almost done. Check your inbox to confirm your email address, then sign in.",
     };
   }
 
+  // A session exists, so the redirect below leads straight to a protected page
+  // whose layout calls `requireUser()`. That is where the application row is
+  // created, so it is not duplicated here.
   redirect("/dashboard");
 }
 
