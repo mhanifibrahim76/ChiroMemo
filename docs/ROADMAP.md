@@ -56,6 +56,13 @@ Supabase database types into `src/lib/supabase/database.types.ts`; moved
 removed Prisma (client, schema, config, generated output, packages, `db:*`
 scripts, and the `DATABASE_URL` env requirement).
 
+**Phase 1A — Learning Goals schema transition (done)**
+Applied `supabase/migrations/20261002000000_learning_goals_relationships_and_priority.sql`
+to the live database. Added `goal_roadmaps` and `step_resources` join tables,
+`learning_goals.priority`, `notes.step_id`, and removed `roadmaps.goal_id`.
+Regenerated `src/lib/supabase/database.types.ts` from the live schema. The
+database now holds 10 tables, 15 foreign keys, and 36 RLS policies.
+
 The application now runs entirely on `Supabase Auth -> Supabase Data API ->
 PostgreSQL + RLS`, with no ORM and no direct database connection. The earlier
 failure mode — Prisma expecting `User` / `userId` / `createdAt` identifiers

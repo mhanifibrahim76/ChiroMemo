@@ -174,16 +174,19 @@ Route groups:
   feature does not need to bypass RLS, do not introduce it.
 - `redirectTo` query values are validated by `safeRedirectPath()`, so a crafted
   link cannot redirect a user to an external site after signing in.
-- RLS is the security boundary for the Supabase Data API: it is enabled on all 8
+- RLS is the security boundary for the Supabase Data API: it is enabled on all 10
   tables in `public` with per-user policies based on `auth.uid()`. This is now
-  **live and verified** in the database, not just designed — 30 policies, every
+  **live and verified** in the database, not just designed — 36 policies, every
   one `TO authenticated`, RLS enabled but not forced. `anon` has no table
   grants. Application-level `user_id` filtering is a second layer, not the only
   one. `roadmap_steps` inherits ownership from `roadmaps` through an `EXISTS`
   subquery, and every policy on a nullable cross-entity reference
   (`roadmaps.goal_id`, `resources.goal_id`, `notes.resource_id`,
   `summaries.resource_id`) verifies that the referenced row belongs to the same
-  user, so a cross-user reference cannot be inserted.
+  user, so a cross-user reference cannot be inserted. The Phase 1A schema
+  transition added `goal_roadmaps` and `step_resources` join tables with
+  two-sided ownership checks, `notes.step_id` with step-ownership validation, and
+  `learning_goals.priority`.
 - Supabase Auth and `public.users` remain **two separate entities**.
   `public.users.id` mirrors `auth.users.id` by application convention — there is
   no foreign key to `auth.users`, no sync trigger, and no column default; the

@@ -10,12 +10,12 @@ truth for the database
 > is no ORM, no schema file, and no direct Postgres connection in the application
 > anymore.
 
-> Status: **APPLIED and VERIFIED (2026-10-02).** The initial migration has been
-> executed against the Supabase project and the resulting schema was inspected
-> read-only with a catalog query pass (Q1-Q18, all PASS). The `public` schema now
-> holds 8 tables, 4 enums, 11 foreign keys, RLS on all 8 tables and 30 policies.
-> All 8 tables contained **0 rows** at verification. See "Verified database
-> state" and "Migration status".
+> Status: **APPLIED and VERIFIED (2026-10-02, updated 2026-10-07).** The initial
+> migration has been executed against the Supabase project and the resulting schema
+> was inspected read-only with a catalog query pass (Q1-Q18, all PASS). Phase 1A
+> schema changes were applied on 2026-10-07. The `public` schema now holds 10
+> tables, 4 enums, 15 foreign keys, RLS on all 10 tables and 36 policies. `users`
+> held 1 row at verification; all other tables were empty.
 
 ## Native conventions (authoritative)
 
@@ -61,17 +61,17 @@ after the apply. Nothing below was changed by the verification.
 
 | Object | Verified value |
 | ------ | -------------- |
-| Tables | **8** — `users`, `learning_goals`, `roadmaps`, `roadmap_steps`, `resources`, `notes`, `summaries`, `learning_activities` |
+| Tables | **10** — `users`, `learning_goals`, `roadmaps`, `roadmap_steps`, `resources`, `notes`, `summaries`, `learning_activities`, `goal_roadmaps`, `step_resources` |
 | Enums | **4** — `ActivityType`, `GoalStatus`, `ResourceType`, `RoadmapStepStatus` |
-| Foreign keys | **11** — 7 `ON DELETE CASCADE`, 4 `ON DELETE SET NULL` |
-| Primary keys | present on all 8 tables |
-| Unique constraints | `users.email`; `UNIQUE (roadmap_id, "order")` on `roadmap_steps` |
+| Foreign keys | **15** — 10 `ON DELETE CASCADE`, 5 `ON DELETE SET NULL` |
+| Primary keys | present on all 10 tables |
+| Unique constraints | `users.email`; `UNIQUE (roadmap_id, "order")` on `roadmap_steps`; composite PK on `goal_roadmaps (goal_id, roadmap_id)` and `step_resources (step_id, resource_id)` |
 | Check constraints | `roadmaps.progress_percent BETWEEN 0 AND 100` |
-| RLS | enabled on all 8 tables; `FORCE` is **false** on all 8 |
-| Policies | **30** — all `TO authenticated`; none for `anon` |
+| RLS | enabled on all 10 tables; `FORCE` is **false** on all 10 |
+| Policies | **36** — all `TO authenticated`; none for `anon` |
 | `users` DELETE policy | absent, by design |
 | `learning_activities` UPDATE policy | absent, by design |
-| Row counts | **0 in all 8 tables** |
+| Row counts | **1 in `users`; 0 in the other 9 tables** |
 | Triggers | no user-defined trigger on these tables |
 
 Privileges after the migration:
@@ -136,13 +136,16 @@ through that same client.
   initial migration** and the **complete initial database state**: 4 enums,
   8 tables, 11 foreign keys, indexes, CHECK/UNIQUE constraints, grants and 30
   RLS policies.
-- **Applied on 2026-10-02.** It was executed through the Supabase SQL Editor as a
-  single submission (the Supabase CLI is not installed in this project and
-  `supabase/config.toml` does not exist), returning `Success. No rows returned`.
-  The file contains no `BEGIN`/`COMMIT` by design, because the SQL Editor already
-  wraps a submission in one transaction.
-- **Do not re-apply this file** and do not convert it into an incremental
-  migration. Every later change must be a NEW file in `supabase/migrations/`.
+- `supabase/migrations/20261002000000_learning_goals_relationships_and_priority.sql`
+  is the **Phase 1A schema transition migration**: adds `goal_roadmaps`,
+  `step_resources`, `notes.step_id`, `learning_goals.priority`, removes
+  `roadmaps.goal_id`, and updates RLS policies.
+- **Both applied on 2026-10-07.** They were executed through the Supabase SQL
+  Editor / `supabase db push` with the session pooler connection, returning
+  `Success. No rows returned`. The migration history table now records both
+  versions, so a fresh database can be rebuilt from `supabase/migrations/` alone.
+- **Do not re-apply these files** and do not convert them into incremental
+  migrations. Every later change must be a NEW file in `supabase/migrations/`.
 - Prisma never owned the migrations. Its CLI commands and the `prisma/`
   directory no longer exist, so there is no alternative migration path to
   accidentally use.
@@ -180,6 +183,11 @@ Prisma is **removed**, and the transition is complete:
 Because the application now runs as the `authenticated` role only, the earlier
 failure mode is gone: there is no connection string in the application that could
 bypass RLS or disagree with the snake_case schema.
+
+The database now contains 10 tables, including the Phase 1A join tables
+`goal_roadmaps` and `step_resources`, the `learning_goals.priority` column, and
+`notes.step_id`. `roadmaps.goal_id` was removed and its associations migrated into
+`goal_roadmaps`.
 
 ## Enums
 
@@ -220,6 +228,7 @@ learning_activities.
 | `title`        | `text`         | NOT NULL                             |
 | `description`  | `text`         | nullable                             |
 | `status`       | `GoalStatus`   | NOT NULL, default `ACTIVE`           |
+| `priority`     | `integer`      | NOT NULL, default `0`                |
 | `target_date`  | `timestamptz`  | nullable                             |
 | `created_at` / `updated_at` | `timestamptz` | NOT NULL, default `now()`    |
 
@@ -227,19 +236,18 @@ Index: `learning_goals_user_id_idx (user_id)`.
 
 ### roadmaps
 
-A roadmap is a plan attached to a learning goal.
-
 | Column        | Type          | Notes                                        |
 | ------------- | ------------- | -------------------------------------------- |
 | `id`          | `text`        | PK, cuid from the application                |
 | `user_id`     | `uuid`        | NOT NULL, FK → `users.id`, CASCADE           |
-| `goal_id`     | `text`        | nullable, FK → `learning_goals.id`, SET NULL  |
 | `title`       | `text`        | NOT NULL                                     |
 | `description` | `text`        | nullable                                     |
 | `progress_percent` | `integer` | NOT NULL, default `0`, CHECK 0-100, cached  |
 | `created_at` / `updated_at` | `timestamptz` | NOT NULL, default `now()`           |
 
-Indexes: `roadmaps_user_id_idx (user_id)`, `roadmaps_goal_id_idx (goal_id)`.
+Indexes: `roadmaps_user_id_idx (user_id)`. `goal_roadmaps` replaces the old
+`roadmaps_goal_id_idx`; there is no `roadmaps.goal_id` column anymore.
+
 CHECK: `roadmaps_progress_percent_check CHECK (progress_percent BETWEEN 0 AND 100)`.
 
 ### roadmap_steps
@@ -286,12 +294,38 @@ the composite index covers every relevant `user_id` query.
 | `id`          | `text`         | PK, cuid from the application          |
 | `user_id`     | `uuid`         | NOT NULL, FK → `users.id`, CASCADE     |
 | `resource_id` | `text`         | nullable, FK → `resources.id`, SET NULL |
+| `step_id`     | `text`         | nullable, FK → `roadmap_steps.id`, SET NULL |
 | `title`       | `text`         | NOT NULL                               |
 | `content`     | `text`         | NOT NULL, markdown source              |
 | `tags`        | `text[]`       | NOT NULL, default `'{}'`               |
 | `created_at` / `updated_at` | `timestamptz` | NOT NULL, default `now()`     |
 
-Indexes: `notes_user_id_idx (user_id)`, `notes_resource_id_idx (resource_id)`.
+Indexes: `notes_user_id_idx (user_id)`, `notes_resource_id_idx (resource_id)`,
+`notes_step_id_idx (step_id)`.
+
+### goal_roadmaps
+
+Many-to-many join table between `learning_goals` and `roadmaps`.
+
+| Column        | Type   | Notes                                           |
+| ------------- | ------ | ----------------------------------------------- |
+| `goal_id`     | `text` | PK + FK → `learning_goals.id`, `ON DELETE CASCADE` |
+| `roadmap_id`  | `text` | PK + FK → `roadmaps.id`, `ON DELETE CASCADE`    |
+
+Composite primary key `(goal_id, roadmap_id)` serves lookups in both directions;
+no additional indexes are needed.
+
+### step_resources
+
+Many-to-many join table between `roadmap_steps` and `resources`.
+
+| Column        | Type   | Notes                                           |
+| ------------- | ------ | ----------------------------------------------- |
+| `step_id`     | `text` | PK + FK → `roadmap_steps.id`, `ON DELETE CASCADE` |
+| `resource_id` | `text` | PK + FK → `resources.id`, `ON DELETE CASCADE`    |
+
+Composite primary key `(step_id, resource_id)` serves lookups in both directions;
+no additional indexes are needed.
 
 ### summaries
 
@@ -329,9 +363,13 @@ Index: `learning_activities_user_id_occurred_at_idx (user_id, occurred_at)`.
 
 ```
 users
- ├─ 1:N ─ learning_goals ─ 1:N ─ roadmaps ─ 1:N ─ roadmap_steps
- ├─ 1:N ─ resources ─ 1:N ─ notes
- │        └──────  1:N ─ summaries
+ ├─ 1:N ─ learning_goals
+ │         ├─ N:M ─ goal_roadmaps ─ N:M ─ roadmaps
+ │         │                        └─ 1:N ─ roadmap_steps
+ │         └─ 1:N ─ resources
+ │                   ├─ N:M ─ step_resources ─ N:M ─ roadmap_steps
+ │                   ├─ 1:N ─ notes
+ │                   └─ 1:N ─ summaries
  └─ 1:N ─ learning_activities
 ```
 
@@ -345,11 +383,13 @@ and `anon` has no grants on the tables at all.
 | --------------------- | ------ | ------ | ------ | ------ |
 | `users`               | own    | `id = auth.uid()` | own | **none (by design)** |
 | `learning_goals`      | own    | own    | own    | own    |
-| `roadmaps`            | own    | own + goal owned   | own + goal owned | own |
-| `roadmap_steps`       | via roadmap | via roadmap | old + new roadmap owned | via roadmap |
+| `roadmaps`            | own    | own    | own    | own    |
+| `goal_roadmaps`       | both sides owned | both sides owned | **none** | both sides owned |
+| `roadmap_steps`       | via roadmap | via roadmap | via old+new roadmap | via roadmap |
+| `step_resources`      | both sides owned | both sides owned | **none** | both sides owned |
 | `resources`           | own    | own + goal owned   | own + goal owned | own |
-| `notes`               | own    | own + resource owned | own + resource owned | own |
-| `summaries`           | own    | own + resource owned | own + resource owned | own |
+| `notes`               | own    | own + resource/step owned | own + resource/step owned | own |
+| `summaries`           | own    | own + resource owned   | own + resource owned | own |
 | `learning_activities` | own    | own    | **none (by design)** | own |
 
 Rules that matter:
@@ -394,6 +434,7 @@ open decision:
 - Automatic `updated_at` trigger.
 - CHECK constraint tying `resources.type` to `url` / `file_path`.
 - Any FK or validation on `learning_activities.entity_id`.
+- Index on `learning_goals (user_id, priority)` — depends on Phase 4 query patterns.
 
 ## Commands
 

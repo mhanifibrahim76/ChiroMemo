@@ -527,3 +527,57 @@ Supabase project, the authentication flow, any `.env` file, and the UI.
 Phase 4 — Learning goals: goal CRUD with zod-validated Server Actions over the
 Supabase Data API, reusing the same authenticated client and RLS user-scoping
 pattern as `src/lib/users.ts`.
+
+## 2026-10-07 — Phase 1A: Learning Goals schema migration applied and types regenerated
+
+### Current Phase
+
+Phase 1A — Learning Goals schema migration (complete)
+
+### Completed
+
+- **Applied `20261002000000_learning_goals_relationships_and_priority.sql`** to the
+  live Supabase database. This second migration introduced the Phase 1A schema
+  changes: `goal_roadmaps` and `step_resources` join tables, `notes.step_id`,
+  `learning_goals.priority`, and the removal of `roadmaps.goal_id`. Existing
+  `roadmaps.goal_id` associations were migrated into `goal_roadmaps` before the
+  column was dropped.
+- **Regenerated `src/lib/supabase/database.types.ts`** from the live schema with
+  `supabase gen types typescript --db-url <pooler>`. The previous Prisma-era
+  migration `20260930000000_init_schema_and_rls.sql` was already present in
+  `supabase/migrations/` but had never been applied; the database was empty except
+  for the `auth.users` row created by Phase 3. To make the migration history
+  consistent, the initial migration version was inserted into
+  `supabase_migrations.schema_migrations` before applying the second migration
+  with `supabase db push`. Both migrations now run cleanly on a fresh database.
+- **Verified the live schema read-only** after the apply:
+  - 10 tables (was 8)
+  - 4 enums
+  - 15 foreign keys (was 11: +5 new, −1 removed)
+  - 36 RLS policies (was 30: +6 new join-table policies, +2 new roadmaps policies,
+    +2 new notes policies, −4 dropped old policies)
+- `npm run build`, `npm run typecheck`, and `npm run lint` all pass.
+
+### Files Changed
+
+Modified: `docs/SESSION_LOG.md`, `docs/DATABASE.md`, `docs/PROJECT_CONTEXT.md`,
+`docs/ARCHITECTURE.md`, `src/lib/supabase/database.types.ts`.
+
+Not touched: any application source file, `src/lib/`, `src/app/`, `supabase/migrations/`,
+`.env*`, or `package.json`.
+
+### Decisions
+
+- The initial migration was not re-executed; its version was inserted into the
+  Supabase migration tracking table so that the second migration could be applied
+  with the standard tooling. The schema objects were already present from a
+  previous manual apply.
+- `database.types.ts` was regenerated from the live database rather than hand-edited.
+
+### Known Issues / follow-ups
+
+- `learning_goals.priority` is a plain integer with no uniqueness or per-user
+  constraint; duplicate priorities are allowed by design for now.
+- `FORCE ROW LEVEL SECURITY` is still undecided.
+- `supabase/config.toml` and a linked CLI project are still absent.
+- `users` table holds 1 row (the auth user created during Phase 3 testing).

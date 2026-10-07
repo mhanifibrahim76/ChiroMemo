@@ -56,20 +56,23 @@ The runtime data path is:
 Next.js App Router -> Supabase Auth -> Supabase Data API -> PostgreSQL + RLS
 ```
 
-**The database is live.** The Supabase migration
-`supabase/migrations/20260930000000_init_schema_and_rls.sql` has been **applied**
-to the Supabase project (`Success. No rows returned` from the SQL Editor), and the
-resulting schema was verified read-only with a catalog query pass (Q1-Q18, all
-PASS). The `public` schema now contains:
+**The database is live.** The Supabase migrations
+`supabase/migrations/20260930000000_init_schema_and_rls.sql` and
+`supabase/migrations/20261002000000_learning_goals_relationships_and_priority.sql`
+have been **applied** to the Supabase project, and the resulting schema was verified
+read-only with a catalog query pass. The `public` schema now contains:
 
-- **8 tables** — `users`, `learning_goals`, `roadmaps`, `roadmap_steps`,
-  `resources`, `notes`, `summaries`, `learning_activities`
+- **10 tables** — `users`, `learning_goals`, `roadmaps`, `roadmap_steps`,
+  `resources`, `notes`, `summaries`, `learning_activities`, `goal_roadmaps`,
+  `step_resources`
 - **4 enums** — `ActivityType`, `GoalStatus`, `ResourceType`, `RoadmapStepStatus`
-- **11 foreign keys** — 7 `ON DELETE CASCADE`, 4 `ON DELETE SET NULL`
-- **RLS enabled on all 8 tables**, not forced, with **30 policies**, every one
+- **15 foreign keys** — 10 `ON DELETE CASCADE`, 5 `ON DELETE SET NULL`
+- **RLS enabled on all 10 tables**, not forced, with **36 policies**, every one
   `TO authenticated`; `anon` holds no table privileges
 - `users.id` and all six `user_id` columns are `uuid`; all timestamps are
   `timestamptz`; `learning_activities` has no `updated_at`
+- `learning_goals.priority` is added (default `0`); `roadmaps.goal_id` is removed;
+  `notes.step_id` is added; `goal_roadmaps` and `step_resources` join tables exist
 
 All 8 tables held **0 rows** at verification time, so the schema exists but
 contains no application data yet.
@@ -88,6 +91,10 @@ row is never overwritten. `public.users.id` is the same UUID as `auth.users.id`.
 
 Because every query runs as the signed-in user, RLS is enforced for all
 application data access.
+
+The Phase 1A schema migration added `goal_roadmaps` and `step_resources` join
+tables, `learning_goals.priority`, `notes.step_id`, and removed `roadmaps.goal_id`.
+All 36 RLS policies were updated accordingly.
 
 ### Historical note
 
@@ -120,8 +127,9 @@ npm run typecheck      # tsc --noEmit
 ```
 
 Database changes live in `supabase/migrations/` and are applied with the Supabase
-CLI (`supabase db push`) or the Supabase SQL editor. The initial migration has
-already been applied this way. Supabase types are regenerated with
+CLI (`supabase db push`) or the Supabase SQL editor. Both the initial migration
+and the Phase 1A schema transition migration have already been applied this way.
+Supabase types are regenerated with
 `npx supabase gen types typescript --project-id <ref> --schema public`, which
 requires an authenticated Supabase CLI session (`supabase login`) and performs no
 database writes.
