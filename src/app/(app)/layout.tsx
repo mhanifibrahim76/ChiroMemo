@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LogOut } from "lucide-react";
+import { LogOut, Target } from "lucide-react";
 
 import { logoutAction } from "@/lib/auth/actions";
 import { requireUser } from "@/lib/auth/session";
@@ -17,7 +17,11 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <Link href="/dashboard" className="font-semibold">
             ChiroMemo
           </Link>
-          <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-4">
+            <Link href="/goals" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <Target className="h-4 w-4" />
+              Goals
+            </Link>
             <span className="text-muted-foreground text-sm">{user.email}</span>
             <form action={logoutAction}>
               <Button type="submit" variant="outline" size="sm">
@@ -25,7 +29,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
                 Sign out
               </Button>
             </form>
-          </div>
+          </nav>
         </div>
       </header>
       <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-8">{children}</main>
