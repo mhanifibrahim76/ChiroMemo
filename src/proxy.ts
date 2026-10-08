@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSupabasePublicEnv } from "@/lib/env";
 
 /** Route prefixes that require a signed-in user. Extend as features are added. */
-const PROTECTED_PREFIXES = ["/dashboard"];
+const PROTECTED_PREFIXES = ["/dashboard", "/goals"];
 
 /** Pages that a signed-in user has no reason to see. */
 const AUTH_ROUTES = ["/login", "/register"];
