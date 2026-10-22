@@ -218,7 +218,8 @@ export async function createRoadmapStepAction(
     if (err && typeof err === "object" && "fieldErrors" in err) {
       return { error: "Please correct the highlighted fields.", fieldErrors: (err as { fieldErrors: Record<string, string> }).fieldErrors };
     }
-    return { error: "Could not create step. Please try again." };
+    const message = err instanceof Error ? err.message : "Could not create step. Please try again.";
+    return { error: message };
   }
 }
 

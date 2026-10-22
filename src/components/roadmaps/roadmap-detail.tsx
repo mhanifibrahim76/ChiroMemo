@@ -181,28 +181,36 @@ export function RoadmapDetail({
       )}
 
       <Card>
-        <CardHeader>
-          <CardTitle>Steps</CardTitle>
-          <CardDescription>Ordered learning steps</CardDescription>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <div>
+            <CardTitle>Steps</CardTitle>
+            <CardDescription>Ordered learning steps ({steps.length})</CardDescription>
+          </div>
+          <CreateStepDialog roadmapId={roadmap.id} />
         </CardHeader>
         <CardContent className="space-y-3">
           {steps.length === 0 ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 space-y-3">
               <p className="text-muted-foreground">No steps yet. Add your first step to get started.</p>
               <CreateStepDialog roadmapId={roadmap.id} />
             </div>
           ) : (
-            steps.map((step, index) => (
-              <RoadmapStepItem
-                key={step.id}
-                step={step}
-                allSteps={steps.map((s) => ({ id: s.id, order: s.order }))}
-                isFirst={index === 0}
-                isLast={index === steps.length - 1}
-                attachedResources={stepResourcesMap?.[step.id] ?? []}
-                allUserResources={allUserResources}
-              />
-            ))
+            <>
+              {steps.map((step, index) => (
+                <RoadmapStepItem
+                  key={step.id}
+                  step={step}
+                  allSteps={steps.map((s) => ({ id: s.id, order: s.order }))}
+                  isFirst={index === 0}
+                  isLast={index === steps.length - 1}
+                  attachedResources={stepResourcesMap?.[step.id] ?? []}
+                  allUserResources={allUserResources}
+                />
+              ))}
+              <div className="pt-2 flex justify-center border-t">
+                <CreateStepDialog roadmapId={roadmap.id} />
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

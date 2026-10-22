@@ -13,6 +13,7 @@ import type { ResourceWithRelations } from "@/lib/resources";
 import { RESOURCE_TYPES } from "@/lib/validations/resources";
 import { ResourceCard } from "./resource-card";
 import { CreateResourceDialog } from "./create-resource-dialog";
+import { UploadDocumentDialog } from "./upload-document-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -165,6 +166,7 @@ export function ResourceList({ resources, availableGoals = [] }: ResourceListPro
             </Button>
 
             <CreateResourceDialog availableGoals={availableGoals} />
+            <UploadDocumentDialog availableGoals={availableGoals} />
           </div>
         </div>
 

@@ -227,7 +227,7 @@ export async function createRoadmapStep(input: {
   await requireUser();
   const supabase = await createClient();
 
-  // Call the atomic create RPC which handles locking, validation, and append logic
+  // Try the atomic create RPC if it exists in the database
   const { data, error } = await supabase.rpc("create_roadmap_step", {
     p_roadmap_id: input.roadmapId,
     p_title: input.title,
@@ -235,13 +235,58 @@ export async function createRoadmapStep(input: {
     p_order: input.order ?? null,
   });
 
-  if (error) {
+  if (!error && data) {
+    return data as unknown as StepRow;
+  }
+
+  // If RPC failed because it does not exist (code 42883 or PGRST202), fall back to direct SQL operations
+  const isMissingRpc =
+    error &&
+    (error.code === "42883" ||
+      error.code === "PGRST202" ||
+      error.message.toLowerCase().includes("does not exist"));
+
+  if (error && !isMissingRpc) {
     throw new Error(`Could not create step: ${error.message}`);
   }
 
-  // Parse and validate the returned JSONB to match StepRow type
-  const step = data as unknown as StepRow;
-  return step;
+  // Fallback: calculate next order number if not specified
+  let nextOrder = input.order;
+  if (nextOrder === undefined || nextOrder === null) {
+    const { data: existingSteps } = await supabase
+      .from("roadmap_steps")
+      .select('"order"')
+      .eq("roadmap_id", input.roadmapId)
+      .order("order", { ascending: false })
+      .limit(1);
+
+    const maxOrder = existingSteps?.[0]?.order ?? 0;
+    nextOrder = maxOrder + 1;
+  }
+
+  const now = new Date().toISOString();
+  const stepId = crypto.randomUUID();
+
+  const { data: insertedStep, error: insertError } = await supabase
+    .from("roadmap_steps")
+    .insert({
+      id: stepId,
+      roadmap_id: input.roadmapId,
+      title: input.title,
+      description: input.description ?? null,
+      order: nextOrder,
+      status: "PENDING",
+      created_at: now,
+      updated_at: now,
+    })
+    .select(STEP_SELECT_COLUMNS)
+    .single();
+
+  if (insertError) {
+    throw new Error(`Could not create step: ${insertError.message}`);
+  }
+
+  return insertedStep;
 }
 
 export async function updateRoadmapStep(
@@ -314,8 +359,27 @@ export async function deleteRoadmapStep(id: string): Promise<string> {
     p_step_id: id,
   });
 
-  if (error) {
+  if (!error) {
+    return step.roadmap_id;
+  }
+
+  const isMissingRpc =
+    error.code === "42883" ||
+    error.code === "PGRST202" ||
+    error.message.toLowerCase().includes("does not exist");
+
+  if (!isMissingRpc) {
     throw new Error(`Could not delete step: ${error.message}`);
+  }
+
+  // Fallback: direct delete from roadmap_steps
+  const { error: directDeleteError } = await supabase
+    .from("roadmap_steps")
+    .delete()
+    .eq("id", id);
+
+  if (directDeleteError) {
+    throw new Error(`Could not delete step: ${directDeleteError.message}`);
   }
 
   return step.roadmap_id;
@@ -334,8 +398,35 @@ export async function reorderRoadmapSteps(
     p_steps: steps as unknown as Json,
   });
 
-  if (error) {
+  if (!error) {
+    return;
+  }
+
+  const isMissingRpc =
+    error.code === "42883" ||
+    error.code === "PGRST202" ||
+    error.message.toLowerCase().includes("does not exist");
+
+  if (!isMissingRpc) {
     throw new Error(`Could not reorder steps: ${error.message}`);
+  }
+
+  // Fallback: Two-phase update to avoid unique constraint collisions on (roadmap_id, "order")
+  const now = new Date().toISOString();
+  for (let i = 0; i < steps.length; i++) {
+    await supabase
+      .from("roadmap_steps")
+      .update({ order: -(i + 1), updated_at: now })
+      .eq("id", steps[i].id);
+  }
+  for (const s of steps) {
+    const { error: updateError } = await supabase
+      .from("roadmap_steps")
+      .update({ order: s.order, updated_at: now })
+      .eq("id", s.id);
+    if (updateError) {
+      throw new Error(`Could not reorder step: ${updateError.message}`);
+    }
   }
 }
 

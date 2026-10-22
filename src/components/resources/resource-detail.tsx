@@ -19,6 +19,11 @@ import {
   CheckCircle2,
   Circle,
   Clock3,
+  Download,
+  Sparkles,
+  Copy,
+  Check,
+  FileText,
 } from "lucide-react";
 
 import type { ResourceDetailData } from "@/lib/resources";
@@ -28,6 +33,7 @@ import {
   dissociateResourceFromStepAction,
 } from "@/lib/resources/actions";
 import { initialResourceActionState } from "@/lib/resources/constants";
+import { getDocumentSignedUrlAction } from "@/lib/documents/actions";
 import { ResourceTypeBadge } from "./resource-type-badge";
 import { EditResourceDialog } from "./edit-resource-dialog";
 import { Button } from "@/components/ui/button";
@@ -95,6 +101,36 @@ function StepStatusIcon({ status }: { status: string }) {
 export function ResourceDetail({ resource, availableGoals = [] }: ResourceDetailProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [downloading, setDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [copiedText, setCopiedText] = useState(false);
+
+  async function handleDownloadDocument() {
+    if (!resource.file_path) return;
+    setDownloading(true);
+    setDownloadError(null);
+    try {
+      const res = await getDocumentSignedUrlAction(resource.file_path);
+      if (res.url) {
+        window.open(res.url, "_blank");
+      } else {
+        setDownloadError(res.error || "Failed to generate download link.");
+      }
+    } catch (err) {
+      setDownloadError(
+        err instanceof Error ? err.message : "Error generating download link."
+      );
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  function handleCopyExtractedText() {
+    if (!resource.extracted_text) return;
+    navigator.clipboard.writeText(resource.extracted_text);
+    setCopiedText(true);
+    setTimeout(() => setCopiedText(false), 2000);
+  }
 
   const [deleteState, deleteFormAction] = useActionState(
     deleteResourceAction,
@@ -159,6 +195,18 @@ export function ResourceDetail({ resource, availableGoals = [] }: ResourceDetail
                 <ExternalLink className="h-4 w-4" />
                 Visit URL
               </a>
+            </Button>
+          )}
+
+          {resource.file_path && (
+            <Button
+              variant="outline"
+              className="gap-2"
+              onClick={handleDownloadDocument}
+              disabled={downloading}
+            >
+              <Download className="h-4 w-4" />
+              {downloading ? "Opening..." : "Download File"}
             </Button>
           )}
 
@@ -233,6 +281,99 @@ export function ResourceDetail({ resource, availableGoals = [] }: ResourceDetail
                       Open <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Uploaded Document File Card */}
+          {resource.file_path && (
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" />
+                  Uploaded Document File
+                </CardTitle>
+                <CardDescription>
+                  Stored securely in ChiroMemo private document storage.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="flex items-center justify-between gap-3 p-3 rounded-md bg-muted/50 border">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">
+                      Storage Path
+                    </p>
+                    <p className="text-xs font-mono text-foreground truncate mt-0.5">
+                      {resource.file_path}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    className="shrink-0 gap-1.5"
+                    onClick={handleDownloadDocument}
+                    disabled={downloading}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    {downloading ? "Opening..." : "Download"}
+                  </Button>
+                </div>
+                {downloadError && (
+                  <p className="text-xs text-destructive">{downloadError}</p>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Extracted Document Text */}
+          {resource.extracted_text && (
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div className="space-y-1">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-primary" />
+                      Extracted Document Text
+                    </CardTitle>
+                    <CardDescription>
+                      Server-extracted text (
+                      {
+                        resource.extracted_text
+                          .split(/\s+/)
+                          .filter(Boolean).length
+                      }{" "}
+                      words, {resource.extracted_text.length} characters).
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      AI Ready
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 gap-1 text-xs"
+                      onClick={handleCopyExtractedText}
+                    >
+                      {copiedText ? (
+                        <>
+                          <Check className="h-3.5 w-3.5 text-emerald-500" />
+                          Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5" />
+                          Copy text
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="max-h-80 overflow-y-auto rounded-lg border bg-muted/30 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap select-text">
+                  {resource.extracted_text}
                 </div>
               </CardContent>
             </Card>

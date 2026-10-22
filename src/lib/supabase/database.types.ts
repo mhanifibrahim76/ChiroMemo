@@ -186,6 +186,7 @@ export type Database = {
           category: string | null;
           created_at: string;
           description: string | null;
+          extracted_text: string | null;
           file_path: string | null;
           goal_id: string | null;
           id: string;
@@ -202,6 +203,7 @@ export type Database = {
           category?: string | null;
           created_at?: string;
           description?: string | null;
+          extracted_text?: string | null;
           file_path?: string | null;
           goal_id?: string | null;
           id: string;
@@ -217,6 +219,7 @@ export type Database = {
           category?: string | null;
           created_at?: string;
           description?: string | null;
+          extracted_text?: string | null;
           file_path?: string | null;
           goal_id?: string | null;
           id?: string;

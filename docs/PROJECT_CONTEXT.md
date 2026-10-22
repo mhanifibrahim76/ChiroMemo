@@ -45,10 +45,11 @@ Row Level Security.
 
 ## Current state
 
-Phases 1-8 complete (foundation, database schema, authentication,
+Phases 1-9 complete (foundation, database schema, authentication,
 native Supabase schema + RLS, learning goals, roadmaps, resources, personal
-notes, and dashboard analytics). All feature pages (/dashboard, /goals, /roadmaps,
-/resources, /notes) are functional and wired to Supabase with strict RLS.
+notes, dashboard analytics, and PDF/document upload with server text extraction).
+All feature pages (/dashboard, /goals, /roadmaps, /resources, /notes) are functional
+and wired to Supabase with strict RLS and private Storage bucket security.
 
 The runtime data path is:
 

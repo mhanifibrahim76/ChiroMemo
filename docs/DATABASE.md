@@ -278,6 +278,7 @@ separate `roadmap_steps_roadmap_id_idx`.
 | `type`        | `ResourceType`| NOT NULL                                     |
 | `url`         | `text`        | nullable, for website/video/course           |
 | `file_path`   | `text`        | nullable, Supabase Storage path for a PDF    |
+| `extracted_text` | `text`     | nullable, server-extracted text content      |
 | `author`      | `text`        | nullable                                     |
 | `description` | `text`        | nullable                                     |
 | `is_archived` | `boolean`     | NOT NULL, default `false`                    |

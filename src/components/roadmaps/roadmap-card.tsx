@@ -86,7 +86,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
             <DropdownMenuItem asChild>
               <Link href={`/roadmaps/${roadmap.id}`}>
                 <EditIcon className="mr-2 h-4 w-4" />
-                View details
+                View details & steps
               </Link>
             </DropdownMenuItem>
             <DropdownMenuSeparator />

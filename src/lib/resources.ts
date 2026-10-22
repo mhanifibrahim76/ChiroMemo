@@ -15,7 +15,7 @@ export type ResourceInsert = TablesInsert<"resources">;
 export type ResourceUpdate = TablesUpdate<"resources">;
 
 const RESOURCE_SELECT_COLUMNS =
-  "id, user_id, goal_id, title, type, url, file_path, category, description, author, is_archived, created_at, updated_at";
+  "id, user_id, goal_id, title, type, url, file_path, category, description, author, extracted_text, is_archived, created_at, updated_at";
 
 const RESOURCE_SELECT_COLUMNS_NO_CATEGORY =
   "id, user_id, goal_id, title, type, url, file_path, description, author, is_archived, created_at, updated_at";
@@ -80,8 +80,13 @@ export async function listResources(filter?: ResourceFilter): Promise<ResourceWi
 
   let { data: resources, error } = await query;
 
-  // Defensive fallback if migration 20261021000000 has not been executed yet (category column missing in DB)
-  if (error && (error.code === "42703" || error.message.toLowerCase().includes("category"))) {
+  // Defensive fallback if migrations for category or extracted_text have not run yet
+  if (
+    error &&
+    (error.code === "42703" ||
+      error.message.toLowerCase().includes("category") ||
+      error.message.toLowerCase().includes("extracted_text"))
+  ) {
     let fallbackQuery = supabase
       .from("resources")
       .select(RESOURCE_SELECT_COLUMNS_NO_CATEGORY)
@@ -103,6 +108,7 @@ export async function listResources(filter?: ResourceFilter): Promise<ResourceWi
       resources = fallbackResult.data.map((r) => ({
         ...r,
         category: null,
+        extracted_text: null,
       })) as ResourceRow[];
       error = null;
     }
@@ -190,7 +196,12 @@ export async function getResource(id: string): Promise<ResourceDetailData | null
     .eq("user_id", user.id)
     .single();
 
-  if (error && (error.code === "42703" || error.message.toLowerCase().includes("category"))) {
+  if (
+    error &&
+    (error.code === "42703" ||
+      error.message.toLowerCase().includes("category") ||
+      error.message.toLowerCase().includes("extracted_text"))
+  ) {
     const fallback = await supabase
       .from("resources")
       .select(RESOURCE_SELECT_COLUMNS_NO_CATEGORY)
@@ -202,6 +213,7 @@ export async function getResource(id: string): Promise<ResourceDetailData | null
       resource = {
         ...fallback.data,
         category: null,
+        extracted_text: null,
       } as ResourceRow;
       error = null;
     }

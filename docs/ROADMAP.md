@@ -14,7 +14,7 @@ phase automatically, and do not implement features from later phases early.
 | 6   | Learning resources                   | **Complete** | `feat: add resource management` |
 | 7   | Personal notes                       | **Complete** | `feat: add notes` |
 | 8   | Dashboard and analytics              | **Complete** | `feat: add dashboard and analytics` |
-| 9   | PDF upload and text extraction       | Not started | `feat: add pdf upload` |
+| 9   | PDF upload and text extraction       | **Complete** | `feat: add pdf upload and text extraction` |
 | 10  | AI document summarization            | Not started | `feat: add AI summarization` |
 | 11  | AI intelligent search                | Not started | `feat: add AI search` |
 | 12  | Personalized recommendations         | Not started | `feat: add recommendations` |
@@ -83,9 +83,8 @@ Note CRUD, markdown content with live preview, tags, optional link to a learning
 **Phase 8 — Dashboard (done)**
 Progress overview, goal/roadmap status, recent activity feed, and Recharts learning progress visualizations.
 
-**Phase 9 — PDF upload and text extraction**
-Supabase Storage bucket, upload Server Action, server-side text extraction, store
-path + extracted text for later AI use.
+**Phase 9 — PDF upload and text extraction (done)**
+Private Supabase Storage bucket (`documents`), upload Server Action with Zod file validation, server-side text extraction (`pdf-parse` v2 and plain text), and `extracted_text` column on resources.
 
 **Phase 10 — AI document summarization**
 Gemini structured output (zod-validated), summary stored in `Summary`.

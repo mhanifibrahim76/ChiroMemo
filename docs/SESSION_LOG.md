@@ -736,3 +736,74 @@ Phase 9 — PDF upload and text extraction (Supabase Storage bucket, upload Serv
   - Specified explicit `"en-US"` locale across all timestamp helpers (`formatDate`, `formatDateTime`, `formatRelativeTime`).
   - Added `suppressHydrationWarning` on all timestamp container elements across `note-list-pane.tsx`, `recent-activity-list.tsx`, `goal-card.tsx`, `goal-detail.tsx`, `resource-card.tsx`, `resource-detail.tsx`, `roadmap-card.tsx`, `roadmap-detail.tsx`, and `roadmap-step-item.tsx`.
 - Verification: `npm run typecheck`, `npm run lint`, and `npm run build` all pass with 0 errors.
+
+
+## 2026-10-22 — Phase 9: PDF Upload and Text Extraction End-to-End Implementation
+
+### Current Phase
+
+Phase 9 — PDF Upload and Text Extraction (complete)
+
+### Completed
+
+- Supabase Storage & Database Schema Migration:
+  - Created `supabase/migrations/20261022000000_phase_9_storage_and_documents.sql`:
+    - Configured private storage bucket `documents` (10MB file limit, allowed MIME types: `application/pdf`, `text/plain`).
+    - Enforced strict RLS policies on `storage.objects` for SELECT, INSERT, UPDATE, and DELETE, strictly scoped to folder prefix `(storage.foldername(name))[1] = auth.uid()::text`.
+    - Added `extracted_text` column to `public.resources` table.
+  - Updated `src/lib/supabase/database.types.ts` with `extracted_text: string | null` in `resources` row types.
+- Zod File & Metadata Validations:
+  - Created `src/lib/validations/documents.ts`:
+    - `MAX_DOCUMENT_FILE_SIZE` (10MB), `ALLOWED_DOCUMENT_MIME_TYPES`, `ALLOWED_DOCUMENT_EXTENSIONS`.
+    - `validateDocumentFile()`: Validates file presence, empty files, size limit, and MIME/extension matching.
+    - `documentMetadataSchema`: Zod schema for title, goalId, category, and description.
+- Server-Side Text Extraction:
+  - Installed `pdf-parse` v2.
+  - Implemented `src/lib/pdf.ts`:
+    - `extractTextFromPdf()`: Parses PDF buffer via `PDFParse`, cleans and normalizes text, counts words/pages/characters, and extracts metadata.
+    - `extractTextFromPlainText()`: UTF-8 decoder for `.txt` documents.
+    - `extractDocumentText()`: Polymorphic dispatcher routing by extension/MIME type with robust error handling for encrypted/corrupted files.
+- Server Actions & Storage Service:
+  - Created `src/lib/documents/constants.ts`: Types for `DocumentActionState` and `initialDocumentActionState`.
+  - Implemented `src/lib/documents/actions.ts`:
+    - `uploadDocumentAction()`: Handles file upload, extracts text on the server, uploads to private bucket `documents/${user.id}/${timestamp}-${safeName}`, creates a resource record with extracted text, logs activity to `learning_activities`, and revalidates paths.
+    - `getDocumentSignedUrlAction()`: Generates 1-hour signed URL for private document download with user ownership validation.
+    - `deleteDocumentFileAction()`: Deletes file from storage with ownership verification.
+- UI Components & Integration:
+  - Created `src/components/resources/upload-document-dialog.tsx`: Full drag-and-drop document upload dialog with file validation, metadata fields (goal linker, category, notes), extraction progress indicator, and extracted text preview snippet.
+  - Connected `UploadDocumentDialog` to `src/components/resources/resource-list.tsx`.
+  - Updated `src/components/resources/resource-detail.tsx`: Added "Download Document" button with signed URL generation, Uploaded Document storage path card, and Extracted Document Text viewer with word count and "Copy text" feature (ready for Phase 10 AI Summarization).
+
+### Files Changed
+
+Created: `supabase/migrations/20261022000000_phase_9_storage_and_documents.sql`, `src/lib/validations/documents.ts`, `src/lib/pdf.ts`, `src/lib/documents/constants.ts`, `src/lib/documents/actions.ts`, `src/components/resources/upload-document-dialog.tsx`.
+Modified: `package.json`, `package-lock.json`, `src/lib/supabase/database.types.ts`, `src/lib/resources.ts`, `src/components/resources/resource-list.tsx`, `src/components/resources/resource-detail.tsx`, `docs/ROADMAP.md`, `docs/PROJECT_CONTEXT.md`, `docs/DATABASE.md`, `docs/SESSION_LOG.md`.
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npm run build` | PASS — Next.js 16.3.7 Turbopack production build succeeded cleanly |
+
+### Next Phase
+
+Phase 10 — AI document summarization (Gemini API via `@google/genai` structured output, zod validation, summaries stored in `Summary` table).
+
+
+### Bug Fix: Goal Target Date Validation (Invalid ISO datetime)
+
+- Root cause: `<input type="date" name="target_date" />` sends format `YYYY-MM-DD` (or `""` when empty), but `z.string().datetime({ offset: true })` in `src/lib/validations/goals.ts` rejected `YYYY-MM-DD` with "Invalid ISO datetime" and rejected empty strings.
+- Fix: Added `sanitizeTargetDate` preprocessor in `src/lib/validations/goals.ts` converting `YYYY-MM-DD` dates to ISO strings (`...T00:00:00.000Z`) and empty strings to `null`.
+- Verification: `npm run typecheck`, `npm run lint`, and `npm run build` all pass with 0 errors.
+
+
+### Bug Fix: Roadmap Step Creation Fallback (Missing RPC function)
+
+- Root cause: `createRoadmapStep` in `src/lib/roadmaps.ts` relied exclusively on `supabase.rpc("create_roadmap_step")` which does not exist in the remote database if SQL migration `20261013000000_reorder_roadmap_steps_rpc.sql` was not run, causing a 42883 error and returning "Could not create step. Please try again."
+- Fix:
+  - Added resilient fallback in `src/lib/roadmaps.ts`: if the stored procedure is missing, `createRoadmapStep` calculates the next `order` sequence and inserts directly into `public.roadmap_steps` using the typed client under RLS.
+  - Added similar direct table operation fallbacks for `deleteRoadmapStep` and `reorderRoadmapSteps`.
+  - Improved error reporting in `createRoadmapStepAction` to surface actionable error messages.
+- Verification: `npm run typecheck`, `npm run lint`, and `npm run build` all pass with 0 errors.
