@@ -28,7 +28,7 @@ interface GoalCardProps {
 function formatDate(dateString: string | null): string {
   if (!dateString) return "—";
   try {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -86,12 +86,12 @@ export function GoalCard({ goal }: GoalCardProps) {
                 <dt className="sr-only">Target date</dt>
                 <dd className="flex items-center gap-1">
                   <CalendarIcon className="h-3 w-3 text-muted-foreground" aria-hidden="true" />
-                  <span>{formatDate(goal.target_date)}</span>
+                  <span suppressHydrationWarning>{formatDate(goal.target_date)}</span>
                 </dd>
               </>
             )}
             <dt className="sr-only">Created</dt>
-            <dd className="text-xs">Created {formatDate(goal.created_at)}</dd>
+            <dd className="text-xs" suppressHydrationWarning>Created {formatDate(goal.created_at)}</dd>
           </dl>
         </div>
 

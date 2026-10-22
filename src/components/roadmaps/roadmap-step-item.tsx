@@ -161,7 +161,14 @@ export function RoadmapStepItem({
             {step.completed_at && (
               <dd className="flex items-center gap-1">
                 <CheckCircleIcon className="h-3 w-3 text-green-600" aria-hidden="true" />
-                <span>Completed {new Date(step.completed_at).toLocaleDateString()}</span>
+                <span suppressHydrationWarning>
+                  Completed{" "}
+                  {new Date(step.completed_at).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })}
+                </span>
               </dd>
             )}
           </dl>

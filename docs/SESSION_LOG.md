@@ -685,3 +685,54 @@ Modified: `src/proxy.ts`, `src/app/(app)/layout.tsx`, `docs/ROADMAP.md`, `docs/S
 ### Next Phase
 
 Phase 8 — Dashboard and analytics (Progress overview, goal/roadmap status, activity feed, Recharts charts).
+
+
+## 2026-10-22 — Phase 8: Dashboard and Learning Analytics End-to-End Implementation
+
+### Current Phase
+
+Phase 8 — Dashboard and Learning Analytics (complete)
+
+### Completed
+
+- Implemented Dashboard Data Layer in `src/lib/dashboard.ts`:
+  - `getDashboardData()`: Concurrently aggregates user-scoped data from `learning_goals`, `roadmaps`, `resources`, `notes`, and `learning_activities` using `Promise.all` to avoid serial round trips.
+  - Metrics calculation: Total Active Goals, Total Goals, Average Roadmap Progress (%), Total Roadmaps Count, Saved Resources Count, and Personal Notes Count.
+  - Recent Activity synthesis: Combines logged learning activities with recent entity updates/creations (notes, resources, roadmaps, goals), sorts descending by timestamp, deduplicates by target, and limits to top recent items.
+  - 7-day Learning Trajectory: Computes day-by-day learning activity breakdown across the past 7 days (notes, resources, roadmaps, logged events) for chart plotting.
+  - Non-blocking helper `recordLearningActivity()` for logging events to `public.learning_activities`.
+- Built UI Components in `src/components/dashboard/`:
+  - `DashboardMetrics`: 4 summary metric cards (Active Goals, Roadmap Progress with mini progress bar, Saved Resources, Personal Notes) with navigation links, accent icons, and hover micro-interactions aligned with Figure 4.3 wireframe.
+  - `LearningProgressChart`: Client Component (`"use client"`) utilizing `recharts` (AreaChart with custom gradient and tooltips for 7-day activity, plus BarChart toggle for Roadmap completion), with clean hydration safety via `useSyncExternalStore` and responsive container.
+  - `RecentActivityList`: Activity stream card featuring differentiated entity badges/icons (`FileText`, `BookOpen`, `Compass`, `Target`), human-readable relative time calculations, direct links to resource/note/roadmap items, and empty state CTA.
+  - `DashboardSkeleton`: Coordinated shimmer skeleton mirroring the wireframe metrics cards, chart block, and activity items to prevent layout shift.
+- App Router Integration:
+  - `src/app/(app)/dashboard/page.tsx`: Transformed the placeholder into the complete dashboard featuring personalized student welcome greeting, quick-action navigation buttons (Goals, Resources, New Note), and a streaming `<Suspense>` boundary.
+  - `src/app/(app)/dashboard/loading.tsx`: Content-level skeleton loader powered by `DashboardSkeleton`.
+  - `src/app/(app)/layout.tsx`: Added direct `Dashboard` navigation item with `LayoutDashboard` icon.
+
+### Files Changed
+
+Created: `src/lib/dashboard.ts`, `src/components/dashboard/dashboard-metrics.tsx`, `src/components/dashboard/learning-progress-chart.tsx`, `src/components/dashboard/recent-activity-list.tsx`, `src/components/dashboard/dashboard-skeleton.tsx`.
+Modified: `src/app/(app)/dashboard/page.tsx`, `src/app/(app)/dashboard/loading.tsx`, `src/app/(app)/layout.tsx`, `docs/ROADMAP.md`, `docs/PROJECT_CONTEXT.md`, `docs/SESSION_LOG.md`.
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npm run build` | PASS — Next.js 16.3.7 Turbopack production build succeeded cleanly |
+
+### Next Phase
+
+Phase 9 — PDF upload and text extraction (Supabase Storage bucket, upload Server Action, server-side text extraction).
+
+
+### Bug Fix: Hydration Mismatch on Date/Time Formatting
+
+- Root cause: `toLocaleTimeString(undefined)` / `toLocaleDateString(undefined)` in Client Components (`note-list-pane.tsx`, etc.) rendered with the Node.js server system locale (e.g. `11.21`) during SSR, but with browser locale (e.g. `11:21 AM`) upon hydration.
+- Fix:
+  - Specified explicit `"en-US"` locale across all timestamp helpers (`formatDate`, `formatDateTime`, `formatRelativeTime`).
+  - Added `suppressHydrationWarning` on all timestamp container elements across `note-list-pane.tsx`, `recent-activity-list.tsx`, `goal-card.tsx`, `goal-detail.tsx`, `resource-card.tsx`, `resource-detail.tsx`, `roadmap-card.tsx`, `roadmap-detail.tsx`, and `roadmap-step-item.tsx`.
+- Verification: `npm run typecheck`, `npm run lint`, and `npm run build` all pass with 0 errors.

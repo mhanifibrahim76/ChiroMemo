@@ -13,7 +13,7 @@ phase automatically, and do not implement features from later phases early.
 | 5   | Learning roadmaps                    | **Complete** | `feat: add learning roadmap` |
 | 6   | Learning resources                   | **Complete** | `feat: add resource management` |
 | 7   | Personal notes                       | **Complete** | `feat: add notes` |
-| 8   | Dashboard and analytics              | Not started | `feat: add dashboard` |
+| 8   | Dashboard and analytics              | **Complete** | `feat: add dashboard and analytics` |
 | 9   | PDF upload and text extraction       | Not started | `feat: add pdf upload` |
 | 10  | AI document summarization            | Not started | `feat: add AI summarization` |
 | 11  | AI intelligent search                | Not started | `feat: add AI search` |
@@ -80,9 +80,8 @@ Resource CRUD with type (PDF/video/website/book/course), link to a goal, roadmap
 **Phase 7 — Personal notes (done)**
 Note CRUD, markdown content with live preview, tags, optional link to a learning resource, search and two-pane split editor.
 
-**Phase 8 — Dashboard**
-Progress overview, goal/roadmap status, activity feed, Recharts charts from
-`LearningActivity`.
+**Phase 8 — Dashboard (done)**
+Progress overview, goal/roadmap status, recent activity feed, and Recharts learning progress visualizations.
 
 **Phase 9 — PDF upload and text extraction**
 Supabase Storage bucket, upload Server Action, server-side text extraction, store

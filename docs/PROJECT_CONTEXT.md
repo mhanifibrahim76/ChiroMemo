@@ -45,10 +45,10 @@ Row Level Security.
 
 ## Current state
 
-Phases 1-7 complete (foundation, database schema, authentication,
-native Supabase schema + RLS, learning goals, roadmaps, resources, and personal
-notes). All feature pages (/goals, /roadmaps, /resources, /notes) are functional
-and wired to Supabase with strict RLS. Protected /dashboard placeholder exists.
+Phases 1-8 complete (foundation, database schema, authentication,
+native Supabase schema + RLS, learning goals, roadmaps, resources, personal
+notes, and dashboard analytics). All feature pages (/dashboard, /goals, /roadmaps,
+/resources, /notes) are functional and wired to Supabase with strict RLS.
 
 The runtime data path is:
 

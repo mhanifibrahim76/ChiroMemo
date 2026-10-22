@@ -55,7 +55,7 @@ interface RoadmapDetailProps {
 
 function formatDateTime(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleString(undefined, {
+    return new Date(dateString).toLocaleString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -95,7 +95,7 @@ export function RoadmapDetail({
             <h1 className="text-2xl font-semibold tracking-tight">{roadmap.title}</h1>
             <Badge variant="secondary">{roadmap.progress_percent}%</Badge>
           </div>
-          <p className="text-muted-foreground text-sm">Created {formatDateTime(roadmap.created_at)}</p>
+          <p className="text-muted-foreground text-sm" suppressHydrationWarning>Created {formatDateTime(roadmap.created_at)}</p>
         </div>
       </div>
 
@@ -162,7 +162,7 @@ export function RoadmapDetail({
           <CardContent>
             <p className="flex items-center gap-2">
               <MapIcon className="h-4 w-4 text-muted-foreground" />
-              <span>{formatDateTime(roadmap.updated_at)}</span>
+              <span suppressHydrationWarning>{formatDateTime(roadmap.updated_at)}</span>
             </p>
           </CardContent>
         </Card>

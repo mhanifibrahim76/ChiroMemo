@@ -27,7 +27,7 @@ interface RoadmapCardProps {
 
 function formatDate(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -72,7 +72,7 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
               </dd>
             )}
             <dt className="sr-only">Created</dt>
-            <dd className="text-xs">Created {formatDate(roadmap.created_at)}</dd>
+            <dd className="text-xs" suppressHydrationWarning>Created {formatDate(roadmap.created_at)}</dd>
           </dl>
         </div>
 

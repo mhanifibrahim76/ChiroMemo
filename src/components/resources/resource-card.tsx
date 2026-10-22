@@ -65,7 +65,7 @@ interface ResourceCardProps {
 
 function formatDate(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -241,7 +241,7 @@ export function ResourceCard({ resource, availableGoals = [] }: ResourceCardProp
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
-            <span>Added {formatDate(resource.created_at)}</span>
+            <span suppressHydrationWarning>Added {formatDate(resource.created_at)}</span>
             {resource.url && (
               <a
                 href={resource.url}

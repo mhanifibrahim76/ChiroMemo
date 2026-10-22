@@ -26,7 +26,7 @@ function formatDate(dateString: string): string {
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
     if (diffDays === 0) {
-      return date.toLocaleTimeString(undefined, {
+      return date.toLocaleTimeString("en-US", {
         hour: "2-digit",
         minute: "2-digit",
       });
@@ -37,7 +37,7 @@ function formatDate(dateString: string): string {
     if (diffDays < 7) {
       return `${diffDays}d ago`;
     }
-    return date.toLocaleDateString(undefined, {
+    return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });
@@ -214,7 +214,10 @@ export function NoteListPane({
                   <h3 className="font-semibold text-xs leading-snug line-clamp-1 text-foreground">
                     {note.title || "Untitled note"}
                   </h3>
-                  <span className="text-[10px] text-muted-foreground shrink-0">
+                  <span
+                    className="text-[10px] text-muted-foreground shrink-0"
+                    suppressHydrationWarning
+                  >
                     {formatDate(note.updated_at)}
                   </span>
                 </div>

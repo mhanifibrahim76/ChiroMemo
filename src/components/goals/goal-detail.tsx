@@ -69,7 +69,7 @@ function StatusBadge({ status }: { status: "ACTIVE" | "COMPLETED" | "ARCHIVED" }
 function formatDate(dateString: string | null): string {
   if (!dateString) return "—";
   try {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -81,7 +81,7 @@ function formatDate(dateString: string | null): string {
 
 function formatDateTime(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleString(undefined, {
+    return new Date(dateString).toLocaleString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -119,7 +119,7 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
         </Link>
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">{goal.title}</h1>
-          <p className="text-muted-foreground text-sm">Created {formatDateTime(goal.created_at)}</p>
+          <p className="text-muted-foreground text-sm" suppressHydrationWarning>Created {formatDateTime(goal.created_at)}</p>
         </div>
       </div>
 
@@ -193,7 +193,7 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
           <CardContent>
             <p className="flex items-center gap-2">
               <TargetIcon className="h-4 w-4 text-muted-foreground" />
-              <span>{goal.target_date ? formatDate(goal.target_date) : "Not set"}</span>
+              <span suppressHydrationWarning>{goal.target_date ? formatDate(goal.target_date) : "Not set"}</span>
             </p>
           </CardContent>
         </Card>
@@ -205,7 +205,7 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
           <CardContent>
             <p className="flex items-center gap-2">
               <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-              <span>{formatDateTime(goal.updated_at)}</span>
+              <span suppressHydrationWarning>{formatDateTime(goal.updated_at)}</span>
             </p>
           </CardContent>
         </Card>

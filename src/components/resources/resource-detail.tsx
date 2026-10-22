@@ -49,7 +49,7 @@ interface ResourceDetailProps {
 
 function formatDate(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleDateString(undefined, {
+    return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -61,7 +61,7 @@ function formatDate(dateString: string): string {
 
 function formatDateTime(dateString: string): string {
   try {
-    return new Date(dateString).toLocaleString(undefined, {
+    return new Date(dateString).toLocaleString("en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -393,7 +393,7 @@ export function ResourceDetail({ resource, availableGoals = [] }: ResourceDetail
                 <span className="flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5" /> Added on
                 </span>
-                <span className="text-foreground font-medium">
+                <span className="text-foreground font-medium" suppressHydrationWarning>
                   {formatDate(resource.created_at)}
                 </span>
               </div>
@@ -401,7 +401,7 @@ export function ResourceDetail({ resource, availableGoals = [] }: ResourceDetail
                 <span className="flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5" /> Last updated
                 </span>
-                <span className="text-foreground font-medium text-xs">
+                <span className="text-foreground font-medium text-xs" suppressHydrationWarning>
                   {formatDateTime(resource.updated_at)}
                 </span>
               </div>
