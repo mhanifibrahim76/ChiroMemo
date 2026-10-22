@@ -581,3 +581,107 @@ Not touched: any application source file, `src/lib/`, `src/app/`, `supabase/migr
 - `FORCE ROW LEVEL SECURITY` is still undecided.
 - `supabase/config.toml` and a linked CLI project are still absent.
 - `users` table holds 1 row (the auth user created during Phase 3 testing).
+
+
+## 2026-10-22 — Phase 6: Learning Resources Data Layer, Actions & UI Implementation
+
+### Current Phase
+
+Phase 6 — Learning Resources (complete)
+
+### Completed
+
+- Implemented Resource Data Layer in `src/lib/resources.ts`:
+  - `listResources(filter)`: Scoped to authenticated user, supports multi-criteria filtering (ResourceType, goal, category, archived status, query search across title, author, description, category), joins goal titles and step association counts.
+  - `getResource(id)`: Fetches single resource with linked goal details and roadmap step associations through `step_resources`.
+  - `createResource(input)`: Validates and inserts into `public.resources` with generated UUID and optional initial `step_resources` links.
+  - `updateResource(id, input)`: Scoped updates with timestamp refresh and step association syncing.
+  - `toggleArchiveResource(id, isArchived)` and `deleteResource(id)`: Full lifecycle management.
+  - Many-to-many associations: `addResourceToStep`, `removeResourceFromStep`, `listResourcesForStep`, `listResourcesForGoal`, and `getStepResourcesMapForRoadmap`.
+- Added Server Action Constants and Handlers:
+  - Created `src/lib/resources/constants.ts` with `ResourceActionState` and `initialResourceActionState`.
+  - Implemented `src/lib/resources/actions.ts`: `createResourceAction`, `updateResourceAction`, `toggleArchiveResourceAction`, `deleteResourceAction`, `associateResourceWithStepAction`, and `dissociateResourceFromStepAction` with full cache revalidation.
+- Updated Zod Schemas in `src/lib/validations/resources.ts`:
+  - Preprocesses empty string values to `null` for URL, author, category, description, and goal_id.
+- Created UI Components in `src/components/resources/`:
+  - `ResourceTypeBadge`: Visual color accents and icons for PDF, Video, Website, Book, and Course.
+  - `ResourceCard`: Preview card with type badge, category tag, goal link, step count, external link button, and action dropdown (edit, archive/restore, delete).
+  - `ResourceList`: Client search and filter hub with type tabs, category dropdown, goal filter, archive toggle, and responsive grid with empty states.
+  - `CreateResourceDialog` & `EditResourceDialog`: Accessible modals with reactive feedback and field error handling.
+  - `ResourceDetail`: Full detail view for `/resources/[id]` with source link, study notes, goal connection card, and roadmap step associations.
+  - `ResourceCardsSkeleton` & `ResourceDetailSkeleton`: Content-level skeleton loaders preventing layout shifts.
+  - `StepResourceDialog`: Modal for attaching/detaching resources directly from roadmap steps.
+- App Router Pages:
+  - `src/app/(app)/resources/page.tsx`: Server Component rendering active library.
+  - `src/app/(app)/resources/loading.tsx`: Stable header skeleton loader.
+  - `src/app/(app)/resources/[id]/page.tsx`: Resource detail route.
+  - `src/app/(app)/resources/[id]/loading.tsx`: Resource detail loading skeleton.
+- Cross-Domain Integration:
+  - Connected `resources` into `GoalDetail` (`src/components/goals/goal-detail.tsx` & `src/app/(app)/goals/[id]/page.tsx`).
+  - Connected step resources into `RoadmapStepItem` and `RoadmapDetail` (`src/components/roadmaps/roadmap-step-item.tsx`, `roadmap-detail.tsx`, and `src/app/(app)/roadmaps/[id]/page.tsx`).
+
+### Files Changed
+
+Created: `src/lib/resources.ts`, `src/lib/resources/constants.ts`, `src/lib/resources/actions.ts`, `src/components/resources/resource-type-badge.tsx`, `src/components/resources/resource-card.tsx`, `src/components/resources/resource-list.tsx`, `src/components/resources/create-resource-dialog.tsx`, `src/components/resources/edit-resource-dialog.tsx`, `src/components/resources/resource-detail.tsx`, `src/components/resources/resource-detail-skeleton.tsx`, `src/components/resources/step-resource-dialog.tsx`, `src/app/(app)/resources/loading.tsx`, `src/app/(app)/resources/[id]/page.tsx`, `src/app/(app)/resources/[id]/loading.tsx`.
+Modified: `src/lib/validations/resources.ts`, `src/lib/supabase/database.types.ts`, `src/app/(app)/resources/page.tsx`, `src/app/(app)/goals/[id]/page.tsx`, `src/components/goals/goal-detail.tsx`, `src/components/roadmaps/roadmap-step-item.tsx`, `src/components/roadmaps/roadmap-detail.tsx`, `src/app/(app)/roadmaps/[id]/page.tsx`, `docs/ROADMAP.md`, `docs/SESSION_LOG.md`.
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npm run build` | PASS — Next.js 16.3.7 Turbopack production build succeeded cleanly |
+
+### Next Phase
+
+Phase 7 — Personal notes (Note CRUD, tags, optional link to a resource).
+
+
+## 2026-10-22 — Phase 7: Personal Note Management End-to-End Implementation
+
+### Current Phase
+
+Phase 7 — Personal Note Management (complete)
+
+### Completed
+
+- Built Zod Validation in `src/lib/validations/notes.ts`:
+  - `createNoteSchema`, `updateNoteSchema`, and `noteIdSchema` with empty-string-to-null sanitizers for foreign keys.
+- Implemented Note Data Layer in `src/lib/notes.ts`:
+  - `listNotes(filter)`: Scoped strictly by `auth.uid() = user_id`, multi-criteria filtering (search, tag, resource, step), joins linked resource details (`id`, `title`, `type`).
+  - `getNote(id)`: Single note fetch scoped to authenticated user, joining linked resource and roadmap step details.
+  - `createNote(input)`: Generates UUID, creates markdown note with tags and optional resource/step association.
+  - `updateNote(id, input)`: Scoped note mutation with timestamp refresh.
+  - `deleteNote(id)`: Scoped note deletion.
+  - Helper queries: `listNotesForResource`, `listNotesForStep`.
+- Created Server Actions and Constants:
+  - Created `src/lib/notes/constants.ts` with `NoteActionState` and `initialNoteActionState`.
+  - Implemented `src/lib/notes/actions.ts`: `createNoteAction`, `updateNoteAction`, and `deleteNoteAction` with `unstable_rethrow` error handling and route revalidations.
+- Built UI Components in `src/components/notes/`:
+  - `MarkdownPreview`: Custom markdown renderer supporting headings, bold, italics, code blocks, lists, blockquotes, and links.
+  - `NoteEditorPane`: Interactive editor with title input, resource linker dropdown with type badges, tag input with badge preview, Write & Preview tabs, and delete dialog.
+  - `NoteListPane`: Sidebar listing with note count badge, new note CTA, live search, tag filters, and note cards with markdown-stripped snippets and relative timestamps.
+  - `NotesSplitView`: Master split-view coordinator handling active note selection and responsive column grid.
+  - `NotesSplitSkeleton`: Content-level skeleton loader mirroring the two-pane layout to prevent layout shift.
+- App Router Integration:
+  - `src/app/(app)/notes/page.tsx`: Route page with stable header, Suspense boundary, and query param support (`?id=...`).
+  - `src/app/(app)/notes/loading.tsx`: Content-level skeleton loader.
+  - Added `"/notes"` to `PROTECTED_PREFIXES` in `src/proxy.ts` and added Notes navigation item (`FileText` icon) in `src/app/(app)/layout.tsx`.
+
+### Files Changed
+
+Created: `src/lib/validations/notes.ts`, `src/lib/notes.ts`, `src/lib/notes/constants.ts`, `src/lib/notes/actions.ts`, `src/components/notes/markdown-preview.tsx`, `src/components/notes/note-editor-pane.tsx`, `src/components/notes/note-list-pane.tsx`, `src/components/notes/notes-split-view.tsx`, `src/components/notes/notes-skeleton.tsx`, `src/app/(app)/notes/page.tsx`, `src/app/(app)/notes/loading.tsx`.
+Modified: `src/proxy.ts`, `src/app/(app)/layout.tsx`, `docs/ROADMAP.md`, `docs/SESSION_LOG.md`.
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npm run build` | PASS — Next.js 16.3.7 Turbopack production build succeeded cleanly |
+
+### Next Phase
+
+Phase 8 — Dashboard and analytics (Progress overview, goal/roadmap status, activity feed, Recharts charts).

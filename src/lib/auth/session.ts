@@ -27,11 +27,15 @@ export async function requireUser() {
     redirect("/login");
   }
 
-  return ensureAppUser({
-    id: claims.sub,
-    email: claims.email ?? null,
-    name: await resolveName(supabase, claims.user_metadata?.name),
-  });
+  try {
+    return await ensureAppUser({
+      id: claims.sub,
+      email: claims.email ?? null,
+      name: await resolveName(supabase, claims.user_metadata?.name),
+    });
+  } catch {
+    redirect("/login");
+  }
 }
 
 /**

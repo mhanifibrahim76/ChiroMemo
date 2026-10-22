@@ -1,5 +1,6 @@
 import "server-only";
 
+import { redirect } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import type { Tables, TablesInsert, TablesUpdate } from "@/lib/supabase/database.types";
@@ -22,6 +23,9 @@ export async function listGoals(): Promise<GoalRow[]> {
     .order("created_at", { ascending: false });
 
   if (error) {
+    if (error.code === "42501" || error.message.toLowerCase().includes("permission denied")) {
+      redirect("/login");
+    }
     throw new Error(`Could not list goals: ${error.message}`);
   }
 

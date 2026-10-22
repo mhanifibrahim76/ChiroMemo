@@ -1,19 +1,14 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { redirect, unstable_rethrow } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { fieldErrorsFrom } from "@/lib/validations/auth";
 import { createGoalSchema, updateGoalSchema, goalIdSchema, type CreateGoalInput, type UpdateGoalInput, type GoalId } from "@/lib/validations/goals";
 import { createGoal, updateGoal, deleteGoal, updateGoalStatus, updateGoalPriority } from "@/lib/goals";
+import type { GoalActionState } from "@/lib/goals/constants";
 
-export type GoalActionState = {
-  error?: string;
-  message?: string;
-  fieldErrors?: Record<string, string>;
-};
-
-export const initialGoalActionState: GoalActionState = {};
+export type { GoalActionState };
 
 function validateCreateGoal(input: unknown): CreateGoalInput {
   const parsed = createGoalSchema.safeParse(input);
@@ -43,6 +38,8 @@ export async function createGoalAction(
   _previousState: GoalActionState,
   formData: FormData
 ): Promise<GoalActionState> {
+  let goalId: string;
+
   try {
     const rawInput = {
       title: formData.get("title"),
@@ -54,15 +51,19 @@ export async function createGoalAction(
 
     const input = validateCreateGoal(rawInput);
     const goal = await createGoal(input);
-
-    revalidatePath("/goals");
-    redirect(`/goals/${goal.id}`);
+    goalId = goal.id;
   } catch (err) {
+    // requireUser() redirects through a thrown control-flow error; never swallow it.
+    unstable_rethrow(err);
     if (err && typeof err === "object" && "fieldErrors" in err) {
       return { error: "Please correct the highlighted fields.", fieldErrors: (err as { fieldErrors: Record<string, string> }).fieldErrors };
     }
     return { error: "Could not create goal. Please try again." };
   }
+
+  // Outside any try/catch: redirect() works by throwing.
+  revalidatePath("/goals");
+  redirect(`/goals/${goalId}`);
 }
 
 export async function updateGoalAction(
@@ -150,13 +151,16 @@ export async function deleteGoalAction(
     const id = validateGoalId(rawId);
 
     await deleteGoal(id);
-
-    revalidatePath("/goals");
-    redirect("/goals");
   } catch (err) {
+    // requireUser() redirects through a thrown control-flow error; never swallow it.
+    unstable_rethrow(err);
     if (err && typeof err === "object" && "fieldErrors" in err) {
       return { error: "Please correct the highlighted fields.", fieldErrors: (err as { fieldErrors: Record<string, string> }).fieldErrors };
     }
     return { error: "Could not delete goal. Please try again." };
   }
+
+  // Outside any try/catch: redirect() works by throwing.
+  revalidatePath("/goals");
+  redirect("/goals");
 }

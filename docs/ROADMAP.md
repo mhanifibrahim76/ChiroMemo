@@ -9,10 +9,10 @@ phase automatically, and do not implement features from later phases early.
 | 2   | Database schema                       | **Complete** | `f719153` |
 | 3   | Authentication                       | **Complete** | `feat: add authentication` |
 | 3.5 | Supabase native schema + RLS         | **Complete** | `chore: native supabase schema and rls` |
-| 4   | Learning goals                       | Not started | `feat: add learning goals` |
-| 5   | Learning roadmaps                    | Not started | `feat: add learning roadmap` |
-| 6   | Learning resources                   | Not started | `feat: add resource management` |
-| 7   | Personal notes                       | Not started | `feat: add notes` |
+| 4   | Learning goals                       | **Complete** | `feat: add learning goals` |
+| 5   | Learning roadmaps                    | **Complete** | `feat: add learning roadmap` |
+| 6   | Learning resources                   | **Complete** | `feat: add resource management` |
+| 7   | Personal notes                       | **Complete** | `feat: add notes` |
 | 8   | Dashboard and analytics              | Not started | `feat: add dashboard` |
 | 9   | PDF upload and text extraction       | Not started | `feat: add pdf upload` |
 | 10  | AI document summarization            | Not started | `feat: add AI summarization` |
@@ -74,11 +74,11 @@ CRUD for goals, status, target date, list/detail pages, server actions + zod.
 **Phase 5 — Learning roadmaps**
 Roadmap CRUD attached to a goal, ordered steps, step status, progress percentage.
 
-**Phase 6 — Learning resources**
-Resource CRUD with type (PDF/video/website/book/course), link to a goal.
+**Phase 6 — Learning resources (done)**
+Resource CRUD with type (PDF/video/website/book/course), link to a goal, roadmap step associations, and category classification.
 
-**Phase 7 — Personal notes**
-Note CRUD, tags, optional link to a resource.
+**Phase 7 — Personal notes (done)**
+Note CRUD, markdown content with live preview, tags, optional link to a learning resource, search and two-pane split editor.
 
 **Phase 8 — Dashboard**
 Progress overview, goal/roadmap status, activity feed, Recharts charts from

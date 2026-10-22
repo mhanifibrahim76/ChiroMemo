@@ -45,10 +45,10 @@ Row Level Security.
 
 ## Current state
 
-Phases 1-3 complete (foundation, database, authentication), and Phase 3.5
-complete (native Supabase schema + RLS, application moved to the Supabase Data
-API, Prisma removed). Register, login, logout, session refresh and a protected
-`/dashboard` placeholder exist. No feature pages beyond auth exist yet.
+Phases 1-7 complete (foundation, database schema, authentication,
+native Supabase schema + RLS, learning goals, roadmaps, resources, and personal
+notes). All feature pages (/goals, /roadmaps, /resources, /notes) are functional
+and wired to Supabase with strict RLS. Protected /dashboard placeholder exists.
 
 The runtime data path is:
 

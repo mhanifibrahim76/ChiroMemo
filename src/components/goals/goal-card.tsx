@@ -5,7 +5,8 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { useState } from "react";
 
-import { updateGoalStatusAction, deleteGoalAction, initialGoalActionState } from "@/lib/goals/actions";
+import { updateGoalStatusAction, deleteGoalAction } from "@/lib/goals/actions";
+import { initialGoalActionState } from "@/lib/goals/constants";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";

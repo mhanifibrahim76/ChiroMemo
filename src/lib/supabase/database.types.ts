@@ -183,6 +183,7 @@ export type Database = {
       resources: {
         Row: {
           author: string | null;
+          category: string | null;
           created_at: string;
           description: string | null;
           file_path: string | null;
@@ -198,6 +199,7 @@ export type Database = {
         ComputedFields: never;
         Insert: {
           author?: string | null;
+          category?: string | null;
           created_at?: string;
           description?: string | null;
           file_path?: string | null;
@@ -212,6 +214,7 @@ export type Database = {
         };
         Update: {
           author?: string | null;
+          category?: string | null;
           created_at?: string;
           description?: string | null;
           file_path?: string | null;
@@ -435,7 +438,29 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
-      [_ in never]: never;
+      create_roadmap_step: {
+        Args: {
+          p_roadmap_id: string;
+          p_title: string;
+          p_description: string | null;
+          p_order: number | null;
+        };
+        Returns: Json;
+      };
+      reorder_roadmap_steps: {
+        Args: {
+          p_roadmap_id: string;
+          p_steps: Json;
+        };
+        Returns: void;
+      };
+      delete_and_reorder_roadmap_step: {
+        Args: {
+          p_roadmap_id: string;
+          p_step_id: string;
+        };
+        Returns: void;
+      };
     };
     Enums: {
       ActivityType:

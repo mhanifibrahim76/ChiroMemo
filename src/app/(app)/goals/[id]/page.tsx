@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 
 import { getGoal } from "@/lib/goals";
+import { getGoalRoadmaps, listRoadmaps } from "@/lib/roadmaps";
+import { listResourcesForGoal } from "@/lib/resources";
 import { GoalDetail } from "@/components/goals/goal-detail";
 import { GoalDetailSkeleton } from "@/components/goals/goal-detail-skeleton";
 
@@ -26,11 +28,20 @@ export default async function GoalDetailPage({ params }: GoalDetailPageProps) {
     notFound();
   }
 
+  const [roadmaps, availableRoadmaps, resources] = await Promise.all([
+    getGoalRoadmaps(id),
+    listRoadmaps(),
+    listResourcesForGoal(id),
+  ]);
+
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-8">
-      <Suspense fallback={<GoalDetailSkeleton />}>
-        <GoalDetail goal={goal} />
-      </Suspense>
-    </div>
+    <Suspense fallback={<GoalDetailSkeleton />}>
+      <GoalDetail
+        goal={goal}
+        roadmaps={roadmaps}
+        availableRoadmaps={availableRoadmaps}
+        resources={resources}
+      />
+    </Suspense>
   );
 }

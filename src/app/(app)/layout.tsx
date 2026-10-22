@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { LogOut, Target } from "lucide-react";
+import { Target, Map, BookOpen, FileText } from "lucide-react";
 
 import { logoutAction } from "@/lib/auth/actions";
 import { requireUser } from "@/lib/auth/session";
-import { Button } from "@/components/ui/button";
+import { SignOutButton } from "@/components/auth/sign-out-button";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   // The Proxy already redirects unauthenticated visitors, but the check is
@@ -22,12 +22,21 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <Target className="h-4 w-4" />
               Goals
             </Link>
+            <Link href="/roadmaps" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <Map className="h-4 w-4" />
+              Roadmaps
+            </Link>
+            <Link href="/resources" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <BookOpen className="h-4 w-4" />
+              Resources
+            </Link>
+            <Link href="/notes" className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+              <FileText className="h-4 w-4" />
+              Notes
+            </Link>
             <span className="text-muted-foreground text-sm">{user.email}</span>
             <form action={logoutAction}>
-              <Button type="submit" variant="outline" size="sm">
-                <LogOut />
-                Sign out
-              </Button>
+              <SignOutButton />
             </form>
           </nav>
         </div>

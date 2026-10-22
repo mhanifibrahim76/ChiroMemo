@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 import { safeRedirectPath } from "@/lib/auth/session";
 import type { AuthFormState } from "@/lib/auth/types";
@@ -95,7 +96,16 @@ export async function registerAction(
 
 export async function logoutAction() {
   const supabase = await createClient();
-  await supabase.auth.signOut();
 
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Sign out error from Supabase Auth:", error.message);
+    }
+  } catch (err) {
+    console.error("Unexpected error during signOut:", err);
+  }
+
+  revalidatePath("/", "layout");
   redirect("/login");
 }

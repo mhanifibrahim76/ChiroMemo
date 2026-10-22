@@ -4,10 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getSupabasePublicEnv } from "@/lib/env";
 
 /** Route prefixes that require a signed-in user. Extend as features are added. */
-const PROTECTED_PREFIXES = ["/dashboard", "/goals"];
+const PROTECTED_PREFIXES = ["/dashboard", "/goals", "/roadmaps", "/resources", "/notes"];
 
-/** Pages that a signed-in user has no reason to see. */
-const AUTH_ROUTES = ["/login", "/register"];
+/** Public routes that a signed-in user has no reason to see (will redirect to /dashboard). */
+const PUBLIC_AUTH_ROUTES = ["/", "/login", "/register"];
 
 /**
  * Refreshes the Supabase session and guards the protected routes.
@@ -47,10 +47,12 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  // `getClaims()` verifies the access token signature. `getSession()` only
-  // reads the cookie and must not be trusted for authorization.
-  const { data } = await supabase.auth.getClaims();
-  const isSignedIn = Boolean(data?.claims?.sub);
+  // `getUser()` validates the auth session directly against Supabase Auth.
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  const isSignedIn = Boolean(user && !error);
 
   if (isSignedIn) {
     // A response that belongs to a signed-in user must never be stored by a CDN
@@ -58,6 +60,16 @@ export async function proxy(request: NextRequest) {
     supabaseResponse.headers.set("cache-control", "private, no-store");
   }
 
+  // Kondisi A: User SUDAH login dan mencoba mengakses rute publik (/, /login, /register) -> redirect ke /dashboard
+  if (isSignedIn && PUBLIC_AUTH_ROUTES.includes(pathname)) {
+    const dashboardUrl = request.nextUrl.clone();
+    dashboardUrl.pathname = "/dashboard";
+    dashboardUrl.search = "";
+
+    return withAuthCookies(NextResponse.redirect(dashboardUrl), supabaseResponse);
+  }
+
+  // Kondisi B: User BELUM login dan mencoba mengakses rute terproteksi (/dashboard, /goals, /roadmaps) -> redirect ke /login
   if (!isSignedIn && PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
     const loginUrl = request.nextUrl.clone();
     loginUrl.pathname = "/login";
@@ -65,14 +77,6 @@ export async function proxy(request: NextRequest) {
     loginUrl.searchParams.set("redirectTo", pathname);
 
     return withAuthCookies(NextResponse.redirect(loginUrl), supabaseResponse);
-  }
-
-  if (isSignedIn && AUTH_ROUTES.includes(pathname)) {
-    const dashboardUrl = request.nextUrl.clone();
-    dashboardUrl.pathname = "/dashboard";
-    dashboardUrl.search = "";
-
-    return withAuthCookies(NextResponse.redirect(dashboardUrl), supabaseResponse);
   }
 
   return supabaseResponse;

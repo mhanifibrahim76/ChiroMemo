@@ -1,13 +1,18 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowLeftIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function GoalDetailSkeleton() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy="true" aria-label="Loading goal details">
       <div className="flex items-center gap-4">
-        <Skeleton className="h-5 w-5" />
+        <Link href="/goals" className="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground h-9 w-9">
+          <ArrowLeftIcon className="h-5 w-5" />
+          <span className="sr-only">Back to goals</span>
+        </Link>
         <div className="space-y-1">
           <Skeleton className="h-6 w-64" />
           <Skeleton className="h-4 w-48" />
