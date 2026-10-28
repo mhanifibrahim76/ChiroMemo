@@ -16,6 +16,7 @@ phase automatically, and do not implement features from later phases early.
 | 8   | Dashboard and analytics              | **Complete** | `feat: add dashboard and analytics` |
 | 9   | PDF upload and text extraction       | **Complete** | `feat: add pdf upload and text extraction` |
 | 10  | AI document summarization            | **Complete** | `feat: add AI document summarization` |
+| 10.5| Navigation & request performance opt | **Complete** | `feat: request memoization and navigation progress` |
 | 11  | AI intelligent search                | Not started | `feat: add AI search` |
 | 12  | Personalized recommendations         | Not started | `feat: add recommendations` |
 | 13  | Testing, security, optimization, deploy | Not started | `chore: prepare deployment` |
@@ -88,6 +89,9 @@ Private Supabase Storage bucket (`documents`), upload Server Action with Zod fil
 
 **Phase 10 — AI document summarization (done)**
 Gemini structured output via `@google/genai` (zod-validated), summary stored in `public.summaries`, two-panel split view UI (Wireframe 4.9) at `/summaries` and `/summaries/[id]`, resource integration with instant "Summarize with Gemini AI" action, and "Save as Personal Note" export.
+
+**Phase 10.5 — Navigation and request performance optimization (done)**
+Request memoization via `React.cache()` on `requireUser()` and `ensureAppUser()` to collapse multi-call server waterfalls into a single query per request, immediate visual transition feedback with a top progress bar on navigation link clicks, and verification of segment `loading.tsx` skeletons across all route groups.
 
 **Phase 11 — AI intelligent search**
 Semantic/natural-language search over goals, resources, notes, summaries.

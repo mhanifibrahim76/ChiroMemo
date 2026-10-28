@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
@@ -15,10 +16,13 @@ type ServerSupabaseClient = Awaited<ReturnType<typeof createClient>>;
  * unauthenticated visitors too, but every protected page must call this as
  * well: the Proxy can be bypassed by calling a Server Action directly.
  *
+ * Memoized per-request with React `cache()` so repeated calls in layout, page,
+ * and data-access layers within the same render pass run the remote checks once.
+ *
  * The application row is created here rather than during registration, because
  * this is the first point at which the caller is authenticated and RLS applies.
  */
-export async function requireUser() {
+export const requireUser = cache(async () => {
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
   const claims = data?.claims;
@@ -36,7 +40,7 @@ export async function requireUser() {
   } catch {
     redirect("/login");
   }
-}
+});
 
 /**
  * Returns the user's name from the verified auth context.

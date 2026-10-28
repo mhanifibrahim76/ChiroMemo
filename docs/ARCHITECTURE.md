@@ -72,6 +72,12 @@ Supabase Auth  ──►  session in cookies (sb-<project-ref>-auth-token)
   idempotent upsert in `src/lib/users.ts` using `ignoreDuplicates`, so repeated
   requests cannot create a duplicate or a mismatched id, and an existing row is
   never overwritten.
+- **Request Memoization (`React.cache`)**: `requireUser()` and `ensureAppUser()` are
+  wrapped with `cache()` from React. Next.js Server Components, layouts (`layout.tsx`),
+  and Data Access Layer functions (`listNotes()`, `listResources()`, etc.) can call
+  `requireUser()` independently without triggering redundant network roundtrips to
+  Supabase. Within a single HTTP request lifecycle, the authentication and user record
+  are fetched once and reused across all server callers.
 - Auth errors are mapped to friendly messages in the Server Actions, so raw
   Supabase or database errors never reach the browser.
 - Environment variables used by authentication: `NEXT_PUBLIC_SUPABASE_URL` and
@@ -143,6 +149,17 @@ Route groups:
 - **UI primitives from shadcn/ui.** Add new primitives with
   `npx shadcn@latest add <component>`; do not hand-roll new primitives.
 - **Path alias** `@/*` -> `src/*`.
+- **Per-request memoization.** Repeated server-side identity or context reads within
+  a render pass must be wrapped in `React.cache()` to prevent waterfall roundtrips.
+- **Immediate navigation feedback.** Route transitions are driven by React transitions;
+  the root layout includes a lightweight top progress indicator to provide immediate
+  visual feedback upon navigation link clicks while Server Components stream.
+- **Static header rendering in loading states.** Do not skeleton static content
+  (page titles, descriptions, breadcrumbs, and static action buttons). Skeletons are
+  reserved strictly for data-dependent dynamic regions (cards, tables, metrics, lists).
+  Headings and instructions must render instantly as real text in `loading.tsx` and
+  around `<Suspense>`, providing immediate structural orientation and eliminating
+  cumulative layout shifts (CLS).
 - Keep modules small; avoid speculative abstractions and future-phase code.
 
 ## Key libraries

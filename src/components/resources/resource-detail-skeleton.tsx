@@ -1,11 +1,24 @@
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export function ResourceDetailSkeleton() {
   return (
     <div className="space-y-6" aria-busy="true" aria-label="Loading resource details">
-      {/* Back button skeleton */}
-      <Skeleton className="h-5 w-32" />
+      {/* Back button renders instantly */}
+      <Button
+        asChild
+        variant="ghost"
+        size="sm"
+        className="gap-1 h-7 px-2 -ml-2 text-xs text-muted-foreground hover:text-foreground"
+      >
+        <Link href="/resources">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to resources
+        </Link>
+      </Button>
 
       {/* Header skeleton */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b pb-6">

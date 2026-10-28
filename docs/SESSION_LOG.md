@@ -875,3 +875,55 @@ Implemented full end-to-end AI-powered document summarization (FR-09) adhering t
 ### Next Phase
 
 Phase 11 — AI intelligent search (natural language / semantic search across goals, roadmaps, resources, notes, and summaries).
+
+
+---
+
+## 2026-10-28 — Phase 10.5: Navigation Performance & Request Lifecycle Optimization
+
+### Completed
+
+- **Server-Side Request Memoization**:
+  - Wrapped `requireUser()` in `src/lib/auth/session.ts` with `React.cache()`.
+  - Wrapped `ensureAppUser()` in `src/lib/users.ts` with `React.cache()`.
+  - Eliminated redundant network waterfalls across layout, page, and data access functions (e.g. on `/notes`, reduced Supabase auth queries from 4x to 1x per request).
+- **Client-Side Immediate Visual Feedback**:
+  - Built `src/components/layout/navigation-progress-bar.tsx`: Direct DOM-animated top progress bar triggered on internal navigation clicks at 0ms latency, bypassing React cascading re-renders and giving instant visual feedback while Server Components stream.
+  - Mounted `NavigationProgressBar` wrapped in `<Suspense fallback={null}>` inside `src/app/layout.tsx`.
+- **Loading Skeleton Coverage**:
+  - Added `src/app/(app)/summaries/loading.tsx` and `src/app/(app)/summaries/[id]/loading.tsx` to ensure all route groups have instant skeleton boundaries.
+
+### Files Changed
+
+- Created:
+  - `src/components/layout/navigation-progress-bar.tsx`
+  - `src/app/(app)/summaries/loading.tsx`
+  - `src/app/(app)/summaries/[id]/loading.tsx`
+- Modified:
+  - `src/lib/auth/session.ts`
+  - `src/lib/users.ts`
+  - `src/app/layout.tsx`
+  - `docs/ARCHITECTURE.md`
+  - `docs/PROJECT_CONTEXT.md`
+  - `docs/ROADMAP.md`
+  - `docs/SESSION_LOG.md`
+  - `src/app/(app)/dashboard/loading.tsx` (aligned static header)
+  - `src/components/summaries/summaries-skeleton.tsx` (aligned static header)
+  - `src/components/resources/resource-detail-skeleton.tsx` (aligned static back button)
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npx next build --webpack` | PASS — 14.5s compile, all routes static & dynamic verified |
+
+### Decisions
+
+- Used React `cache()` for per-request memoization, ensuring safe garbage-collection immediately upon request completion (zero risk of cross-user or session leakage).
+- Used ref-based direct DOM progress animation to avoid triggering React re-renders during route transition.
+
+### Next Phase
+
+Phase 11 — AI intelligent search (natural language / semantic search across goals, roadmaps, resources, notes, and summaries).

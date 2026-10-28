@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
 type AppUserInput = {
@@ -38,7 +39,7 @@ export type AppUser = {
  * and `users_select_own` scope it to `auth.uid()`. Callers must therefore pass
  * an id taken from a verified auth context, never from form or URL input.
  */
-export async function ensureAppUser(input: AppUserInput): Promise<AppUser> {
+export const ensureAppUser = cache(async (input: AppUserInput): Promise<AppUser> => {
   const supabase = await createClient();
 
   const { error: upsertError } = await supabase
@@ -67,4 +68,4 @@ export async function ensureAppUser(input: AppUserInput): Promise<AppUser> {
   }
 
   return data;
-}
+});

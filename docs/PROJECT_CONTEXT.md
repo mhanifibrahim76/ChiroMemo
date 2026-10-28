@@ -87,9 +87,12 @@ passes it as the `Database` generic, so table and column names are typechecked.
 `src/lib/users.ts` writes `public.users` through the Supabase Data API with the
 authenticated client. `ensureAppUser()` is called lazily from `requireUser()`,
 so the row is created on the first authenticated request rather than during
-registration. It upserts with `onConflict: "id"` and `ignoreDuplicates: true`,
-which maps to `ON CONFLICT DO NOTHING`: the row is created once and an existing
-row is never overwritten. `public.users.id` is the same UUID as `auth.users.id`.
+registration. Both `requireUser()` and `ensureAppUser()` are memoized per-request
+with `React.cache()` to prevent redundant round-trips when multiple components or
+data-layer functions query the user in a single render tree. It upserts with
+`onConflict: "id"` and `ignoreDuplicates: true`, which maps to `ON CONFLICT DO NOTHING`:
+the row is created once and an existing row is never overwritten. `public.users.id`
+is the same UUID as `auth.users.id`.
 
 Because every query runs as the signed-in user, RLS is enforced for all
 application data access.
