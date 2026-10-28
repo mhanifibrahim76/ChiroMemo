@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { requireUser } from "@/lib/auth/session";
 import { getResource } from "@/lib/resources";
 import { listGoals } from "@/lib/goals";
+import { getSummaryByResourceId } from "@/lib/summaries";
 import { ResourceDetail } from "@/components/resources/resource-detail";
 
 interface ResourceDetailPageProps {
@@ -24,9 +25,10 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
   await requireUser();
   const { id } = await params;
 
-  const [resource, goals] = await Promise.all([
+  const [resource, goals, summary] = await Promise.all([
     getResource(id),
     listGoals(),
+    getSummaryByResourceId(id),
   ]);
 
   if (!resource) {
@@ -37,6 +39,12 @@ export default async function ResourceDetailPage({ params }: ResourceDetailPageP
     .filter((g) => g.status === "ACTIVE")
     .map((g) => ({ id: g.id, title: g.title }));
 
-  return <ResourceDetail resource={resource} availableGoals={activeGoals} />;
+  return (
+    <ResourceDetail
+      resource={resource}
+      availableGoals={activeGoals}
+      initialSummary={summary}
+    />
+  );
 }
 

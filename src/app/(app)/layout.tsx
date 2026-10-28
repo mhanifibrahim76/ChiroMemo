@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { LayoutDashboard, Target, Map, BookOpen, FileText } from "lucide-react";
+import {
+  LayoutDashboard,
+  Target,
+  Map,
+  BookOpen,
+  FileText,
+  Sparkles,
+} from "lucide-react";
 
 import { logoutAction } from "@/lib/auth/actions";
 import { requireUser } from "@/lib/auth/session";
@@ -52,6 +59,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             >
               <FileText className="h-4 w-4" />
               Notes
+            </Link>
+            <Link
+              href="/summaries"
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Sparkles className="h-4 w-4 text-primary" />
+              Summaries
             </Link>
             <span className="text-muted-foreground text-sm">{user.email}</span>
             <form action={logoutAction}>

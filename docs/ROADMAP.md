@@ -15,7 +15,7 @@ phase automatically, and do not implement features from later phases early.
 | 7   | Personal notes                       | **Complete** | `feat: add notes` |
 | 8   | Dashboard and analytics              | **Complete** | `feat: add dashboard and analytics` |
 | 9   | PDF upload and text extraction       | **Complete** | `feat: add pdf upload and text extraction` |
-| 10  | AI document summarization            | Not started | `feat: add AI summarization` |
+| 10  | AI document summarization            | **Complete** | `feat: add AI document summarization` |
 | 11  | AI intelligent search                | Not started | `feat: add AI search` |
 | 12  | Personalized recommendations         | Not started | `feat: add recommendations` |
 | 13  | Testing, security, optimization, deploy | Not started | `chore: prepare deployment` |
@@ -86,8 +86,8 @@ Progress overview, goal/roadmap status, recent activity feed, and Recharts learn
 **Phase 9 — PDF upload and text extraction (done)**
 Private Supabase Storage bucket (`documents`), upload Server Action with Zod file validation, server-side text extraction (`pdf-parse` v2 and plain text), and `extracted_text` column on resources.
 
-**Phase 10 — AI document summarization**
-Gemini structured output (zod-validated), summary stored in `Summary`.
+**Phase 10 — AI document summarization (done)**
+Gemini structured output via `@google/genai` (zod-validated), summary stored in `public.summaries`, two-panel split view UI (Wireframe 4.9) at `/summaries` and `/summaries/[id]`, resource integration with instant "Summarize with Gemini AI" action, and "Save as Personal Note" export.
 
 **Phase 11 — AI intelligent search**
 Semantic/natural-language search over goals, resources, notes, summaries.

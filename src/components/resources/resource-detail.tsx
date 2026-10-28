@@ -47,10 +47,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import type { SummaryRow } from "@/lib/summaries";
+import { ResourceAiSummaryCard } from "./resource-ai-summary-card";
 
 interface ResourceDetailProps {
   resource: ResourceDetailData;
   availableGoals?: { id: string; title: string }[];
+  initialSummary?: SummaryRow | null;
 }
 
 function formatDate(dateString: string): string {
@@ -98,7 +101,11 @@ function StepStatusIcon({ status }: { status: string }) {
   return <Circle className="h-4 w-4 text-muted-foreground shrink-0" />;
 }
 
-export function ResourceDetail({ resource, availableGoals = [] }: ResourceDetailProps) {
+export function ResourceDetail({
+  resource,
+  availableGoals = [],
+  initialSummary,
+}: ResourceDetailProps) {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -324,6 +331,16 @@ export function ResourceDetail({ resource, availableGoals = [] }: ResourceDetail
                 )}
               </CardContent>
             </Card>
+          )}
+
+          {/* AI Document Summary */}
+          {(resource.extracted_text || resource.description) && (
+            <ResourceAiSummaryCard
+              resourceId={resource.id}
+              resourceTitle={resource.title}
+              hasText={Boolean(resource.extracted_text || resource.description)}
+              initialSummary={initialSummary}
+            />
           )}
 
           {/* Extracted Document Text */}

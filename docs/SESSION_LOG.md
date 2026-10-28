@@ -807,3 +807,71 @@ Phase 10 — AI document summarization (Gemini API via `@google/genai` structure
   - Added similar direct table operation fallbacks for `deleteRoadmapStep` and `reorderRoadmapSteps`.
   - Improved error reporting in `createRoadmapStepAction` to surface actionable error messages.
 - Verification: `npm run typecheck`, `npm run lint`, and `npm run build` all pass with 0 errors.
+
+
+---
+
+## 2026-10-28 — Phase 10: AI Document Summarization
+
+### Completed
+
+Implemented full end-to-end AI-powered document summarization (FR-09) adhering to the proposal wireframe (Figure 4.9):
+- **Validation**:
+  - `src/lib/validations/summaries.ts`: Zod schema for triggering summaries and validating untrusted Gemini JSON output (`overview`, `keyPoints`, `detailedSummary`, `actionableTakeaways`).
+- **AI Service Layer**:
+  - `src/lib/ai/gemini.ts` (`server-only`): Google Gen AI SDK client initialization, fallback model selection (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`), structured JSON extraction, and formatted Markdown generation.
+- **Data Access Layer**:
+  - `src/lib/summaries.ts` (`server-only`): CRUD operations on `public.summaries` under RLS with resource joins, plus logging `type: "SUMMARY_GENERATED"` to `learning_activities` for Dashboard analytics.
+- **Server Actions**:
+  - `src/lib/summaries/actions.ts`: `generateSummaryAction` (from resource or direct text), `deleteSummaryAction`, and `exportSummaryToNoteAction` (converting summaries into editable Personal Notes with `ai-summary` tags).
+- **UI Components & Pages**:
+  - `src/components/summaries/summary-card.tsx`: Summary card with model badge, key concepts preview, and actions.
+  - `src/components/summaries/generate-summary-dialog.tsx`: Dual-tab generation dialog (from resource or direct text input) with live status.
+  - `src/components/summaries/summary-split-view.tsx`: Two-panel layout matching Figure 4.9 (original document on left, AI summary + key points + markdown preview + study takeaways on right).
+  - `src/components/resources/resource-ai-summary-card.tsx`: Integrated directly into `/resources/[id]` with instant "Summarize with Gemini AI" trigger.
+  - `src/app/(app)/summaries/page.tsx` & `src/app/(app)/summaries/[id]/page.tsx`: Streaming pages with Suspense skeletons.
+  - `src/proxy.ts` & `src/app/(app)/layout.tsx`: Added `/summaries` to protected routes and header navigation with Sparkles icon.
+
+### Files Changed
+
+- Created:
+  - `src/lib/validations/summaries.ts`
+  - `src/lib/ai/gemini.ts`
+  - `src/lib/summaries.ts`
+  - `src/lib/summaries/constants.ts`
+  - `src/lib/summaries/actions.ts`
+  - `src/components/summaries/summaries-skeleton.tsx`
+  - `src/components/summaries/summary-card.tsx`
+  - `src/components/summaries/generate-summary-dialog.tsx`
+  - `src/components/summaries/summary-split-view.tsx`
+  - `src/components/resources/resource-ai-summary-card.tsx`
+  - `src/app/(app)/summaries/page.tsx`
+  - `src/app/(app)/summaries/[id]/page.tsx`
+- Modified:
+  - `src/proxy.ts`
+  - `src/app/(app)/layout.tsx`
+  - `src/app/(app)/resources/[id]/page.tsx`
+  - `src/components/resources/resource-detail.tsx`
+  - `docs/ROADMAP.md`
+  - `docs/PROJECT_CONTEXT.md`
+  - `docs/SESSION_LOG.md`
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npx next build --webpack` | PASS — All routes static and dynamic rendered |
+
+### Decisions
+
+- Used `@google/genai` (official modern SDK) on server only.
+- Strict Zod validation on AI output ensuring no unvalidated AI content reaches database.
+- Added "Save to Note" export feature connecting Phase 10 with Phase 7 Personal Notes.
+- Added fallback model hierarchy: `gemini-2.5-flash` -> `gemini-2.0-flash` -> `gemini-1.5-flash`.
+- Logged `SUMMARY_GENERATED` to `learning_activities` on summary creation to feed Dashboard analytics (Phase 8).
+
+### Next Phase
+
+Phase 11 — AI intelligent search (natural language / semantic search across goals, roadmaps, resources, notes, and summaries).
