@@ -45,11 +45,11 @@ Row Level Security.
 
 ## Current state
 
-Phases 1-10 complete (foundation, database schema, authentication,
+Phases 1-11 complete (foundation, database schema, authentication,
 native Supabase schema + RLS, learning goals, roadmaps, resources, personal
 notes, dashboard analytics, PDF/document upload with server text extraction,
-and AI document summarization with Gemini structured output).
-All feature pages (/dashboard, /goals, /roadmaps, /resources, /notes, /summaries)
+AI document summarization, granular parallel streaming, and AI-powered intelligent search).
+All feature pages (/dashboard, /goals, /roadmaps, /resources, /notes, /summaries, /search)
 are functional and wired to Supabase with strict RLS and private Storage bucket security.
 
 The runtime data path is:

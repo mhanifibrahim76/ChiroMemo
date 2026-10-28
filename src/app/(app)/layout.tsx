@@ -6,6 +6,7 @@ import {
   BookOpen,
   FileText,
   Sparkles,
+  Search,
 } from "lucide-react";
 
 import { logoutAction } from "@/lib/auth/actions";
@@ -66,6 +67,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             >
               <Sparkles className="h-4 w-4 text-primary" />
               Summaries
+            </Link>
+            <Link
+              href="/search"
+              className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Search className="h-4 w-4" />
+              Search
             </Link>
             <span className="text-muted-foreground text-sm">{user.email}</span>
             <form action={logoutAction}>

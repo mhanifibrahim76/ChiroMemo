@@ -22,13 +22,13 @@ Do not rely on chat history. The `docs/` folder is the project memory.
 - TypeScript (strict)
 - Tailwind CSS + shadcn/ui (Radix base, `nova` preset, `nova` style)
 - Supabase Postgres + Supabase Auth + Supabase Storage
-- Prisma ORM
+- Supabase Data API (PostgREST) + RLS (no Prisma)
 - Gemini API via `@google/genai` (**server-side only**)
 - Recharts (charts), lucide-react (icons), zod (validation)
 - Vercel (deployment)
 
 **No separate Express backend.** Next.js is the full-stack application:
-UI → Server Components → Server Actions / Route Handlers → Prisma → Supabase Postgres.
+UI → Server Components → Server Actions / Route Handlers → Supabase Data API → Supabase Postgres.
 
 ## Hard rules
 

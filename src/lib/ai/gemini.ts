@@ -39,7 +39,7 @@ Guidelines:
  * Initializes and returns an authenticated GoogleGenAI client instance.
  * Validates that GEMINI_API_KEY is not a template placeholder.
  */
-function getGeminiClient(): GoogleGenAI {
+export function getGeminiClient(): GoogleGenAI {
   const env = getServerEnv();
   const rawKey = env.GEMINI_API_KEY?.trim();
 
@@ -50,7 +50,7 @@ function getGeminiClient(): GoogleGenAI {
     rawKey.length < 10
   ) {
     throw new Error(
-      "Gemini API key is not configured or is using a placeholder. Please set a valid GEMINI_API_KEY in your .env.local file to use AI Document Summarization."
+      "Gemini API key is not configured or is using a placeholder. Please set a valid GEMINI_API_KEY in your .env.local file to use AI features."
     );
   }
 
@@ -114,7 +114,7 @@ function assembleFormattedMarkdown(result: GeminiSummaryResult): string {
 /**
  * Parses JSON response from Gemini, removing markdown code fences if present.
  */
-function parseGeminiJson(rawText: string): unknown {
+export function parseGeminiJson(rawText: string): unknown {
   let cleaned = rawText.trim();
   if (cleaned.startsWith("```json")) {
     cleaned = cleaned.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();

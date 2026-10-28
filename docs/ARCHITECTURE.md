@@ -121,9 +121,8 @@ docs/                  project memory (this folder)
 Route groups:
 
 - `src/app/(auth)/login`, `src/app/(auth)/register` — public
-- `src/app/(app)/dashboard` — authenticated app shell. `/(app)/goals`,
-  `/(app)/roadmaps`, `/(app)/resources`, `/(app)/notes` and `/(app)/search`
-  are added in their own phases.
+- `src/app/(app)/dashboard`, `/(app)/goals`, `/(app)/roadmaps`, `/(app)/resources`,
+  `/(app)/notes`, `/(app)/summaries`, `/(app)/search` — authenticated app shell.
 
 ## Conventions
 
@@ -160,6 +159,17 @@ Route groups:
   Headings and instructions must render instantly as real text in `loading.tsx` and
   around `<Suspense>`, providing immediate structural orientation and eliminating
   cumulative layout shifts (CLS).
+- **Granular streaming (parallel Suspense boundaries).** In pages or dashboards
+  featuring multiple independent widgets (e.g. quick metrics, analytics charts, and
+  recent activity feeds), avoid bundling all queries into a monolithic `Promise.all`
+  inside a single top-level `<Suspense>`. Instead, partition distinct macro-sections into
+  dedicated Server Components with independent `<Suspense>` boundaries. Fast queries
+  (e.g. summary counts) resolve and paint immediately without waiting for slower
+  analytical or historical queries. To prevent N+1 issues and database pool saturation,
+  queries must be scoped to macro-sections using batch PostgREST queries (never per-row
+  loops) and share memoized auth sessions (`React.cache()`). Skeleton fallbacks must
+  mirror the exact dimensions/min-heights of loaded content to prevent Cumulative
+  Layout Shift (CLS).
 - Keep modules small; avoid speculative abstractions and future-phase code.
 
 ## Key libraries

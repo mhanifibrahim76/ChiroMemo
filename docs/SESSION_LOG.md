@@ -927,3 +927,114 @@ Phase 11 — AI intelligent search (natural language / semantic search across go
 ### Next Phase
 
 Phase 11 — AI intelligent search (natural language / semantic search across goals, roadmaps, resources, notes, and summaries).
+
+---
+
+## 2026-10-28 — Granular Parallel Streaming & Documentation Cleanup
+
+### Completed
+
+- **Clarified Stack Documentation**:
+  - Removed outdated references to Prisma in `AGENTS.md` and confirmed all database interactions use Supabase Data API (PostgREST) + RLS with `@supabase/ssr`.
+- **Granular Streaming Architecture**:
+  - Documented the Granular Parallel Suspense convention in `docs/ARCHITECTURE.md` to prevent slowest-query bottlenecks on complex multi-section pages.
+  - Divided `/dashboard` data fetching in `src/lib/dashboard.ts` into 3 independent, highly-optimized functions:
+    1. `getDashboardMetrics()`: Only fetches row counts/statuses via narrow projection & exact count headers (<40ms).
+    2. `getDashboardChartData()`: Scoped with `.gte("created_at", sevenDaysAgo)` to prevent loading full history across all entities.
+    3. `getDashboardRecentActivities()`: Scoped with strict `.limit(10)` and `.limit(5)` to prevent memory saturation.
+  - Split `src/components/dashboard/dashboard-skeleton.tsx` into modular skeletons (`DashboardMetricsSkeleton`, `DashboardChartSkeleton`, `DashboardActivitySkeleton`).
+  - Refactored `src/app/(app)/dashboard/page.tsx` into 3 independent Server Components with dedicated `<Suspense>` boundaries. Metrics appear immediately without waiting for analytics charts or activity logs.
+
+### Files Changed
+
+- Modified:
+  - `AGENTS.md`
+  - `docs/ARCHITECTURE.md`
+  - `docs/SESSION_LOG.md`
+  - `src/lib/dashboard.ts`
+  - `src/components/dashboard/dashboard-skeleton.tsx`
+  - `src/app/(app)/dashboard/page.tsx`
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npm run build` | PASS — Turbopack compiled in 14.6s, 14 routes statically & dynamically generated |
+
+### Decisions
+
+- Used widget-level granular `<Suspense>` boundaries rather than item-level boundaries to avoid Postgres connection pool pressure while eliminating the slowest-query bottleneck.
+- Kept `getDashboardData()` backward compatibility as an aggregated helper.
+- Leveraged `React.cache()` on user session so all 3 independent server components share authenticated user context with 0ms overhead.
+
+### Next Phase
+
+Phase 11 — AI intelligent search (natural language / semantic search across goals, roadmaps, resources, notes, and summaries).
+
+
+---
+
+## 2026-10-28 — Phase 11: AI-Powered Intelligent Search
+
+### Completed
+
+- **Multi-Entity Search Data Access Layer**:
+  - Implemented `src/lib/search.ts` with user-scoped (`user_id = user.id`) parallel PostgREST queries across `notes`, `resources`, `summaries`, `learning_goals`, and `roadmaps`.
+  - Added smart snippet extraction (`extractSnippet`) centering on matched terms with Markdown cleaning.
+  - Implemented type filtering (`ALL`, `NOTE`, `RESOURCE`, `SUMMARY`, `GOAL`, `ROADMAP`).
+- **AI Semantic Synthesis Engine**:
+  - Built `src/lib/ai/search.ts` utilizing `@google/genai` with model fallback (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`).
+  - Generates direct academic answers synthesized from student notes, key conceptual takeaways, AI relevance evaluations with match scores (0-100), and follow-up inquiry suggestions.
+  - Validated with Zod schema (`geminiSearchSynthesisSchema` in `src/lib/validations/search.ts`).
+  - Resilient fallback: If Gemini is offline, rate-limited, or unconfigured, falls back cleanly to ranked candidate text matches without disrupting the search UI.
+- **Search UI & Progressive Streaming**:
+  - `src/components/search/search-bar.tsx`: Interactive search input with clear button, submit button, and state synchronization.
+  - `src/components/search/search-filters.tsx`: Entity filter pills with active state indication.
+  - `src/components/search/ai-synthesis-card.tsx`: Sparkles AI insight card with direct answer, key takeaways, model badge, and clickable follow-up queries.
+  - `src/components/search/search-result-card.tsx`: Rich card with entity badges, direct item links, AI insight reason, match snippets, and tags.
+  - `src/components/search/search-skeleton.tsx`: Structured skeleton layout matching the loaded page.
+  - Routes: `src/app/(app)/search/page.tsx` with `<Suspense>` streaming and `src/app/(app)/search/loading.tsx`.
+- **Navigation & Proxy Integration**:
+  - Added `/search` to `PROTECTED_PREFIXES` in `src/proxy.ts`.
+  - Added Search nav item with `Search` icon to `src/app/(app)/layout.tsx`.
+
+### Files Changed
+
+- Created:
+  - `src/lib/validations/search.ts`
+  - `src/lib/ai/search.ts`
+  - `src/lib/search.ts`
+  - `src/components/search/search-bar.tsx`
+  - `src/components/search/search-filters.tsx`
+  - `src/components/search/ai-synthesis-card.tsx`
+  - `src/components/search/search-result-card.tsx`
+  - `src/components/search/search-skeleton.tsx`
+  - `src/app/(app)/search/page.tsx`
+  - `src/app/(app)/search/loading.tsx`
+- Modified:
+  - `src/lib/ai/gemini.ts`
+  - `src/proxy.ts`
+  - `src/app/(app)/layout.tsx`
+  - `docs/ROADMAP.md`
+  - `docs/PROJECT_CONTEXT.md`
+  - `docs/ARCHITECTURE.md`
+  - `docs/SESSION_LOG.md`
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npm run build` | PASS — Turbopack compiled in 6.2s, 15 routes statically & dynamically generated |
+
+### Decisions
+
+- Designed a hybrid search model: PostgREST user-scoped retrieval for speed + Gemini semantic synthesis for high-yield academic understanding and re-ranking.
+- Ensured total graceful degradation: If Gemini API encounters network/quota limits, search results still render immediately without throwing server errors.
+
+### Next Phase
+
+Phase 12 — Personalized recommendations (Gemini-based study recommendations and next steps derived from goals, resources, notes, and activity history).

@@ -4,12 +4,20 @@ import Link from "next/link";
 import { Target, BookOpen, FileText } from "lucide-react";
 
 import { requireUser } from "@/lib/auth/session";
-import { getDashboardData } from "@/lib/dashboard";
+import {
+  getDashboardMetrics,
+  getDashboardChartData,
+  getDashboardRecentActivities,
+} from "@/lib/dashboard";
 import { Button } from "@/components/ui/button";
 import { DashboardMetrics } from "@/components/dashboard/dashboard-metrics";
 import { LearningProgressChart } from "@/components/dashboard/learning-progress-chart";
 import { RecentActivityList } from "@/components/dashboard/recent-activity-list";
-import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton";
+import {
+  DashboardMetricsSkeleton,
+  DashboardChartSkeleton,
+  DashboardActivitySkeleton,
+} from "@/components/dashboard/dashboard-skeleton";
 
 export const metadata: Metadata = {
   title: "Dashboard · ChiroMemo",
@@ -17,31 +25,24 @@ export const metadata: Metadata = {
     "Personal learning progress, roadmap milestones, and recent study activities.",
 };
 
-async function DashboardContent() {
-  const data = await getDashboardData();
+async function DashboardMetricsSection() {
+  const metrics = await getDashboardMetrics();
+  return <DashboardMetrics metrics={metrics} />;
+}
 
+async function DashboardChartSection() {
+  const { dailyActivity, roadmaps } = await getDashboardChartData();
   return (
-    <div className="space-y-6">
-      {/* 1. Summary Cards */}
-      <DashboardMetrics metrics={data.metrics} />
-
-      {/* 2. Main Analytics & Activity Grid */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Left: Recharts Learning Progress Chart */}
-        <div className="lg:col-span-7">
-          <LearningProgressChart
-            dailyActivity={data.dailyActivity}
-            roadmaps={data.roadmaps}
-          />
-        </div>
-
-        {/* Right: Recent Activity Feed */}
-        <div className="lg:col-span-5">
-          <RecentActivityList activities={data.recentActivities} />
-        </div>
-      </div>
-    </div>
+    <LearningProgressChart
+      dailyActivity={dailyActivity}
+      roadmaps={roadmaps}
+    />
   );
+}
+
+async function DashboardActivitySection() {
+  const activities = await getDashboardRecentActivities();
+  return <RecentActivityList activities={activities} />;
 }
 
 export default async function DashboardPage() {
@@ -84,10 +85,27 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Async Dashboard Data Boundary */}
-      <Suspense fallback={<DashboardSkeleton />}>
-        <DashboardContent />
+      {/* 1. Summary Cards: Independent Granular Suspense Boundary */}
+      <Suspense fallback={<DashboardMetricsSkeleton />}>
+        <DashboardMetricsSection />
       </Suspense>
+
+      {/* 2. Main Analytics & Activity Grid: Independent Granular Suspense Boundaries */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        {/* Left: Recharts Learning Progress Chart */}
+        <div className="lg:col-span-7">
+          <Suspense fallback={<DashboardChartSkeleton />}>
+            <DashboardChartSection />
+          </Suspense>
+        </div>
+
+        {/* Right: Recent Activity Feed */}
+        <div className="lg:col-span-5">
+          <Suspense fallback={<DashboardActivitySkeleton />}>
+            <DashboardActivitySection />
+          </Suspense>
+        </div>
+      </div>
     </div>
   );
 }
