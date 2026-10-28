@@ -45,13 +45,13 @@ Row Level Security.
 
 ## Current state
 
-Phases 1-12 complete (foundation, database schema, authentication,
+All 13 phases complete (foundation, database schema, authentication,
 native Supabase schema + RLS, learning goals, roadmaps, resources, personal
 notes, dashboard analytics, PDF/document upload with server text extraction,
 AI document summarization, granular parallel streaming, AI intelligent search,
-and Gemini personalized recommendations).
-All feature pages (/dashboard, /goals, /roadmaps, /resources, /notes, /summaries, /search, /recommendations)
-are functional and wired to Supabase with strict RLS and private Storage bucket security.
+Gemini personalized recommendations, and production testing/deployment preparation).
+All 16 feature and system routes are functional, typechecked, linted, unit-tested,
+and verified for production deployment on Vercel with Supabase Postgres + Storage + Auth.
 
 The runtime data path is:
 

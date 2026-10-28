@@ -111,18 +111,8 @@ function assembleFormattedMarkdown(result: GeminiSummaryResult): string {
   return sections.join("\n\n");
 }
 
-/**
- * Parses JSON response from Gemini, removing markdown code fences if present.
- */
-export function parseGeminiJson(rawText: string): unknown {
-  let cleaned = rawText.trim();
-  if (cleaned.startsWith("```json")) {
-    cleaned = cleaned.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
-  } else if (cleaned.startsWith("```")) {
-    cleaned = cleaned.replace(/^```\s*/, "").replace(/```\s*$/i, "").trim();
-  }
-  return JSON.parse(cleaned);
-}
+import { parseGeminiJson } from "./parser";
+export { parseGeminiJson };
 
 /**
  * Calls Gemini AI to summarize a document using structured JSON output
