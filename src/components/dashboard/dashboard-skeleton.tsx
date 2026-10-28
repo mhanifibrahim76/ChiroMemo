@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardRecommendationsWidgetSkeleton } from "@/components/recommendations/dashboard-recommendations-widget";
 
 export function DashboardMetricsSkeleton() {
   return (
@@ -78,6 +79,9 @@ export function DashboardSkeleton() {
     <div className="space-y-6" aria-busy="true" aria-label="Loading dashboard">
       {/* Metrics Cards Skeleton */}
       <DashboardMetricsSkeleton />
+
+      {/* AI Recommendations Skeleton */}
+      <DashboardRecommendationsWidgetSkeleton />
 
       {/* Main Grid: Chart and Recent Activities */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">

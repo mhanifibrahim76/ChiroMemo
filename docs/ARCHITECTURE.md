@@ -122,7 +122,7 @@ Route groups:
 
 - `src/app/(auth)/login`, `src/app/(auth)/register` — public
 - `src/app/(app)/dashboard`, `/(app)/goals`, `/(app)/roadmaps`, `/(app)/resources`,
-  `/(app)/notes`, `/(app)/summaries`, `/(app)/search` — authenticated app shell.
+  `/(app)/notes`, `/(app)/summaries`, `/(app)/search`, `/(app)/recommendations` — authenticated app shell.
 
 ## Conventions
 

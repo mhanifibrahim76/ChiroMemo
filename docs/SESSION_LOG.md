@@ -1038,3 +1038,74 @@ Phase 11 — AI intelligent search (natural language / semantic search across go
 ### Next Phase
 
 Phase 12 — Personalized recommendations (Gemini-based study recommendations and next steps derived from goals, resources, notes, and activity history).
+
+
+---
+
+## 2026-10-28 — Phase 12: Personalized Recommendations
+
+### Completed
+
+- **Academic Profile Data Access Layer**:
+  - Implemented `src/lib/recommendations.ts` with user-scoped (`user_id = user.id`) parallel PostgREST queries across active goals, roadmaps, pending milestones (`roadmap_steps`), recent notes, recent resources, summaries count, and recent study activities.
+  - Computes study velocity, active roadmaps with next milestone linkage, and days since last study session.
+- **Gemini Academic Strategy Engine**:
+  - Built `src/lib/ai/recommendations.ts` with model fallback (`gemini-2.5-flash`, `gemini-2.0-flash`, `gemini-1.5-flash`).
+  - Generates comprehensive student assessments, key next focus areas, and categorized actionable recommendations:
+    - `NEXT_STEP`: Sequential milestone advancements.
+    - `KNOWLEDGE_GAP`: Objectives lacking linked notes or resources.
+    - `REVIEW_RECALL`: Spaced repetition and active recall reminders for older notes.
+    - `STUDY_STRATEGY`: High-yield study habits and synthesis practices.
+  - Implemented smart heuristic fallback ensuring full utility and zero crashes when Gemini API is rate-limited or unconfigured.
+- **Server Action**:
+  - Built `src/lib/recommendations/actions.ts` (`refreshRecommendationsAction`) to allow students to trigger on-demand re-evaluations with instant Next.js cache revalidation.
+- **UI & Dashboard Integration**:
+  - `src/components/recommendations/recommendation-card.tsx`: Rich card with priority indicators (Flame/Sparkles), category icons, AI reasoning callout, and one-click action CTAs.
+  - `src/components/recommendations/recommendations-overview.tsx`: Executive assessment banner with primary focus area and refresh button.
+  - `src/components/recommendations/dashboard-recommendations-widget.tsx`: Compact focus widget embedded directly into `/dashboard` via independent Granular Parallel Streaming.
+  - `src/components/recommendations/recommendations-skeleton.tsx`: Skeleton loading states for smooth rendering.
+  - Routes: `src/app/(app)/recommendations/page.tsx` with `<Suspense>` streaming and `src/app/(app)/recommendations/loading.tsx`.
+- **Navigation & Proxy Integration**:
+  - Added `/recommendations` to `PROTECTED_PREFIXES` in `src/proxy.ts`.
+  - Added Recommendations nav item with `Lightbulb` icon in `src/app/(app)/layout.tsx`.
+
+### Files Changed
+
+- Created:
+  - `src/lib/validations/recommendations.ts`
+  - `src/lib/ai/recommendations.ts`
+  - `src/lib/recommendations.ts`
+  - `src/lib/recommendations/actions.ts`
+  - `src/components/recommendations/recommendation-card.tsx`
+  - `src/components/recommendations/recommendations-overview.tsx`
+  - `src/components/recommendations/refresh-recommendations-button.tsx`
+  - `src/components/recommendations/recommendations-skeleton.tsx`
+  - `src/components/recommendations/dashboard-recommendations-widget.tsx`
+  - `src/app/(app)/recommendations/page.tsx`
+  - `src/app/(app)/recommendations/loading.tsx`
+- Modified:
+  - `src/app/(app)/dashboard/page.tsx`
+  - `src/components/dashboard/dashboard-skeleton.tsx`
+  - `src/proxy.ts`
+  - `src/app/(app)/layout.tsx`
+  - `docs/ROADMAP.md`
+  - `docs/PROJECT_CONTEXT.md`
+  - `docs/ARCHITECTURE.md`
+  - `docs/SESSION_LOG.md`
+
+### Verification
+
+| Command | Result |
+| --- | --- |
+| `npm run typecheck` | PASS — 0 errors |
+| `npm run lint` | PASS — 0 errors, 0 warnings |
+| `npm run build` | PASS — Turbopack compiled in 5.4s, 16 routes statically & dynamically generated |
+
+### Decisions
+
+- Integrated recommendations directly into the `/dashboard` mission control as an independent granular Suspense stream so students see immediate study guidance upon logging in.
+- Maintained a dedicated `/recommendations` hub for in-depth academic advisory, goal gap analysis, and spaced repetition tracking.
+
+### Next Phase
+
+Phase 13 — Testing, security review, performance optimization, and Vercel deployment preparation.

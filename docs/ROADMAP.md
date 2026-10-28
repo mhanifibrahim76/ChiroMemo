@@ -18,7 +18,7 @@ phase automatically, and do not implement features from later phases early.
 | 10  | AI document summarization            | **Complete** | `feat: add AI document summarization` |
 | 10.5| Navigation & request performance opt | **Complete** | `feat: request memoization and navigation progress` |
 | 11  | AI intelligent search                | **Complete** | `feat: add AI search` |
-| 12  | Personalized recommendations         | Not started | `feat: add recommendations` |
+| 12  | Personalized recommendations         | **Complete** | `feat: add recommendations` |
 | 13  | Testing, security, optimization, deploy | Not started | `chore: prepare deployment` |
 
 ## Phase details
@@ -96,8 +96,8 @@ Request memoization via `React.cache()` on `requireUser()` and `ensureAppUser()`
 **Phase 11 — AI intelligent search (done)**
 Multi-entity user-scoped search across notes, resources, summaries, goals, and roadmaps; Gemini semantic synthesis engine producing direct answers, conceptual takeaways, and relevance-ranked candidate explanations with graceful fallback; interactive UI at `/search` with debounced search input, type filter pills, and AI synthesis card.
 
-**Phase 12 — Personalized recommendations**
-Gemini-based recommendations from the user's goals, resources, notes, and activity.
+**Phase 12 — Personalized recommendations (done)**
+Gemini-based study advisor synthesizing the student's active goals, pending roadmap milestones, recent study notes, and learning activities; categorized actionable advice (Next Milestone, Knowledge Gap, Active Recall, Study Strategy) with direct action CTAs; integrated into `/dashboard` via granular parallel streaming and detailed at `/recommendations`.
 
 **Phase 13 — Testing, security, optimization, deployment**
 Test setup, security review, performance pass, Vercel deployment.

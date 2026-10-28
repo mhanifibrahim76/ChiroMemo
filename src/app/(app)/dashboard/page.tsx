@@ -18,6 +18,11 @@ import {
   DashboardChartSkeleton,
   DashboardActivitySkeleton,
 } from "@/components/dashboard/dashboard-skeleton";
+import { getPersonalizedRecommendations } from "@/lib/recommendations";
+import {
+  DashboardRecommendationsWidget,
+  DashboardRecommendationsWidgetSkeleton,
+} from "@/components/recommendations/dashboard-recommendations-widget";
 
 export const metadata: Metadata = {
   title: "Dashboard · ChiroMemo",
@@ -28,6 +33,11 @@ export const metadata: Metadata = {
 async function DashboardMetricsSection() {
   const metrics = await getDashboardMetrics();
   return <DashboardMetrics metrics={metrics} />;
+}
+
+async function DashboardRecommendationsSection() {
+  const recommendations = await getPersonalizedRecommendations();
+  return <DashboardRecommendationsWidget data={recommendations} />;
 }
 
 async function DashboardChartSection() {
@@ -90,7 +100,12 @@ export default async function DashboardPage() {
         <DashboardMetricsSection />
       </Suspense>
 
-      {/* 2. Main Analytics & Activity Grid: Independent Granular Suspense Boundaries */}
+      {/* 2. AI Personalized Study Recommendations: Independent Granular Suspense Boundary */}
+      <Suspense fallback={<DashboardRecommendationsWidgetSkeleton />}>
+        <DashboardRecommendationsSection />
+      </Suspense>
+
+      {/* 3. Main Analytics & Activity Grid: Independent Granular Suspense Boundaries */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Left: Recharts Learning Progress Chart */}
         <div className="lg:col-span-7">

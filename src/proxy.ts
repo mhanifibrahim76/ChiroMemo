@@ -12,6 +12,7 @@ const PROTECTED_PREFIXES = [
   "/notes",
   "/summaries",
   "/search",
+  "/recommendations",
 ];
 
 /** Public routes that a signed-in user has no reason to see (will redirect to /dashboard). */
