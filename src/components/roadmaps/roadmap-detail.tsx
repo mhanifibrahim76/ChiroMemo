@@ -8,8 +8,6 @@ import { useState } from "react";
 import { deleteRoadmapAction } from "@/lib/roadmaps/actions";
 import { initialRoadmapActionState } from "@/lib/roadmaps/constants";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { EditRoadmapDialog } from "./edit-roadmap-dialog";
 import { CreateStepDialog } from "./create-step-dialog";
@@ -85,113 +83,108 @@ export function RoadmapDetail({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/roadmaps" className="text-muted-foreground hover:text-foreground">
-          <ArrowLeftIcon className="h-5 w-5" />
-          <span className="sr-only">Back to roadmaps</span>
+      <div>
+        <Link
+          href="/roadmaps"
+          className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#1C1917]/65 hover:text-[#166534] transition-colors"
+        >
+          <ArrowLeftIcon className="h-3.5 w-3.5" />
+          <span>Back to roadmaps</span>
         </Link>
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight">{roadmap.title}</h1>
-            <Badge variant="secondary">{roadmap.progress_percent}%</Badge>
-          </div>
-          <p className="text-muted-foreground text-sm" suppressHydrationWarning>Created {formatDateTime(roadmap.created_at)}</p>
+      </div>
+
+      {/* Editorial Header */}
+      <div className="border border-[#E5DEC9] bg-[#F7EEDB] p-6 space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#166534]">
+            SYLLABUS PATHWAY {"//"} SEQUENCE
+          </span>
+          <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono text-[#166534]">
+            {roadmap.progress_percent}% COMPLETE
+          </span>
         </div>
+        <h1 className="font-serif font-normal text-3xl tracking-tight text-[#1C1917]">{roadmap.title}</h1>
+        <p className="text-xs font-mono text-[#1C1917]/60" suppressHydrationWarning>
+          Created {formatDateTime(roadmap.created_at)}
+        </p>
       </div>
 
       {roadmap.description && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Description</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap">{roadmap.description}</p>
-          </CardContent>
-        </Card>
+        <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+          <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+            <h2 className="font-serif font-normal text-lg text-[#1C1917]">Description</h2>
+          </div>
+          <div className="p-6">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#1C1917]/80">{roadmap.description}</p>
+          </div>
+        </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Progress</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="w-full">
-              <div className="flex items-center justify-between text-sm mb-1">
-                <span>Completed</span>
-                <span className="font-medium">{roadmap.progress_percent}%</span>
-              </div>
-              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-primary transition-all duration-300"
-                  style={{ width: `${roadmap.progress_percent}%` }}
-                />
-              </div>
+      {/* 4-Column Hairline Ledger */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-[#E5DEC9] bg-[#FDFCFA] divide-y sm:divide-y-0 sm:divide-x divide-[#E5DEC9]">
+        <div className="p-5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Progress</p>
+          <div className="w-full pt-1">
+            <div className="flex items-center justify-between text-xs font-mono mb-1.5">
+              <span className="text-[#1C1917]/70">Completed</span>
+              <span className="font-semibold text-[#166534]">{roadmap.progress_percent}%</span>
             </div>
-          </CardContent>
-        </Card>
+            <div className="h-2 bg-[#E5DEC9] rounded-none overflow-hidden">
+              <div
+                className="h-full bg-[#166534] transition-all duration-300"
+                style={{ width: `${roadmap.progress_percent}%` }}
+              />
+            </div>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Steps</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="flex items-center gap-2">
-              <MapIcon className="h-4 w-4 text-muted-foreground" />
-              <span>{steps.length} step{steps.length !== 1 ? "s" : ""}</span>
-            </p>
-          </CardContent>
-        </Card>
+        <div className="p-5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Steps</p>
+          <p className="flex items-center gap-2 font-serif font-normal text-2xl text-[#1C1917] pt-0.5">
+            <MapIcon className="h-4 w-4 text-[#166534]" />
+            <span>{steps.length} step{steps.length !== 1 ? "s" : ""}</span>
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Connected Goals</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="flex items-center gap-2">
-              <ArrowLeftIcon className="h-4 w-4 text-muted-foreground" />
-              <span>{currentGoals.length} Goal{currentGoals.length !== 1 ? "s" : ""}</span>
-            </p>
-          </CardContent>
-        </Card>
+        <div className="p-5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Connected Goals</p>
+          <p className="flex items-center gap-2 font-serif font-normal text-2xl text-[#1C1917] pt-0.5">
+            <span>{currentGoals.length} Goal{currentGoals.length !== 1 ? "s" : ""}</span>
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Last updated</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="flex items-center gap-2">
-              <MapIcon className="h-4 w-4 text-muted-foreground" />
-              <span suppressHydrationWarning>{formatDateTime(roadmap.updated_at)}</span>
-            </p>
-          </CardContent>
-        </Card>
+        <div className="p-5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Last Updated</p>
+          <p className="flex items-center gap-2 text-xs font-mono text-[#1C1917]/80 pt-1.5">
+            <span suppressHydrationWarning>{formatDateTime(roadmap.updated_at)}</span>
+          </p>
+        </div>
       </div>
 
       {currentGoals.length > 1 && (
-        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
-          <AlertTriangleIcon className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+        <div className="p-3.5 bg-[#D97706]/10 border border-[#D97706]/30 rounded-sm flex items-start gap-2.5">
+          <AlertTriangleIcon className="h-4 w-4 text-[#D97706] flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-yellow-800">Shared Roadmap</p>
-            <p className="text-xs text-yellow-700 mt-0.5">
+            <p className="text-xs font-mono uppercase tracking-wider font-semibold text-[#D97706]">Shared Roadmap</p>
+            <p className="text-xs text-[#1C1917]/75 mt-0.5">
               This Roadmap is shared by {currentGoals.length} Goals. Changes to this Roadmap affect all connected Goals.
             </p>
           </div>
         </div>
       )}
 
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+      <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+        <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB] flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Steps</CardTitle>
-            <CardDescription>Ordered learning steps ({steps.length})</CardDescription>
+            <h2 className="font-serif font-normal text-lg text-[#1C1917]">Steps</h2>
+            <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">Ordered learning steps ({steps.length})</p>
           </div>
           <CreateStepDialog roadmapId={roadmap.id} />
-        </CardHeader>
-        <CardContent className="space-y-3">
+        </div>
+        <div className="p-6 space-y-3">
           {steps.length === 0 ? (
             <div className="text-center py-8 space-y-3">
-              <p className="text-muted-foreground">No steps yet. Add your first step to get started.</p>
+              <p className="text-sm text-[#1C1917]/60">No steps yet. Add your first step to get started.</p>
               <CreateStepDialog roadmapId={roadmap.id} />
             </div>
           ) : (
@@ -207,39 +200,39 @@ export function RoadmapDetail({
                   allUserResources={allUserResources}
                 />
               ))}
-              <div className="pt-2 flex justify-center border-t">
+              <div className="pt-3 flex justify-center border-t border-[#E5DEC9]">
                 <CreateStepDialog roadmapId={roadmap.id} />
               </div>
             </>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Goal Associations</CardTitle>
-          <CardDescription>Manage which Goals use this Roadmap</CardDescription>
-        </CardHeader>
-        <CardContent>
+      <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+        <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+          <h2 className="font-serif font-normal text-lg text-[#1C1917]">Goal Associations</h2>
+          <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">Manage which Goals use this Roadmap</p>
+        </div>
+        <div className="p-6">
           <GoalRoadmapAssociations
             roadmapId={roadmap.id}
             currentGoals={currentGoals}
             availableGoals={availableGoals}
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Actions</CardTitle>
-          <CardDescription>Manage this roadmap</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
+      <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+        <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+          <h2 className="font-serif font-normal text-lg text-[#1C1917]">Actions</h2>
+          <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">Manage this roadmap</p>
+        </div>
+        <div className="p-6 flex flex-wrap gap-3">
           <EditRoadmapDialog roadmap={{ ...roadmap, goalCount: currentGoals.length }} />
 
           <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="destructive">
+              <Button variant="destructive" className="rounded-sm shadow-none">
                 <TrashIcon className="mr-2 h-4 w-4" />
                 Delete roadmap
               </Button>
@@ -270,8 +263,8 @@ export function RoadmapDetail({
               </form>
             </DialogContent>
           </Dialog>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

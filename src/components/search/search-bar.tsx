@@ -49,25 +49,25 @@ export function SearchBar() {
   };
 
   return (
-    <div className="relative flex w-full items-center gap-2">
+    <div className="relative flex w-full items-center gap-2 border border-[#E5DEC9] bg-[#FDFCFA] p-2">
       <div className="relative flex-1">
-        <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+        <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#1C1917]/45 pointer-events-none" />
         <Input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Ask a natural-language question or search notes, PDFs, goals, summaries..."
-          className="pl-10 pr-10 h-11 text-base shadow-xs"
+          className="pl-10 pr-10 h-10 text-sm rounded-sm border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917] placeholder:text-[#1C1917]/45 shadow-none focus-visible:ring-[#166534]/30"
         />
         {query && (
           <button
             type="button"
             onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-sm p-1 text-[#1C1917]/50 hover:text-[#1C1917] hover:bg-[#F7EEDB] transition-colors"
             title="Clear search"
           >
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5" />
           </button>
         )}
       </div>
@@ -75,16 +75,16 @@ export function SearchBar() {
       <Button
         onClick={() => handleSearch(query)}
         disabled={isPending}
-        className="h-11 px-5 font-medium shrink-0"
+        className="h-10 px-5 rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 font-medium text-xs shrink-0 shadow-none"
       >
         {isPending ? (
           <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />
             Searching
           </>
         ) : (
           <>
-            <Sparkles className="mr-2 h-4 w-4 text-primary-foreground/90" />
+            <Sparkles className="mr-2 h-3.5 w-3.5 text-[#FAF8F4]/90" />
             AI Search
           </>
         )}

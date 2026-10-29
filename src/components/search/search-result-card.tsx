@@ -10,8 +10,6 @@ import {
   CheckCircle2,
   Clock,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { SearchResultItem, SearchEntityType } from "@/lib/validations/search";
 
 interface SearchResultCardProps {
@@ -22,39 +20,39 @@ function getEntityConfig(type: SearchEntityType) {
   switch (type) {
     case "NOTE":
       return {
-        label: "Note",
+        label: "NOTE",
         icon: FileText,
-        badgeClass: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800",
+        badgeClass: "border-[#E5DEC9] bg-[#F7EEDB] text-[#1C1917]/80",
       };
     case "RESOURCE":
       return {
-        label: "Resource",
+        label: "RESOURCE",
         icon: BookOpen,
-        badgeClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+        badgeClass: "border-[#D97706]/30 bg-[#D97706]/10 text-[#D97706]",
       };
     case "SUMMARY":
       return {
-        label: "AI Summary",
+        label: "AI SUMMARY",
         icon: Sparkles,
-        badgeClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
+        badgeClass: "border-[#166534]/30 bg-[#166534]/10 text-[#166534]",
       };
     case "GOAL":
       return {
-        label: "Goal",
+        label: "GOAL",
         icon: Target,
-        badgeClass: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800",
+        badgeClass: "border-[#166534]/25 bg-[#F7EEDB] text-[#166534]",
       };
     case "ROADMAP":
       return {
-        label: "Roadmap",
+        label: "ROADMAP",
         icon: Map,
-        badgeClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800",
+        badgeClass: "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/75",
       };
     default:
       return {
-        label: "Item",
+        label: "ITEM",
         icon: FileText,
-        badgeClass: "bg-muted text-muted-foreground",
+        badgeClass: "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/60",
       };
   }
 }
@@ -70,92 +68,96 @@ export function SearchResultCard({ item }: SearchResultCardProps) {
   });
 
   return (
-    <Card className="group hover:border-foreground/30 transition-all shadow-xs">
-      <CardContent className="p-4 sm:p-5 space-y-3">
-        {/* Header: Entity Type Badge, Date, AI Match Score */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className={`text-xs font-medium gap-1 py-0.5 ${config.badgeClass}`}>
-              <Icon className="h-3 w-3" />
-              {config.label}
-            </Badge>
-
-            {item.metadata?.resourceType && (
-              <span className="text-xs text-muted-foreground font-mono">
-                {item.metadata.resourceType}
-              </span>
-            )}
-
-            {item.metadata?.goalStatus && (
-              <span className="text-xs text-muted-foreground font-medium">
-                ({item.metadata.goalStatus.toLowerCase()})
-              </span>
-            )}
-
-            {item.metadata?.progressPercent !== undefined && (
-              <span className="text-xs text-muted-foreground font-medium">
-                {item.metadata.progressPercent}% completed
-              </span>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            {item.score !== undefined && item.relevanceReason && (
-              <Badge variant="secondary" className="text-[11px] font-medium bg-secondary/80">
-                Score: {item.score}%
-              </Badge>
-            )}
-            <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" />
-              {formattedDate}
-            </span>
-          </div>
-        </div>
-
-        {/* Title Link */}
-        <div>
-          <Link
-            href={item.href}
-            className="group/link inline-flex items-center gap-1.5 text-base font-semibold text-foreground hover:text-primary transition-colors"
+    <div className="group border border-[#E5DEC9] bg-[#FDFCFA] p-5 transition-colors hover:bg-[#F7EEDB]/60 space-y-3">
+      {/* Header: Entity Type Badge, Date, AI Match Score */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E5DEC9] pb-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider ${config.badgeClass}`}
           >
-            <span>{item.title}</span>
-            <ArrowUpRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all text-primary" />
-          </Link>
+            <Icon className="h-3 w-3" />
+            {config.label}
+          </span>
+
+          {item.metadata?.resourceType && (
+            <span className="text-[11px] text-[#1C1917]/60 font-mono uppercase">
+              {item.metadata.resourceType}
+            </span>
+          )}
+
+          {item.metadata?.goalStatus && (
+            <span className="text-[11px] text-[#1C1917]/60 font-mono uppercase">
+              [{item.metadata.goalStatus.toLowerCase()}]
+            </span>
+          )}
+
+          {item.metadata?.progressPercent !== undefined && (
+            <span className="text-[11px] text-[#166534] font-mono">
+              {item.metadata.progressPercent}% completed
+            </span>
+          )}
         </div>
 
-        {/* AI Relevance Reason (if analyzed by Gemini) */}
-        {item.relevanceReason && (
-          <div className="flex items-start gap-1.5 rounded-md bg-muted/60 px-2.5 py-1.5 text-xs text-foreground/90">
-            <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-emerald-500 shrink-0" />
-            <span className="leading-snug">
-              <span className="font-semibold text-foreground">AI Insight:</span> {item.relevanceReason}
+        <div className="flex items-center gap-2.5 text-[11px] font-mono text-[#1C1917]/55">
+          {item.score !== undefined && item.relevanceReason && (
+            <span className="inline-flex items-center rounded-sm border border-[#166534]/25 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono text-[#166534]">
+              MATCH {item.score}%
             </span>
-          </div>
-        )}
+          )}
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" />
+            {formattedDate}
+          </span>
+        </div>
+      </div>
 
-        {/* Text Snippet */}
-        {item.snippet && (
-          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed">
-            {item.snippet}
-          </p>
-        )}
+      {/* Title Link */}
+      <div>
+        <Link
+          href={item.href}
+          className="group/link inline-flex items-center gap-1.5 font-serif font-normal text-2xl text-[#1C1917] hover:text-[#166534] transition-colors tracking-tight"
+        >
+          <span>{item.title}</span>
+          <ArrowUpRight className="h-4 w-4 opacity-0 -translate-x-1 group-hover/link:opacity-100 group-hover/link:translate-x-0 transition-all text-[#166534]" />
+        </Link>
+      </div>
 
-        {/* Tags / Metadata Footer */}
-        {item.metadata?.tags && item.metadata.tags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-1">
-            {item.metadata.tags.map((tag) => (
-              <span
-                key={tag}
-                className="inline-flex items-center gap-1 rounded bg-secondary px-2 py-0.5 text-[11px] font-medium text-secondary-foreground"
-              >
-                <Tag className="h-2.5 w-2.5 opacity-60" />
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
-      </CardContent>
-    </Card>
+      {/* AI Relevance Reason (if analyzed by Gemini) */}
+      {item.relevanceReason && (
+        <div className="flex items-start gap-2 rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-3 py-2 text-xs text-[#1C1917]/80">
+          <CheckCircle2 className="h-3.5 w-3.5 mt-0.5 text-[#166534] shrink-0" />
+          <span className="leading-relaxed">
+            <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-[#166534] mr-1.5">
+              AI Insight:
+            </span>
+            {item.relevanceReason}
+          </span>
+        </div>
+      )}
+
+      {/* Text Snippet */}
+      {item.snippet && (
+        <p className="text-sm text-[#1C1917]/70 line-clamp-2 leading-relaxed">
+          {item.snippet}
+        </p>
+      )}
+
+      {/* Tags / Metadata Footer */}
+      {item.metadata?.tags && item.metadata.tags.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          {item.metadata.tags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center gap-1 rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-2 py-0.5 text-[10px] font-mono text-[#1C1917]/65"
+            >
+              <Tag className="h-2.5 w-2.5 opacity-60" />
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
+
 

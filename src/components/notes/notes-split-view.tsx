@@ -22,7 +22,6 @@ export function NotesSplitView({
   resources,
   initialSelectedNoteId,
 }: NotesSplitViewProps) {
-  // If initial note id is provided, select it; otherwise default to first note or null
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(
     initialSelectedNoteId !== undefined
       ? initialSelectedNoteId
@@ -41,15 +40,14 @@ export function NotesSplitView({
   };
 
   const handleNoteDeleted = () => {
-    // Select first remaining note or new note mode
     const remaining = notes.filter((n) => n.id !== selectedNoteId);
     setSelectedNoteId(remaining.length > 0 ? remaining[0].id : null);
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 min-h-[640px] items-stretch">
-      {/* Left Pane: Notes List (5 cols on md+) */}
-      <div className="md:col-span-5 h-[640px] flex flex-col">
+    <div className="grid grid-cols-1 md:grid-cols-12 border border-[#E5DEC9] bg-[#FDFCFA] md:divide-x md:divide-[#E5DEC9] min-h-[660px] items-stretch">
+      {/* Left Column: Note Index & Directory */}
+      <div className="md:col-span-5 lg:col-span-4 flex flex-col min-h-0 bg-[#FAF8F4]">
         <NoteListPane
           notes={notes}
           selectedNoteId={selectedNoteId}
@@ -61,10 +59,9 @@ export function NotesSplitView({
         />
       </div>
 
-      {/* Right Pane: Note Editor & Resource Linker (7 cols on md+) */}
-      <div className="md:col-span-7 h-[640px] flex flex-col">
+      {/* Right Column: Active Note Editor & Preview Sheet */}
+      <div className="md:col-span-7 lg:col-span-8 flex flex-col min-h-0 bg-[#FDFCFA]">
         <NoteEditorPane
-          key={activeNote ? activeNote.id : "new-note"}
           note={activeNote}
           resources={resources}
           onNoteSaved={handleNoteSaved}
@@ -74,4 +71,3 @@ export function NotesSplitView({
     </div>
   );
 }
-

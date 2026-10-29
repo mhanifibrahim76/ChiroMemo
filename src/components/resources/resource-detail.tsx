@@ -37,8 +37,6 @@ import { getDocumentSignedUrlAction } from "@/lib/documents/actions";
 import { ResourceTypeBadge } from "./resource-type-badge";
 import { EditResourceDialog } from "./edit-resource-dialog";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -158,33 +156,35 @@ export function ResourceDetail({
       <div>
         <Link
           href="/resources"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#1C1917]/65 hover:text-[#166534] transition-colors"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-3.5 w-3.5" />
           Back to resources
         </Link>
       </div>
 
-      {/* Main Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border-b pb-6">
+      {/* Main Editorial Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between border border-[#E5DEC9] bg-[#F7EEDB] p-6">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <ResourceTypeBadge type={resource.type} />
             {resource.category && (
-              <Badge variant="outline" className="font-normal">
+              <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FDFCFA] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/75">
                 {resource.category}
-              </Badge>
+              </span>
             )}
             {resource.is_archived && (
-              <Badge variant="secondary" className="text-muted-foreground">
+              <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/60">
                 Archived
-              </Badge>
+              </span>
             )}
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">{resource.title}</h1>
+          <h1 className="font-serif font-normal text-3xl tracking-tight text-[#1C1917]">
+            {resource.title}
+          </h1>
           {resource.author && (
-            <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <User className="h-4 w-4 shrink-0" aria-hidden="true" />
+            <p className="flex items-center gap-1.5 text-xs font-mono text-[#1C1917]/65">
+              <User className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
               <span>By {resource.author}</span>
             </p>
           )}
@@ -193,13 +193,18 @@ export function ResourceDetail({
         {/* Action Toolbar */}
         <div className="flex flex-wrap items-center gap-2">
           {resource.url && (
-            <Button asChild variant="outline" className="gap-2">
+            <Button
+              asChild
+              variant="outline"
+              size="sm"
+              className="gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#FAF8F4] text-xs shadow-none"
+            >
               <a
                 href={resource.url}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className="h-3.5 w-3.5" />
                 Visit URL
               </a>
             </Button>
@@ -208,21 +213,23 @@ export function ResourceDetail({
           {resource.file_path && (
             <Button
               variant="outline"
-              className="gap-2"
+              size="sm"
+              className="gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#FAF8F4] text-xs shadow-none"
               onClick={handleDownloadDocument}
               disabled={downloading}
             >
-              <Download className="h-4 w-4" />
+              <Download className="h-3.5 w-3.5" />
               {downloading ? "Opening..." : "Download File"}
             </Button>
           )}
 
           <Button
             variant="outline"
-            className="gap-2"
+            size="sm"
+            className="gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#FAF8F4] text-xs shadow-none"
             onClick={() => setEditDialogOpen(true)}
           >
-            <Edit2 className="h-4 w-4" />
+            <Edit2 className="h-3.5 w-3.5" />
             Edit
           </Button>
 
@@ -233,15 +240,20 @@ export function ResourceDetail({
               name="is_archived"
               value={resource.is_archived ? "false" : "true"}
             />
-            <Button variant="outline" type="submit" className="gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              type="submit"
+              className="gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#FAF8F4] text-xs shadow-none"
+            >
               {resource.is_archived ? (
                 <>
-                  <RotateCcw className="h-4 w-4" />
+                  <RotateCcw className="h-3.5 w-3.5" />
                   Restore
                 </>
               ) : (
                 <>
-                  <Archive className="h-4 w-4" />
+                  <Archive className="h-3.5 w-3.5" />
                   Archive
                 </>
               )}
@@ -250,10 +262,11 @@ export function ResourceDetail({
 
           <Button
             variant="destructive"
-            className="gap-2"
+            size="sm"
+            className="gap-1.5 h-8 rounded-sm text-xs shadow-none"
             onClick={() => setDeleteDialogOpen(true)}
           >
-            <Trash2 className="h-4 w-4" />
+            <Trash2 className="h-3.5 w-3.5" />
             Delete
           </Button>
         </div>
@@ -264,61 +277,66 @@ export function ResourceDetail({
         <div className="lg:col-span-2 space-y-6">
           {/* URL & Source card */}
           {resource.url && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">Resource source</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center justify-between gap-3 p-3 rounded-md bg-muted/50 border">
+            <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+              <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+                <h2 className="font-serif font-normal text-lg text-[#1C1917]">Resource Source</h2>
+              </div>
+              <div className="p-6">
+                <div className="flex items-center justify-between gap-3 p-3.5 rounded-sm bg-[#FAF8F4] border border-[#E5DEC9]">
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">
+                    <p className="text-[10px] font-mono text-[#1C1917]/55 uppercase tracking-wider">
                       Target Link
                     </p>
                     <a
                       href={resource.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm font-medium text-primary hover:underline break-all"
+                      className="text-sm font-medium text-[#166534] hover:underline break-all"
                     >
                       {resource.url}
                     </a>
                   </div>
-                  <Button asChild size="sm" variant="secondary" className="shrink-0 gap-1.5">
+                  <Button
+                    asChild
+                    size="sm"
+                    variant="outline"
+                    className="shrink-0 gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-xs shadow-none"
+                  >
                     <a href={resource.url} target="_blank" rel="noopener noreferrer">
-                      Open <ExternalLink className="h-3.5 w-3.5" />
+                      Open <ExternalLink className="h-3 w-3" />
                     </a>
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* Uploaded Document File Card */}
           {resource.file_path && (
-            <Card>
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-primary" />
+            <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+              <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+                <h2 className="font-serif font-normal text-lg flex items-center gap-2 text-[#1C1917]">
+                  <FileText className="h-4 w-4 text-[#166534]" />
                   Uploaded Document File
-                </CardTitle>
-                <CardDescription>
+                </h2>
+                <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
                   Stored securely in ChiroMemo private document storage.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between gap-3 p-3 rounded-md bg-muted/50 border">
+                </p>
+              </div>
+              <div className="p-6 space-y-3">
+                <div className="flex items-center justify-between gap-3 p-3.5 rounded-sm bg-[#FAF8F4] border border-[#E5DEC9]">
                   <div className="min-w-0 flex-1">
-                    <p className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">
+                    <p className="text-[10px] font-mono text-[#1C1917]/55 uppercase tracking-wider">
                       Storage Path
                     </p>
-                    <p className="text-xs font-mono text-foreground truncate mt-0.5">
+                    <p className="text-xs font-mono text-[#1C1917] truncate mt-0.5">
                       {resource.file_path}
                     </p>
                   </div>
                   <Button
                     size="sm"
-                    variant="secondary"
-                    className="shrink-0 gap-1.5"
+                    variant="outline"
+                    className="shrink-0 gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-xs shadow-none"
                     onClick={handleDownloadDocument}
                     disabled={downloading}
                   >
@@ -329,8 +347,8 @@ export function ResourceDetail({
                 {downloadError && (
                   <p className="text-xs text-destructive">{downloadError}</p>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* AI Document Summary */}
@@ -345,15 +363,15 @@ export function ResourceDetail({
 
           {/* Extracted Document Text */}
           {resource.extracted_text && (
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-1">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Sparkles className="h-4 w-4 text-primary" />
+            <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+              <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <h2 className="font-serif font-normal text-lg flex items-center gap-2 text-[#1C1917]">
+                      <Sparkles className="h-4 w-4 text-[#166534]" />
                       Extracted Document Text
-                    </CardTitle>
-                    <CardDescription>
+                    </h2>
+                    <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
                       Server-extracted text (
                       {
                         resource.extracted_text
@@ -361,21 +379,21 @@ export function ResourceDetail({
                           .filter(Boolean).length
                       }{" "}
                       words, {resource.extracted_text.length} characters).
-                    </CardDescription>
+                    </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#FDFCFA] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
                       AI Ready
-                    </Badge>
+                    </span>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 gap-1 text-xs"
+                      className="h-7 gap-1 text-xs rounded-sm hover:bg-[#FAF8F4]"
                       onClick={handleCopyExtractedText}
                     >
                       {copiedText ? (
                         <>
-                          <Check className="h-3.5 w-3.5 text-emerald-500" />
+                          <Check className="h-3.5 w-3.5 text-[#166534]" />
                           Copied
                         </>
                       ) : (
@@ -387,70 +405,70 @@ export function ResourceDetail({
                     </Button>
                   </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="max-h-80 overflow-y-auto rounded-lg border bg-muted/30 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap select-text">
+              </div>
+              <div className="p-6">
+                <div className="max-h-80 overflow-y-auto rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap select-text text-[#1C1917]/85">
                   {resource.extracted_text}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* Description & Study Notes */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Description & Notes</CardTitle>
-              <CardDescription>
+          <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+            <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+              <h2 className="font-serif font-normal text-lg text-[#1C1917]">Description & Notes</h2>
+              <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
                 Reference notes, key topics, or reason for saving this material.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div className="p-6">
               {resource.description ? (
-                <div className="text-sm leading-relaxed whitespace-pre-line text-foreground/90">
+                <div className="text-sm leading-relaxed whitespace-pre-line text-[#1C1917]/85">
                   {resource.description}
                 </div>
               ) : (
-                <p className="text-sm italic text-muted-foreground">
+                <p className="text-sm italic text-[#1C1917]/55">
                   No description or notes added yet. Click &ldquo;Edit&rdquo; above to add study notes.
                 </p>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Linked Roadmap Steps */}
-          <Card>
-            <CardHeader className="pb-3">
+          <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+            <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base">Roadmap step associations</CardTitle>
-                  <CardDescription>
+                  <h2 className="font-serif font-normal text-lg text-[#1C1917]">Roadmap Step Associations</h2>
+                  <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
                     Steps in your learning roadmaps where this resource is used.
-                  </CardDescription>
+                  </p>
                 </div>
-                <Badge variant="secondary">
+                <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FDFCFA] px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/75">
                   {resource.steps.length} {resource.steps.length === 1 ? "step" : "steps"}
-                </Badge>
+                </span>
               </div>
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="p-6">
               {resource.steps.length > 0 ? (
-                <div className="divide-y rounded-md border">
+                <div className="divide-y divide-[#E5DEC9] rounded-sm border border-[#E5DEC9]">
                   {resource.steps.map((step) => (
                     <div
                       key={step.id}
-                      className="flex items-center justify-between gap-3 p-3 hover:bg-muted/40 transition-colors"
+                      className="flex items-center justify-between gap-3 p-3.5 bg-[#FAF8F4] hover:bg-[#F7EEDB]/60 transition-colors"
                     >
                       <div className="flex items-start gap-2.5 min-w-0">
                         <StepStatusIcon status={step.status} />
                         <div className="min-w-0">
-                          <p className="text-sm font-medium leading-none truncate">
+                          <p className="text-sm font-medium leading-none truncate text-[#1C1917]">
                             {step.title}
                           </p>
-                          <p className="mt-1 text-xs text-muted-foreground">
+                          <p className="mt-1 text-xs text-[#1C1917]/65">
                             Roadmap:{" "}
                             <Link
                               href={`/roadmaps/${step.roadmap.id}`}
-                              className="font-medium text-foreground hover:underline"
+                              className="font-medium text-[#166534] hover:underline"
                             >
                               {step.roadmap.title}
                             </Link>
@@ -459,9 +477,9 @@ export function ResourceDetail({
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
-                        <Badge variant="outline" className="text-xs">
+                        <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FDFCFA] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/70">
                           {step.status.replace("_", " ")}
-                        </Badge>
+                        </span>
                         <form action={unlinkStepFormAction}>
                           <input type="hidden" name="step_id" value={step.id} />
                           <input type="hidden" name="resource_id" value={resource.id} />
@@ -470,7 +488,7 @@ export function ResourceDetail({
                             type="submit"
                             variant="ghost"
                             size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            className="h-7 w-7 rounded-sm text-[#1C1917]/55 hover:text-destructive"
                             title="Unlink from this step"
                           >
                             <Unlink className="h-3.5 w-3.5" />
@@ -481,44 +499,49 @@ export function ResourceDetail({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-6 text-sm text-muted-foreground">
-                  <Route className="mx-auto h-8 w-8 text-muted-foreground/40 mb-2" />
+                <div className="text-center py-6 text-sm text-[#1C1917]/60">
+                  <Route className="mx-auto h-8 w-8 text-[#1C1917]/30 mb-2" />
                   <p>This resource is not attached to any roadmap steps yet.</p>
                   <p className="text-xs mt-1">
                     You can attach resources to roadmap steps from any roadmap detail page.
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Right column: Goal connection & Metadata */}
         <div className="space-y-6">
           {/* Associated Goal Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <Target className="h-4 w-4 text-primary" />
+          <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+            <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+              <h2 className="font-serif font-normal text-lg flex items-center gap-2 text-[#1C1917]">
+                <Target className="h-4 w-4 text-[#166534]" />
                 Learning Goal
-              </CardTitle>
-              <CardDescription>
+              </h2>
+              <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
                 Target academic or skill objective.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              </p>
+            </div>
+            <div className="p-6">
               {resource.goal ? (
-                <div className="p-3 rounded-lg border bg-card space-y-2">
+                <div className="p-3.5 rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] space-y-2.5">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-sm leading-snug">
+                    <span className="font-serif font-normal text-lg leading-snug text-[#1C1917]">
                       {resource.goal.title}
                     </span>
-                    <Badge variant="outline" className="text-xs">
+                    <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
                       {resource.goal.status}
-                    </Badge>
+                    </span>
                   </div>
-                  <div className="pt-2 border-t">
-                    <Button asChild size="sm" variant="outline" className="w-full text-xs">
+                  <div className="pt-2.5 border-t border-[#E5DEC9]">
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="outline"
+                      className="w-full text-xs rounded-sm border-[#E5DEC9] bg-[#FDFCFA] hover:bg-[#F7EEDB] shadow-none"
+                    >
                       <Link href={`/goals/${resource.goal.id}`}>
                         View goal details
                       </Link>
@@ -526,57 +549,57 @@ export function ResourceDetail({
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-4 text-sm text-muted-foreground space-y-2">
+                <div className="text-center py-4 text-sm text-[#1C1917]/60 space-y-2">
                   <p>Not linked to a specific goal.</p>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-xs"
+                    className="text-xs rounded-sm border-[#E5DEC9] bg-[#FAF8F4]"
                     onClick={() => setEditDialogOpen(true)}
                   >
                     Link to a goal
                   </Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
           {/* Metadata Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base">Details & History</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <div className="flex items-center justify-between text-muted-foreground">
+          <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+            <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+              <h2 className="font-serif font-normal text-lg text-[#1C1917]">Details & History</h2>
+            </div>
+            <div className="p-6 space-y-3 text-xs font-mono">
+              <div className="flex items-center justify-between text-[#1C1917]/65">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5" /> Added on
                 </span>
-                <span className="text-foreground font-medium" suppressHydrationWarning>
+                <span className="text-[#1C1917] font-medium" suppressHydrationWarning>
                   {formatDate(resource.created_at)}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex items-center justify-between text-[#1C1917]/65">
                 <span className="flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5" /> Last updated
                 </span>
-                <span className="text-foreground font-medium text-xs" suppressHydrationWarning>
+                <span className="text-[#1C1917] font-medium" suppressHydrationWarning>
                   {formatDateTime(resource.updated_at)}
                 </span>
               </div>
-              <div className="flex items-center justify-between text-muted-foreground">
+              <div className="flex items-center justify-between text-[#1C1917]/65">
                 <span>Status</span>
-                <Badge variant={resource.is_archived ? "secondary" : "default"} className="text-xs">
+                <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
                   {resource.is_archived ? "Archived" : "Active"}
-                </Badge>
+                </span>
               </div>
               {resource.category && (
-                <div className="flex items-center justify-between text-muted-foreground">
+                <div className="flex items-center justify-between text-[#1C1917]/65">
                   <span>Category</span>
-                  <span className="text-foreground font-medium">{resource.category}</span>
+                  <span className="text-[#1C1917] font-medium">{resource.category}</span>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 

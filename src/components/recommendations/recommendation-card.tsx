@@ -8,8 +8,6 @@ import {
   Flame,
   CheckCircle2,
 } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type {
   RecommendationItem,
@@ -25,27 +23,27 @@ function getCategoryConfig(category: RecommendationCategory) {
   switch (category) {
     case "NEXT_STEP":
       return {
-        label: "Next Milestone",
+        label: "NEXT MILESTONE",
         icon: Compass,
-        badgeClass: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800",
+        badgeClass: "border-[#166534]/30 bg-[#166534]/10 text-[#166534]",
       };
     case "KNOWLEDGE_GAP":
       return {
-        label: "Knowledge Gap",
+        label: "KNOWLEDGE GAP",
         icon: AlertCircle,
-        badgeClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+        badgeClass: "border-[#D97706]/30 bg-[#D97706]/10 text-[#D97706]",
       };
     case "REVIEW_RECALL":
       return {
-        label: "Active Recall",
+        label: "ACTIVE RECALL",
         icon: Repeat,
-        badgeClass: "bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-800",
+        badgeClass: "border-[#166534]/25 bg-[#F7EEDB] text-[#166534]",
       };
     case "STUDY_STRATEGY":
       return {
-        label: "Study Strategy",
+        label: "STUDY STRATEGY",
         icon: Sparkles,
-        badgeClass: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800",
+        badgeClass: "border-[#E5DEC9] bg-[#F7EEDB] text-[#1C1917]/75",
       };
   }
 }
@@ -54,20 +52,20 @@ function getPriorityConfig(priority: RecommendationPriority) {
   switch (priority) {
     case "HIGH":
       return {
-        label: "High Priority",
-        badgeClass: "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-800",
+        label: "HIGH PRIORITY",
+        badgeClass: "border-[#D97706]/40 bg-[#D97706]/10 text-[#D97706]",
         icon: Flame,
       };
     case "MEDIUM":
       return {
-        label: "Medium Priority",
-        badgeClass: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800",
+        label: "STANDARD",
+        badgeClass: "border-[#166534]/25 bg-[#166534]/10 text-[#166534]",
         icon: Sparkles,
       };
     case "LOW":
       return {
-        label: "Supplemental",
-        badgeClass: "bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800",
+        label: "SUPPLEMENTAL",
+        badgeClass: "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/60",
         icon: CheckCircle2,
       };
   }
@@ -80,59 +78,71 @@ export function RecommendationCard({ recommendation }: RecommendationCardProps) 
   const PriIcon = pri.icon;
 
   return (
-    <Card className="hover:border-foreground/30 transition-all shadow-xs overflow-hidden">
-      <CardContent className="p-5 space-y-4">
+    <div className="border border-[#E5DEC9] bg-[#FDFCFA] p-6 transition-colors hover:bg-[#F7EEDB]/60 flex flex-col justify-between gap-5">
+      <div className="space-y-4">
         {/* Badges row */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className={`text-xs font-medium gap-1 py-0.5 ${cat.badgeClass}`}>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#E5DEC9] pb-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider ${cat.badgeClass}`}
+            >
               <CatIcon className="h-3 w-3" />
               {cat.label}
-            </Badge>
-            <Badge variant="outline" className={`text-xs font-medium gap-1 py-0.5 ${pri.badgeClass}`}>
+            </span>
+            <span
+              className={`inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider ${pri.badgeClass}`}
+            >
               <PriIcon className="h-3 w-3" />
               {pri.label}
-            </Badge>
+            </span>
           </div>
 
           {recommendation.targetEntity?.title && (
-            <span className="text-xs text-muted-foreground font-medium truncate max-w-[200px]">
+            <span className="text-[11px] font-mono text-[#1C1917]/55 truncate max-w-[200px]">
               {recommendation.targetEntity.title}
             </span>
           )}
         </div>
 
         {/* Title and Description */}
-        <div className="space-y-1.5">
-          <h3 className="text-base font-semibold text-foreground tracking-tight">
+        <div className="space-y-2">
+          <h3 className="font-serif font-normal text-2xl text-[#1C1917] tracking-tight leading-snug">
             {recommendation.title}
           </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
+          <p className="text-sm text-[#1C1917]/70 leading-relaxed">
             {recommendation.description}
           </p>
         </div>
 
-        {/* AI Reasoning pill */}
+        {/* AI Reasoning callout */}
         {recommendation.reasoning && (
-          <div className="flex items-start gap-2 rounded-md bg-muted/60 p-2.5 text-xs text-foreground/90">
-            <Sparkles className="h-3.5 w-3.5 mt-0.5 text-primary shrink-0" />
-            <span className="leading-snug">
-              <span className="font-semibold text-foreground">Why this matters:</span> {recommendation.reasoning}
+          <div className="flex items-start gap-2.5 rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] p-3 text-xs text-[#1C1917]/80">
+            <Sparkles className="h-3.5 w-3.5 mt-0.5 text-[#166534] shrink-0" />
+            <span className="leading-relaxed">
+              <span className="font-mono text-[10px] uppercase tracking-wider font-semibold text-[#166534] mr-1.5">
+                Rationale:
+              </span>
+              {recommendation.reasoning}
             </span>
           </div>
         )}
+      </div>
 
-        {/* CTA Button */}
-        <div className="pt-1 flex items-center justify-end">
-          <Button asChild size="sm" className="font-medium gap-1.5">
-            <Link href={recommendation.actionHref}>
-              <span>{recommendation.actionLabel}</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+      {/* CTA Button */}
+      <div className="pt-2 border-t border-[#E5DEC9] flex items-center justify-end">
+        <Button
+          asChild
+          size="sm"
+          className="rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 font-medium gap-1.5 h-8 px-3.5 text-xs shadow-none"
+        >
+          <Link href={recommendation.actionHref}>
+            <span>{recommendation.actionLabel}</span>
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Link>
+        </Button>
+      </div>
+    </div>
   );
 }
+
 

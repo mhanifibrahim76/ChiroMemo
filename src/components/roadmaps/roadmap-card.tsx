@@ -8,19 +8,32 @@ import { useState } from "react";
 import { deleteRoadmapAction } from "@/lib/roadmaps/actions";
 import { initialRoadmapActionState } from "@/lib/roadmaps/constants";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
-import { TrashIcon, EditIcon, MapIcon, ArrowRightIcon } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { TrashIcon, MapIcon, ArrowRightIcon, ArrowUpRight } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 
 interface RoadmapCardProps {
   roadmap: {
     id: string;
     title: string;
     description: string | null;
-    progress_percent: number;
     created_at: string;
     updated_at: string;
+    progress_percent: number;
     goalCount: number;
   };
 }
@@ -39,7 +52,17 @@ function formatDate(dateString: string): string {
 
 function SubmitButton() {
   const { pending } = useFormStatus();
-  return <Button type="submit" variant="ghost" className="w-full justify-start text-left" disabled={pending}>{pending ? "Deleting…" : "Delete roadmap"}</Button>;
+  return (
+    <Button
+      type="submit"
+      variant="destructive"
+      size="sm"
+      className="rounded-none text-xs"
+      disabled={pending}
+    >
+      {pending ? "Deleting…" : "Delete roadmap"}
+    </Button>
+  );
 }
 
 export function RoadmapCard({ roadmap }: RoadmapCardProps) {
@@ -47,87 +70,117 @@ export function RoadmapCard({ roadmap }: RoadmapCardProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   return (
-    <article className="border rounded-lg p-4 bg-card transition-shadow hover:shadow-md">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex-1 min-w-0">
-          <Link href={`/roadmaps/${roadmap.id}`} className="block">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold text-lg truncate">{roadmap.title}</h3>
-              <Badge variant="secondary">{roadmap.progress_percent}%</Badge>
-            </div>
-          </Link>
-          {roadmap.description && (
-            <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{roadmap.description}</p>
-          )}
-          <dl className="mt-3 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-            <dt className="sr-only">Progress</dt>
-            <dd className="flex items-center gap-1">
-              <MapIcon className="h-3 w-3" aria-hidden="true" />
-              <span>{roadmap.progress_percent}% complete</span>
-            </dd>
-            {roadmap.goalCount > 0 && (
-              <dd className="flex items-center gap-1">
-                <ArrowRightIcon className="h-3 w-3" aria-hidden="true" />
-                <span>{roadmap.goalCount} Goal{roadmap.goalCount > 1 ? "s" : ""}</span>
-              </dd>
-            )}
-            <dt className="sr-only">Created</dt>
-            <dd className="text-xs" suppressHydrationWarning>Created {formatDate(roadmap.created_at)}</dd>
-          </dl>
+    <article className="group relative flex flex-col justify-between border border-[#E5DEC9] bg-[#FDFCFA] p-5 transition-colors hover:bg-[#F7EEDB]">
+      <div className="space-y-3">
+        {/* Header Indicator */}
+        <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.16em]">
+          <span className="text-[#166534] font-semibold flex items-center gap-1.5">
+            <MapIcon className="h-3 w-3" />
+            <span>PROGRESS: {roadmap.progress_percent}%</span>
+          </span>
+
+          <div className="flex items-center gap-1">
+            <Link
+              href={`/roadmaps/${roadmap.id}`}
+              className="p-1 text-[#1C1917]/40 hover:text-[#166534] transition-colors"
+              aria-label="View roadmap"
+            >
+              <ArrowUpRight className="h-4 w-4" />
+            </Link>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-[#1C1917]/50 hover:text-[#1C1917]"
+                  aria-label="Roadmap actions"
+                >
+                  <TrashIcon className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="border-[#E5DEC9] bg-[#FAF8F4] rounded-none text-xs font-mono">
+                <DropdownMenuItem variant="destructive" asChild>
+                  <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start gap-2 h-7 text-xs font-mono text-destructive"
+                      >
+                        <TrashIcon className="h-3.5 w-3.5" />
+                        Delete roadmap
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md border-[#E5DEC9] bg-[#FAF8F4] rounded-none">
+                      <DialogHeader>
+                        <DialogTitle className="font-serif font-normal text-2xl">Delete roadmap</DialogTitle>
+                        <DialogDescription className="text-xs text-[#1C1917]/70">
+                          Are you sure you want to delete &ldquo;{roadmap.title}&rdquo;?
+                        </DialogDescription>
+                      </DialogHeader>
+                      <form action={deleteFormAction} className="space-y-4">
+                        <input type="hidden" name="id" value={roadmap.id} />
+                        <p className="text-xs text-[#1C1917]/70 leading-relaxed">
+                          This deletes the roadmap and all its milestone steps. Goals and attached resources are preserved.
+                        </p>
+                        {deleteState.error && (
+                          <p role="alert" className="text-destructive text-xs font-mono">{deleteState.error}</p>
+                        )}
+                        <DialogFooter>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="rounded-none border-[#E5DEC9]"
+                            onClick={() => setDeleteDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <SubmitButton />
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" aria-label="Roadmap actions">
-              <EditIcon className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
-              <Link href={`/roadmaps/${roadmap.id}`}>
-                <EditIcon className="mr-2 h-4 w-4" />
-                View details & steps
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem variant="destructive" asChild>
-              <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" className="w-full justify-start gap-2 text-destructive focus:text-destructive">
-                    <TrashIcon className="h-4 w-4" />
-                    Delete roadmap
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Delete roadmap</DialogTitle>
-                    <DialogDescription>
-                      Are you sure you want to permanently delete &ldquo;{roadmap.title}&rdquo;? This action cannot be undone.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <form action={deleteFormAction} className="space-y-4">
-                    <input type="hidden" name="id" value={roadmap.id} />
-                    <p className="text-sm text-muted-foreground">
-                      This will permanently delete the roadmap and all its steps.
-                      Goal & Roadmap associations will be removed.
-                      Resources, Notes, Summaries, and Learning Activities will be preserved.
-                    </p>
-                    {deleteState.error && (
-                      <p role="alert" className="text-destructive text-sm">{deleteState.error}</p>
-                    )}
-                    <DialogFooter>
-                      <Button type="button" variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-                        Cancel
-                      </Button>
-                      <SubmitButton />
-                    </DialogFooter>
-                  </form>
-                </DialogContent>
-              </Dialog>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Title */}
+        <Link href={`/roadmaps/${roadmap.id}`} className="block group-hover:underline underline-offset-4">
+          <h3 className="font-serif font-normal text-2xl tracking-[-0.02em] text-[#1C1917] truncate">
+            {roadmap.title}
+          </h3>
+        </Link>
+
+        {/* Description */}
+        {roadmap.description && (
+          <p className="line-clamp-2 text-xs sm:text-sm text-[#1C1917]/75 leading-relaxed">
+            {roadmap.description}
+          </p>
+        )}
+
+        {/* Progress bar */}
+        <div className="pt-1 space-y-1">
+          <Progress value={roadmap.progress_percent} className="h-1 bg-[#E5DEC9]" />
+        </div>
       </div>
+
+      {/* Metadata footer */}
+      <dl className="mt-4 flex items-center justify-between border-t border-[#E5DEC9] pt-3 font-mono text-[11px] text-[#1C1917]/60">
+        <dd className="flex items-center gap-1.5">
+          {roadmap.goalCount > 0 ? (
+            <span className="text-[#166534] flex items-center gap-1">
+              <ArrowRightIcon className="h-3 w-3" />
+              <span>{roadmap.goalCount} Linked Goal{roadmap.goalCount > 1 ? "s" : ""}</span>
+            </span>
+          ) : (
+            <span>Independent track</span>
+          )}
+        </dd>
+        <dd suppressHydrationWarning>Created {formatDate(roadmap.created_at)}</dd>
+      </dl>
     </article>
   );
 }

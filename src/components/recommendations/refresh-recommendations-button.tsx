@@ -20,11 +20,12 @@ export function RefreshRecommendationsButton() {
       size="sm"
       onClick={handleRefresh}
       disabled={isPending}
-      className="gap-1.5 text-xs font-medium"
+      className="gap-1.5 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#F7EEDB] hover:text-[#166534] font-mono text-[11px] uppercase tracking-wider h-8 px-3 shadow-none"
     >
-      <RefreshCw className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`} />
-      <span>{isPending ? "Analyzing..." : "Refresh Insights"}</span>
+      <RefreshCw className={`h-3 w-3 ${isPending ? "animate-spin" : ""}`} />
+      <span>{isPending ? "Analyzing..." : "Refresh Advisory"}</span>
     </Button>
   );
 }
+
 

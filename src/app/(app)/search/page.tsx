@@ -58,12 +58,12 @@ async function SearchResultsContent({
 
       {/* Results List or Empty State */}
       {result.items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-none border border-dashed border-[#E5DEC9] p-12 text-center bg-[#F7EEDB]/30">
-          <div className="flex h-12 w-12 items-center justify-center rounded-none border border-[#1C1917]/15 bg-card text-[#1C1917]/60 mb-4">
-            <SearchX className="h-6 w-6" />
+        <div className="flex flex-col items-center justify-center rounded-none border border-[#E5DEC9] p-12 text-center bg-[#FDFCFA]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-sm border border-[#E5DEC9] bg-[#F7EEDB] text-[#1C1917]/60 mb-4">
+            <SearchX className="h-5 w-5" />
           </div>
-          <h3 className="text-base font-semibold text-[#1C1917]">No matching materials found</h3>
-          <p className="mt-1 text-xs text-[#1C1917]/70 max-w-sm">
+          <h3 className="font-serif font-normal text-xl text-[#1C1917]">No matching materials found</h3>
+          <p className="mt-1.5 text-xs text-[#1C1917]/65 max-w-sm leading-relaxed">
             We couldn&apos;t find any notes, resources, or summaries matching &ldquo;{query}&rdquo;. Try checking for typos or searching a broader topic.
           </p>
         </div>

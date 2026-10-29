@@ -48,7 +48,7 @@ export function SearchFilters({ activeType }: SearchFiltersProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1.5 pb-2">
+    <div className="flex flex-wrap items-center gap-1.5 pb-1">
       {FILTER_OPTIONS.map((filter) => {
         const Icon = filter.icon;
         const isActive = activeType === filter.id;
@@ -56,12 +56,16 @@ export function SearchFilters({ activeType }: SearchFiltersProps) {
         return (
           <Button
             key={filter.id}
-            variant={isActive ? "default" : "outline"}
+            variant="outline"
             size="sm"
             onClick={() => handleSelectType(filter.id)}
-            className="h-8 text-xs font-medium rounded-full px-3 transition-colors"
+            className={
+              isActive
+                ? "h-8 text-[11px] font-mono uppercase tracking-wider rounded-sm px-3 bg-[#166534] text-[#FAF8F4] border-[#166534] hover:bg-[#166534]/90 hover:text-[#FAF8F4] shadow-none"
+                : "h-8 text-[11px] font-mono uppercase tracking-wider rounded-sm px-3 bg-[#FDFCFA] text-[#1C1917]/75 border-[#E5DEC9] hover:bg-[#F7EEDB] hover:text-[#166534] shadow-none"
+            }
           >
-            <Icon className="mr-1.5 h-3.5 w-3.5" />
+            <Icon className="mr-1.5 h-3 w-3" />
             {filter.label}
           </Button>
         );

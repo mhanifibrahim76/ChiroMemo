@@ -10,8 +10,6 @@ import { initialGoalActionState } from "@/lib/goals/constants";
 import { removeGoalFromRoadmapAction } from "@/lib/roadmaps/actions";
 import { initialRoadmapActionState } from "@/lib/roadmaps/constants";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogTrigger } from "@/components/ui/dialog";
 import { EditGoalDialog } from "./edit-goal-dialog";
 import { CreateRoadmapDialog } from "@/components/roadmaps/create-roadmap-dialog";
@@ -58,12 +56,16 @@ interface GoalDetailProps {
 }
 
 function StatusBadge({ status }: { status: "ACTIVE" | "COMPLETED" | "ARCHIVED" }) {
-  const variants = {
-    ACTIVE: "default" as const,
-    COMPLETED: "secondary" as const,
-    ARCHIVED: "outline" as const,
+  const styles = {
+    ACTIVE: "border-[#166534]/30 bg-[#166534]/10 text-[#166534]",
+    COMPLETED: "border-[#D97706]/30 bg-[#D97706]/10 text-[#D97706]",
+    ARCHIVED: "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/60",
   };
-  return <Badge variant={variants[status]}>{status}</Badge>;
+  return (
+    <span className={`inline-flex items-center rounded-sm border px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider ${styles[status]}`}>
+      {status}
+    </span>
+  );
 }
 
 function formatDate(dateString: string | null): string {
@@ -112,126 +114,131 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/goals" className="text-muted-foreground hover:text-foreground">
-          <ArrowLeftIcon className="h-5 w-5" />
-          <span className="sr-only">Back to goals</span>
+      <div>
+        <Link
+          href="/goals"
+          className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#1C1917]/65 hover:text-[#166534] transition-colors"
+        >
+          <ArrowLeftIcon className="h-3.5 w-3.5" />
+          <span>Back to goals</span>
         </Link>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{goal.title}</h1>
-          <p className="text-muted-foreground text-sm" suppressHydrationWarning>Created {formatDateTime(goal.created_at)}</p>
+      </div>
+
+      {/* Editorial Header */}
+      <div className="border border-[#E5DEC9] bg-[#F7EEDB] p-6 space-y-2">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono uppercase tracking-widest text-[#166534]">
+            COURSE OBJECTIVE {"//"} RECORD
+          </span>
+          <StatusBadge status={goal.status} />
         </div>
+        <h1 className="font-serif font-normal text-3xl tracking-tight text-[#1C1917]">{goal.title}</h1>
+        <p className="text-xs font-mono text-[#1C1917]/60" suppressHydrationWarning>
+          Created {formatDateTime(goal.created_at)}
+        </p>
       </div>
 
       {goal.description && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Description</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap">{goal.description}</p>
-          </CardContent>
-        </Card>
+        <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+          <div className="px-6 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+            <h2 className="font-serif font-normal text-lg text-[#1C1917]">Description</h2>
+          </div>
+          <div className="p-6">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#1C1917]/80">{goal.description}</p>
+          </div>
+        </div>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Status</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form action={statusFormAction} className="space-y-2">
-              <input type="hidden" name="id" value={goal.id} />
-              <StatusBadge status={goal.status} />
-              <select
-                name="status"
-                value={goal.status}
-                onChange={(e) => (e.currentTarget as HTMLSelectElement).form?.requestSubmit()}
-                className="w-full border rounded px-2 py-1 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                aria-label="Change status"
+      {/* 4-Column Hairline Ledger */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-[#E5DEC9] bg-[#FDFCFA] divide-y sm:divide-y-0 sm:divide-x divide-[#E5DEC9]">
+        <div className="p-5 space-y-2.5">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Status</p>
+          <form action={statusFormAction} className="space-y-2">
+            <input type="hidden" name="id" value={goal.id} />
+            <select
+              name="status"
+              value={goal.status}
+              onChange={(e) => (e.currentTarget as HTMLSelectElement).form?.requestSubmit()}
+              className="w-full border border-[#E5DEC9] rounded-sm px-2.5 py-1.5 text-xs font-mono bg-[#FAF8F4] text-[#1C1917] focus:outline-none focus:ring-1 focus:ring-[#166534]/40"
+              aria-label="Change status"
+            >
+              <option value="ACTIVE">Active</option>
+              <option value="COMPLETED">Completed</option>
+              <option value="ARCHIVED">Archived</option>
+            </select>
+          </form>
+        </div>
+
+        <div className="p-5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Priority</p>
+          <form action={priorityFormAction} className="space-y-2">
+            <input type="hidden" name="id" value={goal.id} />
+            <div className="flex items-center gap-2">
+              <input
+                name="priority"
+                type="number"
+                min="0"
+                step="1"
+                defaultValue={goal.priority}
+                className="w-20 border border-[#E5DEC9] rounded-sm px-2.5 py-1 text-xs font-mono bg-[#FAF8F4] text-[#1C1917] focus:outline-none focus:ring-1 focus:ring-[#166534]/40"
+                aria-label="Priority"
+              />
+              <Button
+                type="submit"
+                variant="outline"
+                size="sm"
+                className="h-7 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-xs shadow-none"
+                disabled={Boolean(priorityState.error || priorityState.message)}
               >
-                <option value="ACTIVE">Active</option>
-                <option value="COMPLETED">Completed</option>
-                <option value="ARCHIVED">Archived</option>
-              </select>
-            </form>
-          </CardContent>
-        </Card>
+                Update
+              </Button>
+            </div>
+            {priorityState.message && <p className="text-[#166534] text-xs font-mono">Priority updated</p>}
+            {priorityState.error && <p className="text-destructive text-xs">{priorityState.error}</p>}
+          </form>
+          <p className="text-[11px] text-[#1C1917]/50">Higher values = higher priority</p>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Priority</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form action={priorityFormAction} className="space-y-2">
-              <input type="hidden" name="id" value={goal.id} />
-              <div className="flex items-center gap-2">
-                <input
-                  name="priority"
-                  type="number"
-                  min="0"
-                  step="1"
-                  defaultValue={goal.priority}
-                  className="w-20 border rounded px-2 py-1 text-sm bg-background focus:outline-none focus:ring-2 focus:ring-ring"
-                  aria-label="Priority"
-                />
-                <Button type="submit" variant="outline" size="sm" disabled={Boolean(priorityState.error || priorityState.message)}>
-                  Update
-                </Button>
-              </div>
-              {priorityState.message && <p className="text-green-600 text-xs">Priority updated</p>}
-              {priorityState.error && <p className="text-destructive text-xs">{priorityState.error}</p>}
-            </form>
-            <p className="mt-1 text-xs text-muted-foreground">Higher values = higher priority</p>
-          </CardContent>
-        </Card>
+        <div className="p-5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Target Date</p>
+          <p className="flex items-center gap-2 text-sm text-[#1C1917] pt-1">
+            <TargetIcon className="h-4 w-4 text-[#166534]" />
+            <span suppressHydrationWarning>{goal.target_date ? formatDate(goal.target_date) : "Not set"}</span>
+          </p>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Target date</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="flex items-center gap-2">
-              <TargetIcon className="h-4 w-4 text-muted-foreground" />
-              <span suppressHydrationWarning>{goal.target_date ? formatDate(goal.target_date) : "Not set"}</span>
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-medium">Last updated</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="flex items-center gap-2">
-              <CalendarIcon className="h-4 w-4 text-muted-foreground" />
-              <span suppressHydrationWarning>{formatDateTime(goal.updated_at)}</span>
-            </p>
-          </CardContent>
-        </Card>
+        <div className="p-5 space-y-2">
+          <p className="text-[10px] font-mono uppercase tracking-widest text-[#1C1917]/55">Last Updated</p>
+          <p className="flex items-center gap-2 text-xs font-mono text-[#1C1917]/80 pt-1">
+            <CalendarIcon className="h-4 w-4 text-[#166534]" />
+            <span suppressHydrationWarning>{formatDateTime(goal.updated_at)}</span>
+          </p>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Roadmaps</CardTitle>
-          <CardDescription>Learning roadmaps connected to this goal</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-3">
+      <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+        <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+          <h2 className="font-serif font-normal text-lg text-[#1C1917]">Roadmaps</h2>
+          <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">Learning roadmaps connected to this goal</p>
+        </div>
+        <div className="p-6 space-y-3">
           {roadmaps.length === 0 ? (
-            <div className="text-center py-6">
-              <p className="text-muted-foreground">No roadmaps connected yet.</p>
+            <div className="text-center py-6 space-y-3">
+              <p className="text-sm text-[#1C1917]/60">No roadmaps connected yet.</p>
               <CreateRoadmapDialog preSelectedGoalIds={[goal.id]} />
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {roadmaps.map((roadmap) => (
-                <div key={roadmap.id} className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
+                <div key={roadmap.id} className="flex items-center justify-between p-4 rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] hover:bg-[#F7EEDB]/60 transition-colors">
                   <Link href={`/roadmaps/${roadmap.id}`} className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <h4 className="font-medium truncate">{roadmap.title}</h4>
-                      <Badge variant="secondary">{roadmap.progress_percent}%</Badge>
+                      <h4 className="font-serif font-normal text-lg text-[#1C1917] truncate">{roadmap.title}</h4>
+                      <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono text-[#166534]">
+                        {roadmap.progress_percent}%
+                      </span>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">{roadmap.description ?? "No description"}</p>
+                    <p className="text-xs text-[#1C1917]/65 truncate mt-0.5">{roadmap.description ?? "No description"}</p>
                   </Link>
                   <form action={removeRoadmapFormAction} className="inline">
                     <input type="hidden" name="goalId" value={goal.id} />
@@ -240,7 +247,7 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
                       type="submit"
                       variant="ghost"
                       size="icon"
-                      className="text-muted-foreground hover:text-destructive"
+                      className="text-[#1C1917]/55 hover:text-destructive rounded-sm"
                       aria-label={`Remove ${roadmap.title} from goal`}
                     >
                       <UnlinkIcon className="h-4 w-4" />
@@ -249,46 +256,46 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
                 </div>
               ))}
               {unassociatedRoadmaps.length > 0 && (
-                <div className="pt-2 border-t">
+                <div className="pt-3 border-t border-[#E5DEC9]">
                   <CreateRoadmapDialog preSelectedGoalIds={[goal.id]} />
                 </div>
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Learning Resources Card */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+      {/* Learning Resources Panel */}
+      <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+        <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB] flex flex-row items-center justify-between">
           <div>
-            <CardTitle>Learning Resources</CardTitle>
-            <CardDescription>Materials and study links connected to this goal</CardDescription>
+            <h2 className="font-serif font-normal text-lg text-[#1C1917]">Learning Resources</h2>
+            <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">Materials and study links connected to this goal</p>
           </div>
           <CreateResourceDialog
             availableGoals={[{ id: goal.id, title: goal.title }]}
             initialGoalId={goal.id}
             redirectTo={`/goals/${goal.id}`}
             trigger={
-              <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+              <Button size="sm" variant="outline" className="gap-1.5 text-xs rounded-sm border-[#E5DEC9] bg-[#FDFCFA] shadow-none">
                 <PlusIcon className="h-3.5 w-3.5" />
                 Add resource
               </Button>
             }
           />
-        </CardHeader>
-        <CardContent className="space-y-3">
+        </div>
+        <div className="p-6 space-y-3">
           {resources.length === 0 ? (
             <div className="text-center py-6">
-              <BookOpenIcon className="mx-auto h-8 w-8 text-muted-foreground/40 mb-2" />
-              <p className="text-sm text-muted-foreground">No resources connected to this goal yet.</p>
+              <BookOpenIcon className="mx-auto h-8 w-8 text-[#1C1917]/30 mb-2" />
+              <p className="text-sm text-[#1C1917]/60">No resources connected to this goal yet.</p>
               <div className="mt-3">
                 <CreateResourceDialog
                   availableGoals={[{ id: goal.id, title: goal.title }]}
                   initialGoalId={goal.id}
                   redirectTo={`/goals/${goal.id}`}
                   trigger={
-                    <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+                    <Button size="sm" variant="outline" className="gap-1.5 text-xs rounded-sm border-[#E5DEC9] bg-[#FAF8F4]">
                       <PlusIcon className="h-3.5 w-3.5" />
                       Add study material
                     </Button>
@@ -297,29 +304,29 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
               </div>
             </div>
           ) : (
-            <div className="divide-y rounded-md border">
+            <div className="divide-y divide-[#E5DEC9] rounded-sm border border-[#E5DEC9]">
               {resources.map((resource) => (
                 <div
                   key={resource.id}
-                  className="flex items-center justify-between p-3 hover:bg-muted/40 transition-colors"
+                  className="flex items-center justify-between p-3.5 bg-[#FAF8F4] hover:bg-[#F7EEDB]/60 transition-colors"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <ResourceTypeBadge type={resource.type} />
                       {resource.category && (
-                        <Badge variant="outline" className="text-xs font-normal">
+                        <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FDFCFA] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/70">
                           {resource.category}
-                        </Badge>
+                        </span>
                       )}
                     </div>
                     <Link
                       href={`/resources/${resource.id}`}
-                      className="mt-1 block font-medium text-sm hover:underline truncate"
+                      className="mt-1.5 block font-serif font-normal text-lg text-[#1C1917] hover:text-[#166534] truncate"
                     >
                       {resource.title}
                     </Link>
                     {resource.author && (
-                      <p className="text-xs text-muted-foreground">by {resource.author}</p>
+                      <p className="text-xs font-mono text-[#1C1917]/55">by {resource.author}</p>
                     )}
                   </div>
 
@@ -329,13 +336,13 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-muted-foreground hover:text-foreground p-1"
+                        className="text-[#1C1917]/55 hover:text-[#166534] p-1"
                         aria-label={`Open link for ${resource.title}`}
                       >
                         <ExternalLinkIcon className="h-4 w-4" />
                       </a>
                     )}
-                    <Button asChild size="sm" variant="ghost" className="text-xs">
+                    <Button asChild size="sm" variant="ghost" className="text-xs rounded-sm">
                       <Link href={`/resources/${resource.id}`}>
                         View
                       </Link>
@@ -345,20 +352,20 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
               ))}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Actions</CardTitle>
-          <CardDescription>Manage this goal</CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
+      <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+        <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+          <h2 className="font-serif font-normal text-lg text-[#1C1917]">Actions</h2>
+          <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">Manage this goal</p>
+        </div>
+        <div className="p-6 flex flex-wrap gap-3">
           <EditGoalDialog goal={goal} />
 
           <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
             <DialogTrigger asChild>
-              <Button variant="destructive">
+              <Button variant="destructive" className="rounded-sm shadow-none">
                 <TrashIcon className="mr-2 h-4 w-4" />
                 Delete goal
               </Button>
@@ -388,8 +395,8 @@ export function GoalDetail({ goal, roadmaps, availableRoadmaps, resources = [] }
               </form>
             </DialogContent>
           </Dialog>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

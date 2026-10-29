@@ -13,9 +13,7 @@ import {
   FileText,
   Lightbulb,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,25 +69,25 @@ export function SummaryCard({ summary }: SummaryCardProps) {
 
   return (
     <>
-      <Card className="flex flex-col justify-between hover:border-primary/50 transition-colors">
-        <CardHeader className="pb-3 space-y-2">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="gap-1 text-xs">
-                <Sparkles className="h-3 w-3 text-primary" />
+      <div className="flex flex-col justify-between border border-[#E5DEC9] bg-[#FDFCFA] p-6 transition-colors hover:bg-[#F7EEDB]/60 gap-5">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between gap-2 border-b border-[#E5DEC9] pb-2.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
+                <Sparkles className="h-3 w-3 text-[#166534]" />
                 {displayModel}
-              </Badge>
+              </span>
               {summary.resourceType && (
-                <Badge variant="outline" className="text-xs">
+                <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/65">
                   {summary.resourceType}
-                </Badge>
+                </span>
               )}
             </div>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-sm text-[#1C1917]/60 hover:text-[#1C1917] hover:bg-[#F7EEDB]">
+                  <MoreVertical className="h-3.5 w-3.5" />
                   <span className="sr-only">Open menu</span>
                 </Button>
               </DropdownMenuTrigger>
@@ -108,69 +106,71 @@ export function SummaryCard({ summary }: SummaryCardProps) {
           <div>
             <Link
               href={`/summaries/${summary.id}`}
-              className="hover:underline focus:outline-none"
+              className="hover:text-[#166534] transition-colors focus:outline-none"
             >
-              <CardTitle className="text-lg font-semibold line-clamp-1">
+              <h3 className="font-serif font-normal text-2xl text-[#1C1917] tracking-tight line-clamp-1">
                 {title}
-              </CardTitle>
+              </h3>
             </Link>
-            <CardDescription className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
-              <Calendar className="h-3.5 w-3.5 shrink-0" />
+            <p className="flex items-center gap-1.5 text-[11px] font-mono text-[#1C1917]/55 mt-1">
+              <Calendar className="h-3 w-3 shrink-0" />
               <span suppressHydrationWarning>{formatDate(summary.created_at)}</span>
-            </CardDescription>
+            </p>
           </div>
-        </CardHeader>
 
-        <CardContent className="space-y-4 pt-0">
           {summary.key_points && summary.key_points.length > 0 && (
-            <div className="space-y-1.5">
-              <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
-                <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+            <div className="space-y-2 pt-1">
+              <p className="text-[11px] font-mono uppercase tracking-wider font-medium text-[#1C1917]/65 flex items-center gap-1.5">
+                <Lightbulb className="h-3 w-3 text-[#D97706]" />
                 Key Concepts ({summary.key_points.length})
               </p>
-              <div className="flex flex-wrap gap-1">
+              <div className="flex flex-wrap gap-1.5">
                 {summary.key_points.slice(0, 3).map((kp, idx) => (
                   <span
                     key={idx}
-                    className="inline-block max-w-full truncate rounded bg-muted/80 px-2 py-0.5 text-[11px] text-foreground font-mono"
+                    className="inline-block max-w-full truncate rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-2 py-0.5 text-[11px] text-[#1C1917]/75 font-mono"
                   >
                     {kp}
                   </span>
                 ))}
                 {summary.key_points.length > 3 && (
-                  <span className="text-[11px] text-muted-foreground self-center px-1">
+                  <span className="text-[10px] font-mono text-[#1C1917]/55 self-center px-1">
                     +{summary.key_points.length - 3} more
                   </span>
                 )}
               </div>
             </div>
           )}
+        </div>
 
-          <div className="flex items-center justify-between pt-3 border-t">
-            {summary.resource_id ? (
-              <Link
-                href={`/resources/${summary.resource_id}`}
-                className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 truncate max-w-[150px]"
-              >
-                <BookOpen className="h-3.5 w-3.5 shrink-0" />
-                <span className="truncate">Resource</span>
-              </Link>
-            ) : (
-              <span className="text-xs text-muted-foreground flex items-center gap-1">
-                <FileText className="h-3.5 w-3.5" />
-                Direct text
-              </span>
-            )}
+        <div className="flex items-center justify-between pt-3 border-t border-[#E5DEC9]">
+          {summary.resource_id ? (
+            <Link
+              href={`/resources/${summary.resource_id}`}
+              className="text-[11px] font-mono uppercase tracking-wider text-[#1C1917]/60 hover:text-[#166534] flex items-center gap-1.5 truncate max-w-[150px]"
+            >
+              <BookOpen className="h-3 w-3 shrink-0" />
+              <span className="truncate">Source Resource</span>
+            </Link>
+          ) : (
+            <span className="text-[11px] font-mono uppercase tracking-wider text-[#1C1917]/55 flex items-center gap-1.5">
+              <FileText className="h-3 w-3" />
+              Direct text
+            </span>
+          )}
 
-            <Button asChild size="sm" variant="default" className="gap-1.5 h-8">
-              <Link href={`/summaries/${summary.id}`}>
-                View summary
-                <ExternalLink className="h-3.5 w-3.5" />
-              </Link>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          <Button
+            asChild
+            size="sm"
+            className="gap-1.5 h-8 px-3 rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 text-xs shadow-none"
+          >
+            <Link href={`/summaries/${summary.id}`}>
+              View summary
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          </Button>
+        </div>
+      </div>
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={deleteOpen} onOpenChange={setDeleteDialogOpen}>
@@ -206,4 +206,5 @@ export function SummaryCard({ summary }: SummaryCardProps) {
     </>
   );
 }
+
 

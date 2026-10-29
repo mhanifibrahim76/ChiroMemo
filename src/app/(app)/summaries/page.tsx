@@ -65,15 +65,15 @@ async function SummariesContent({ search }: { search?: string }) {
 
       {/* Grid or Empty State */}
       {summaries.length === 0 ? (
-        <div className="rounded-none border border-dashed border-[#E5DEC9] p-12 text-center space-y-4 bg-[#F7EEDB]/40">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-none border border-[#166534]/20 bg-[#166534]/10 text-[#166534]">
-            <Sparkles className="h-7 w-7" />
+        <div className="rounded-none border border-[#E5DEC9] p-12 text-center space-y-4 bg-[#FDFCFA]">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-sm border border-[#166534]/25 bg-[#F7EEDB] text-[#166534]">
+            <Sparkles className="h-5 w-5" />
           </div>
-          <div className="space-y-1 max-w-md mx-auto">
-            <h3 className="text-base font-semibold text-[#1C1917]">
+          <div className="space-y-1.5 max-w-md mx-auto">
+            <h3 className="font-serif font-normal text-xl text-[#1C1917]">
               {search ? "No matching summaries found" : "No AI summaries generated yet"}
             </h3>
-            <p className="text-xs text-[#1C1917]/70 leading-relaxed">
+            <p className="text-xs text-[#1C1917]/65 leading-relaxed">
               {search
                 ? `No summaries matched "${search}". Try searching for a different keyword or reset filters.`
                 : "Upload lecture slides, research papers, or syllabus documents to automatically distill them into key points, executive overviews, and study takeaways."}
@@ -82,7 +82,7 @@ async function SummariesContent({ search }: { search?: string }) {
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             {search ? (
-              <Button asChild variant="outline" size="sm" className="rounded-sm">
+              <Button asChild variant="outline" size="sm" className="rounded-sm border-[#E5DEC9] bg-[#FAF8F4]">
                 <Link href="/summaries">Clear search</Link>
               </Button>
             ) : (
@@ -90,13 +90,13 @@ async function SummariesContent({ search }: { search?: string }) {
                 <GenerateSummaryDialog
                   resources={summarizableResources}
                   trigger={
-                    <Button className="rounded-sm bg-[#166534] text-[#FAF8F4] gap-2">
+                    <Button className="rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 gap-2 shadow-none">
                       <Sparkles className="h-4 w-4" />
                       Generate First Summary
                     </Button>
                   }
                 />
-                <Button asChild variant="outline" className="rounded-sm gap-2">
+                <Button asChild variant="outline" className="rounded-sm border-[#E5DEC9] bg-[#FAF8F4] hover:bg-[#F7EEDB] gap-2 shadow-none">
                   <Link href="/resources">
                     <BookOpen className="h-4 w-4" />
                     Browse Resources

@@ -13,9 +13,7 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   generateSummaryAction,
   exportSummaryToNoteAction,
@@ -38,11 +36,15 @@ function GenerateButton({ isRegen }: { isRegen: boolean }) {
       disabled={pending}
       size={isRegen ? "sm" : "default"}
       variant={isRegen ? "outline" : "default"}
-      className="gap-2"
+      className={
+        isRegen
+          ? "gap-2 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#F7EEDB] text-xs h-8 shadow-none"
+          : "gap-2 rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 text-xs h-9 shadow-none"
+      }
     >
       {pending ? (
         <>
-          <Loader2 className="h-4 w-4 animate-spin text-primary-foreground" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
           <span>Analyzing with Gemini...</span>
         </>
       ) : isRegen ? (
@@ -52,7 +54,7 @@ function GenerateButton({ isRegen }: { isRegen: boolean }) {
         </>
       ) : (
         <>
-          <Sparkles className="h-4 w-4" />
+          <Sparkles className="h-3.5 w-3.5" />
           <span>Summarize with Gemini AI</span>
         </>
       )}
@@ -68,9 +70,9 @@ function SaveNoteButton() {
       disabled={pending}
       variant="outline"
       size="sm"
-      className="gap-1.5 h-8 text-xs"
+      className="gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#F7EEDB] text-xs shadow-none"
     >
-      <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
+      <BookmarkCheck className="h-3.5 w-3.5 text-[#166534]" />
       <span>{pending ? "Saving..." : "Save to Note"}</span>
     </Button>
   );
@@ -97,35 +99,35 @@ export function ResourceAiSummaryCard({
   }
 
   return (
-    <Card className="border-primary/30 shadow-xs">
-      <CardHeader className="pb-3 bg-muted/20 border-b">
+    <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+      <div className="px-6 py-4 bg-[#F7EEDB] border-b border-[#E5DEC9]">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-0.5">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-primary" />
+          <div>
+            <h2 className="font-serif font-normal text-lg flex items-center gap-2 text-[#1C1917]">
+              <Sparkles className="h-4 w-4 text-[#166534]" />
               AI Document Summary
-            </CardTitle>
-            <CardDescription className="text-xs">
+            </h2>
+            <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
               Distill key concepts and study takeaways for {resourceTitle} with Google Gemini AI.
-            </CardDescription>
+            </p>
           </div>
           {initialSummary && (
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="text-xs">
+              <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FDFCFA] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/75">
                 {initialSummary.model || "gemini-2.5-flash"}
-              </Badge>
-              <Badge variant="outline" className="text-xs text-emerald-600 dark:text-emerald-400 border-emerald-500/30">
+              </span>
+              <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
                 Ready
-              </Badge>
+              </span>
             </div>
           )}
         </div>
-      </CardHeader>
+      </div>
 
-      <CardContent className="pt-4 space-y-4">
+      <div className="p-6 space-y-4">
         {/* Error notification */}
         {generateState.status === "error" && (
-          <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-start gap-2">
+          <div className="p-3 rounded-sm bg-destructive/10 border border-destructive/20 text-destructive text-sm flex items-start gap-2">
             <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
             <div>
               <p className="font-medium text-xs">Failed to generate summary</p>
@@ -136,35 +138,37 @@ export function ResourceAiSummaryCard({
 
         {/* Note export notification */}
         {exportState.status === "success" && (
-          <div className="p-2.5 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs flex items-center justify-between">
+          <div className="p-3 rounded-sm bg-[#166534]/10 border border-[#166534]/30 text-[#166534] text-xs font-mono flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-[#166534]" />
               <span>{exportState.message}</span>
             </div>
-            <Button asChild size="sm" variant="link" className="h-6 px-1 text-xs">
+            <Button asChild size="sm" variant="link" className="h-6 px-1 text-xs text-[#166534]">
               <Link href="/notes">View in Notes</Link>
             </Button>
           </div>
         )}
 
         {initialSummary ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {/* Key concepts highlight */}
             {initialSummary.key_points && initialSummary.key_points.length > 0 && (
-              <div className="space-y-1.5">
-                <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 uppercase tracking-wider">
-                  <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+              <div className="space-y-2">
+                <p className="text-[11px] font-mono font-medium text-[#1C1917]/65 flex items-center gap-1.5 uppercase tracking-wider">
+                  <Lightbulb className="h-3.5 w-3.5 text-[#D97706]" />
                   Key Highlights ({initialSummary.key_points.length})
                 </p>
-                <ul className="space-y-1 text-xs">
+                <ul className="space-y-1.5 text-xs">
                   {initialSummary.key_points.slice(0, 3).map((kp, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-foreground/90">
-                      <span className="text-primary font-bold">•</span>
+                    <li key={idx} className="flex items-start gap-2 text-[#1C1917]/85 leading-relaxed">
+                      <span className="text-[#166534] font-mono font-bold">
+                        {String(idx + 1).padStart(2, "0")}.
+                      </span>
                       <span>{kp}</span>
                     </li>
                   ))}
                   {initialSummary.key_points.length > 3 && (
-                    <li className="text-muted-foreground italic text-[11px] pl-3">
+                    <li className="text-[#1C1917]/55 font-mono text-[11px] pl-5">
                       +{initialSummary.key_points.length - 3} more key points in full view
                     </li>
                   )}
@@ -173,12 +177,16 @@ export function ResourceAiSummaryCard({
             )}
 
             {/* Actions toolbar */}
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-[#E5DEC9]">
               <div className="flex items-center gap-2">
-                <Button asChild size="sm" className="gap-1.5 h-8 text-xs">
+                <Button
+                  asChild
+                  size="sm"
+                  className="gap-1.5 h-8 rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 text-xs shadow-none"
+                >
                   <Link href={`/summaries/${initialSummary.id}`}>
                     <span>Open Two-Panel View</span>
-                    <ExternalLink className="h-3.5 w-3.5" />
+                    <ExternalLink className="h-3 w-3" />
                   </Link>
                 </Button>
 
@@ -195,12 +203,12 @@ export function ResourceAiSummaryCard({
             </div>
           </div>
         ) : (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-lg bg-muted/30 border border-dashed">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-sm bg-[#FAF8F4] border border-[#E5DEC9]">
             <div className="space-y-1 text-center sm:text-left">
-              <p className="text-sm font-medium text-foreground">
+              <p className="font-serif font-normal text-base text-[#1C1917]">
                 Document is extracted and ready for AI
               </p>
-              <p className="text-xs text-muted-foreground max-w-md">
+              <p className="text-xs text-[#1C1917]/65 max-w-md leading-relaxed">
                 Click below to generate an executive overview, bullet-point key
                 theories, and student study takeaways.
               </p>
@@ -212,7 +220,8 @@ export function ResourceAiSummaryCard({
             </form>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
+

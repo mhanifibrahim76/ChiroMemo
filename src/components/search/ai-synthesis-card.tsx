@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { Sparkles, Lightbulb, ArrowRight, Compass } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { GeminiSearchSynthesis } from "@/lib/validations/search";
 
 interface AiSynthesisCardProps {
@@ -16,46 +14,51 @@ export function AiSynthesisCard({
   modelUsed = "gemini-2.5-flash",
 }: AiSynthesisCardProps) {
   return (
-    <Card className="border-primary/20 bg-primary/5 shadow-xs overflow-hidden">
-      <CardHeader className="pb-3 border-b border-primary/10 bg-primary/5">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Sparkles className="h-4 w-4" />
-            </div>
-            <CardTitle className="text-base font-semibold tracking-tight">
-              AI Semantic Synthesis
-            </CardTitle>
+    <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+      <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB] flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-7 w-7 items-center justify-center rounded-sm border border-[#166534]/25 bg-[#166534]/10 text-[#166534]">
+            <Sparkles className="h-3.5 w-3.5" />
           </div>
-          <Badge variant="outline" className="text-[11px] font-mono border-primary/20 text-primary">
-            {modelUsed}
-          </Badge>
+          <div>
+            <p className="text-[10px] font-mono text-[#166534] uppercase tracking-widest leading-none mb-1">
+              SEMANTIC ANSWER {"//"} SYNTHESIS
+            </p>
+            <h2 className="font-serif font-normal text-xl tracking-tight text-[#1C1917] leading-none">
+              AI Semantic Synthesis
+            </h2>
+          </div>
         </div>
-      </CardHeader>
+        <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#FDFCFA] px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
+          {modelUsed}
+        </span>
+      </div>
 
-      <CardContent className="pt-4 space-y-4 text-sm">
+      <div className="p-6 space-y-5 text-sm">
         {/* Direct Answer */}
         <div className="space-y-1.5">
-          <p className="leading-relaxed text-foreground font-normal">
+          <p className="leading-relaxed text-[#1C1917]/85 font-normal">
             {synthesis.directAnswer}
           </p>
         </div>
 
         {/* Key Conceptual Insights */}
         {synthesis.keyInsights && synthesis.keyInsights.length > 0 && (
-          <div className="space-y-2 pt-2 border-t border-primary/10">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              <Lightbulb className="h-3.5 w-3.5 text-amber-500" />
+          <div className="space-y-2.5 pt-4 border-t border-[#E5DEC9]">
+            <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-[#1C1917]/65 uppercase tracking-wider">
+              <Lightbulb className="h-3.5 w-3.5 text-[#D97706]" />
               Key Insights from Your Knowledge Base
             </div>
-            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               {synthesis.keyInsights.map((insight, idx) => (
                 <li
                   key={idx}
-                  className="flex items-start gap-2 rounded-md bg-background/80 p-2.5 text-xs border border-primary/10 shadow-2xs"
+                  className="flex items-start gap-2.5 rounded-sm bg-[#FAF8F4] p-3 text-xs border border-[#E5DEC9]"
                 >
-                  <span className="font-semibold text-primary">•</span>
-                  <span className="text-muted-foreground">{insight}</span>
+                  <span className="font-mono font-semibold text-[#166534]">
+                    {String(idx + 1).padStart(2, "0")}.
+                  </span>
+                  <span className="text-[#1C1917]/75 leading-relaxed">{insight}</span>
                 </li>
               ))}
             </ul>
@@ -64,9 +67,9 @@ export function AiSynthesisCard({
 
         {/* Suggested Follow-up Searches */}
         {synthesis.suggestedFollowUps && synthesis.suggestedFollowUps.length > 0 && (
-          <div className="space-y-2 pt-2 border-t border-primary/10">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              <Compass className="h-3.5 w-3.5 text-primary" />
+          <div className="space-y-2.5 pt-4 border-t border-[#E5DEC9]">
+            <div className="flex items-center gap-1.5 text-[11px] font-mono font-medium text-[#1C1917]/65 uppercase tracking-wider">
+              <Compass className="h-3.5 w-3.5 text-[#166534]" />
               Suggested Follow-up Inquiries
             </div>
             <div className="flex flex-wrap gap-2">
@@ -74,7 +77,7 @@ export function AiSynthesisCard({
                 <Link
                   key={idx}
                   href={`/search?q=${encodeURIComponent(followUp)}`}
-                  className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-background px-3 py-1 text-xs text-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-3 py-1.5 text-xs text-[#1C1917]/80 hover:bg-[#F7EEDB] hover:text-[#166534] hover:border-[#166534]/30 transition-colors"
                 >
                   <span>{followUp}</span>
                   <ArrowRight className="h-3 w-3 opacity-60" />
@@ -83,8 +86,9 @@ export function AiSynthesisCard({
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
+
 

@@ -6,7 +6,6 @@ import { Plus, Search, X, FileText, BookOpen } from "lucide-react";
 import type { NoteWithRelations } from "@/lib/notes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 
 interface NoteListPaneProps {
   notes: NoteWithRelations[];
@@ -114,23 +113,23 @@ export function NoteListPane({
   }, [notes, selectedTag, searchQuery]);
 
   return (
-    <div className="flex h-full flex-col rounded-lg border bg-card text-card-foreground shadow-xs">
+    <div className="flex h-full flex-col bg-[#FAF8F4] text-[#1C1917]">
       {/* Header and New Note action */}
-      <div className="flex items-center justify-between border-b p-3 bg-muted/20">
+      <div className="flex items-center justify-between border-b border-[#E5DEC9] px-4 py-3.5 bg-[#F7EEDB]">
         <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4 text-primary" />
-          <h2 className="text-sm font-semibold tracking-tight">Personal Notes</h2>
-          <Badge variant="secondary" className="text-xs px-1.5 py-0">
+          <FileText className="h-4 w-4 text-[#166534]" />
+          <h2 className="font-serif font-normal text-lg tracking-tight text-[#1C1917]">
+            Note Directory
+          </h2>
+          <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-1.5 py-0.5 text-[10px] font-mono text-[#166534]">
             {notes.length}
-          </Badge>
+          </span>
         </div>
 
         <Button
           size="sm"
           onClick={() => onSelectNote(null)}
-          className={`h-8 gap-1 text-xs ${
-            selectedNoteId === null ? "bg-primary text-primary-foreground" : ""
-          }`}
+          className="h-8 gap-1.5 rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 text-xs shadow-none"
         >
           <Plus className="h-3.5 w-3.5" />
           New note
@@ -138,21 +137,21 @@ export function NoteListPane({
       </div>
 
       {/* Search Bar */}
-      <div className="p-3 border-b space-y-2">
+      <div className="p-3.5 border-b border-[#E5DEC9] bg-[#FDFCFA] space-y-2.5">
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[#1C1917]/45" />
           <Input
             type="text"
             placeholder="Search notes, tags, resources..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="h-8 pl-8 pr-7 text-xs"
+            className="h-8 pl-8 pr-7 text-xs rounded-sm border-[#E5DEC9] bg-[#FAF8F4] shadow-none"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => onSearchChange("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[#1C1917]/50 hover:text-[#1C1917]"
               aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" />
@@ -160,16 +159,16 @@ export function NoteListPane({
           )}
         </div>
 
-        {/* Tag filter pills */}
+        {/* Tag filter buttons */}
         {allTags.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1 max-h-16 overflow-y-auto pt-1">
+          <div className="flex flex-wrap items-center gap-1 max-h-16 overflow-y-auto pt-0.5">
             <button
               type="button"
               onClick={() => onTagChange(null)}
-              className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
+              className={`rounded-sm border px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider transition-colors ${
                 selectedTag === null
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+                  ? "border-[#166534] bg-[#166534] text-[#FAF8F4]"
+                  : "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/65 hover:bg-[#F7EEDB] hover:text-[#166534]"
               }`}
             >
               All
@@ -179,10 +178,10 @@ export function NoteListPane({
                 key={tag}
                 type="button"
                 onClick={() => onTagChange(selectedTag === tag ? null : tag)}
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                className={`rounded-sm border px-2 py-0.5 text-[10px] font-mono transition-colors ${
                   selectedTag === tag
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
+                    ? "border-[#166534] bg-[#166534] text-[#FAF8F4]"
+                    : "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/65 hover:bg-[#F7EEDB] hover:text-[#166534]"
                 }`}
               >
                 #{tag}
@@ -193,7 +192,7 @@ export function NoteListPane({
       </div>
 
       {/* Notes List */}
-      <div className="flex-1 overflow-y-auto divide-y">
+      <div className="flex-1 overflow-y-auto divide-y divide-[#E5DEC9]">
         {filteredNotes.length > 0 ? (
           filteredNotes.map((note) => {
             const isSelected = selectedNoteId === note.id;
@@ -204,18 +203,18 @@ export function NoteListPane({
                 key={note.id}
                 type="button"
                 onClick={() => onSelectNote(note.id)}
-                className={`flex w-full flex-col items-start gap-1 p-3 text-left transition-colors cursor-pointer ${
+                className={`flex w-full flex-col items-start gap-1.5 p-4 text-left transition-colors cursor-pointer ${
                   isSelected
-                    ? "bg-primary/10 border-l-4 border-l-primary"
-                    : "hover:bg-muted/50"
+                    ? "bg-[#F7EEDB] border-l-4 border-l-[#166534]"
+                    : "bg-[#FDFCFA] hover:bg-[#F7EEDB]/50"
                 }`}
               >
                 <div className="flex w-full items-start justify-between gap-2">
-                  <h3 className="font-semibold text-xs leading-snug line-clamp-1 text-foreground">
+                  <h3 className="font-serif font-normal text-base leading-snug line-clamp-1 text-[#1C1917]">
                     {note.title || "Untitled note"}
                   </h3>
                   <span
-                    className="text-[10px] text-muted-foreground shrink-0"
+                    className="text-[10px] font-mono text-[#1C1917]/50 shrink-0 mt-0.5"
                     suppressHydrationWarning
                   >
                     {formatDate(note.updated_at)}
@@ -223,7 +222,7 @@ export function NoteListPane({
                 </div>
 
                 {snippet && (
-                  <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-[#1C1917]/65 line-clamp-2 leading-relaxed">
                     {snippet}
                   </p>
                 )}
@@ -232,7 +231,7 @@ export function NoteListPane({
                 <div className="flex flex-wrap items-center gap-1.5 mt-1">
                   {note.resource && (
                     <span
-                      className="inline-flex items-center gap-1 rounded bg-secondary px-1.5 py-0.2 text-[10px] font-medium text-secondary-foreground truncate max-w-[160px]"
+                      className="inline-flex items-center gap-1 rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-1.5 py-0.5 text-[10px] font-mono text-[#166534] truncate max-w-[160px]"
                       title={`Linked to: ${note.resource.title}`}
                     >
                       <BookOpen className="h-2.5 w-2.5 shrink-0" />
@@ -243,12 +242,12 @@ export function NoteListPane({
                   {note.tags && note.tags.length > 0 && (
                     <div className="flex items-center gap-1">
                       {note.tags.slice(0, 2).map((t, i) => (
-                        <span key={i} className="text-[10px] text-muted-foreground">
+                        <span key={i} className="text-[10px] font-mono text-[#1C1917]/55">
                           #{t}
                         </span>
                       ))}
                       {note.tags.length > 2 && (
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-[10px] font-mono text-[#1C1917]/50">
                           +{note.tags.length - 2}
                         </span>
                       )}
@@ -260,16 +259,16 @@ export function NoteListPane({
           })
         ) : notes.length === 0 ? (
           <div className="p-8 text-center">
-            <FileText className="mx-auto h-8 w-8 text-muted-foreground/40" />
-            <h4 className="mt-2 text-xs font-medium text-foreground">No notes yet</h4>
-            <p className="mt-1 text-[11px] text-muted-foreground">
+            <FileText className="mx-auto h-8 w-8 text-[#1C1917]/30" />
+            <h4 className="mt-2 font-serif font-normal text-base text-[#1C1917]">No notes yet</h4>
+            <p className="mt-1 text-xs text-[#1C1917]/60">
               Write study thoughts, chapter summaries, or lecture notes.
             </p>
             <Button
               size="sm"
               variant="outline"
               onClick={() => onSelectNote(null)}
-              className="mt-3 text-xs h-7 gap-1"
+              className="mt-3 text-xs h-7 gap-1 rounded-sm border-[#E5DEC9] bg-[#FDFCFA]"
             >
               <Plus className="h-3 w-3" />
               Write note
@@ -277,8 +276,8 @@ export function NoteListPane({
           </div>
         ) : (
           <div className="p-6 text-center">
-            <Search className="mx-auto h-6 w-6 text-muted-foreground/40" />
-            <p className="mt-2 text-xs text-muted-foreground">No matching notes found</p>
+            <Search className="mx-auto h-6 w-6 text-[#1C1917]/30" />
+            <p className="mt-2 text-xs text-[#1C1917]/60">No matching notes found</p>
             <Button
               size="sm"
               variant="ghost"
@@ -286,7 +285,7 @@ export function NoteListPane({
                 onSearchChange("");
                 onTagChange(null);
               }}
-              className="mt-2 text-xs h-7 text-primary"
+              className="mt-2 text-xs h-7 text-[#166534]"
             >
               Clear filters
             </Button>

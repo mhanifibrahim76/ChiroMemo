@@ -18,9 +18,7 @@ import {
   CheckCircle2,
   BookmarkCheck,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -62,9 +60,9 @@ function ExportNoteButton() {
       size="sm"
       type="submit"
       disabled={pending}
-      className="gap-1.5 h-8 text-xs"
+      className="gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#F7EEDB] hover:text-[#166534] text-xs shadow-none"
     >
-      <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
+      <BookmarkCheck className="h-3.5 w-3.5 text-[#166534]" />
       <span>{pending ? "Saving..." : "Save as Note"}</span>
     </Button>
   );
@@ -78,7 +76,7 @@ function RegenerateButton() {
       size="sm"
       type="submit"
       disabled={pending}
-      className="gap-1.5 h-8 text-xs"
+      className="gap-1.5 h-8 rounded-sm text-xs text-[#1C1917]/75 hover:bg-[#F7EEDB] hover:text-[#166534]"
     >
       <RefreshCw className={`h-3.5 w-3.5 ${pending ? "animate-spin" : ""}`} />
       <span>{pending ? "Regenerating..." : "Regenerate"}</span>
@@ -142,41 +140,41 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
   return (
     <div className="space-y-6">
       {/* Top Header & Navigation */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b pb-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border border-[#E5DEC9] bg-[#F7EEDB] p-6">
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button
               asChild
               variant="ghost"
               size="sm"
-              className="gap-1 h-7 px-2 -ml-2 text-xs text-muted-foreground hover:text-foreground"
+              className="gap-1 h-7 px-2 -ml-2 text-xs font-mono uppercase tracking-wider text-[#1C1917]/65 hover:text-[#166534] hover:bg-[#FAF8F4]/60 rounded-sm"
             >
               <Link href="/summaries">
                 <ArrowLeft className="h-3.5 w-3.5" />
                 All Summaries
               </Link>
             </Button>
-            <Badge variant="secondary" className="gap-1 text-xs">
-              <Sparkles className="h-3 w-3 text-primary" />
+            <span className="inline-flex items-center gap-1 rounded-sm border border-[#166534]/30 bg-[#166534]/10 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
+              <Sparkles className="h-3 w-3 text-[#166534]" />
               {summary.model || "gemini-2.5-flash"}
-            </Badge>
+            </span>
             {summary.resourceType && (
-              <Badge variant="outline" className="text-xs">
+              <span className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FDFCFA] px-2 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#1C1917]/70">
                 {summary.resourceType}
-              </Badge>
+              </span>
             )}
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-          <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <h1 className="font-serif font-normal text-3xl text-[#1C1917] tracking-tight">{title}</h1>
+          <p className="flex flex-wrap items-center gap-1.5 text-xs font-mono text-[#1C1917]/60">
             <Calendar className="h-3.5 w-3.5" />
             <span>Generated on </span>
             <span suppressHydrationWarning>{formatDate(summary.created_at)}</span>
             {summary.resource_id && (
               <>
-                <span className="mx-1">•</span>
+                <span className="mx-1">{"//"}</span>
                 <Link
                   href={`/resources/${summary.resource_id}`}
-                  className="flex items-center gap-1 text-primary hover:underline"
+                  className="flex items-center gap-1 text-[#166534] hover:underline"
                 >
                   <BookOpen className="h-3 w-3" />
                   View Original Resource
@@ -199,11 +197,11 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
             variant="outline"
             size="sm"
             onClick={handleCopySummary}
-            className="gap-1.5 h-8 text-xs"
+            className="gap-1.5 h-8 rounded-sm border-[#E5DEC9] bg-[#FDFCFA] text-[#1C1917] hover:bg-[#FAF8F4] text-xs shadow-none"
           >
             {copiedSummary ? (
               <>
-                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                <Check className="h-3.5 w-3.5 text-[#166534]" />
                 <span>Copied</span>
               </>
             ) : (
@@ -227,7 +225,7 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
             variant="ghost"
             size="sm"
             onClick={() => setDeleteDialogOpen(true)}
-            className="gap-1.5 h-8 text-xs text-destructive hover:text-destructive"
+            className="gap-1.5 h-8 rounded-sm text-xs text-destructive hover:text-destructive hover:bg-destructive/10"
           >
             <Trash2 className="h-3.5 w-3.5" />
             <span>Delete</span>
@@ -237,13 +235,13 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
 
       {/* Notification banners */}
       {exportState.status === "success" && (
-        <div className="p-3 rounded-md bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-sm flex items-center justify-between">
+        <div className="p-3.5 rounded-sm bg-[#166534]/10 border border-[#166534]/30 text-[#166534] text-xs font-mono flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+            <CheckCircle2 className="h-4 w-4 text-[#166534]" />
             <span>{exportState.message}</span>
           </div>
           {exportState.noteId && (
-            <Button asChild size="sm" variant="outline" className="h-7 text-xs">
+            <Button asChild size="sm" variant="outline" className="h-7 text-xs rounded-sm border-[#166534]/30 bg-[#FDFCFA]">
               <Link href="/notes">Open Notes</Link>
             </Button>
           )}
@@ -251,45 +249,45 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
       )}
 
       {exportState.status === "error" && (
-        <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+        <div className="p-3 rounded-sm bg-destructive/10 border border-destructive/20 text-destructive text-sm">
           {exportState.message}
         </div>
       )}
 
       {regenState.status === "error" && (
-        <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20 text-destructive text-sm">
+        <div className="p-3 rounded-sm bg-destructive/10 border border-destructive/20 text-destructive text-sm">
           {regenState.message}
         </div>
       )}
 
-      {/* Two-Panel Layout (Figure 4.9 Wireframe) */}
+      {/* Two-Panel Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Panel: Original Document / Text */}
         <div className="lg:col-span-5 space-y-4">
-          <Card className="h-full border-muted-foreground/20">
-            <CardHeader className="pb-3 border-b bg-muted/20">
+          <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+            <div className="px-5 py-3.5 border-b border-[#E5DEC9] bg-[#F7EEDB]">
               <div className="flex items-center justify-between">
                 <div>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-muted-foreground" />
+                  <h2 className="font-serif font-normal text-lg text-[#1C1917] flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-[#1C1917]/60" />
                     Original Document
-                  </CardTitle>
-                  <CardDescription className="text-xs mt-0.5">
+                  </h2>
+                  <p className="text-[11px] font-mono text-[#1C1917]/55 mt-0.5">
                     {originalText
                       ? `${originalWords.toLocaleString()} words (${originalText.length.toLocaleString()} chars)`
                       : "Source document"}
-                  </CardDescription>
+                  </p>
                 </div>
                 {originalText && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-7 gap-1 text-xs"
+                    className="h-7 gap-1 text-xs rounded-sm hover:bg-[#FAF8F4]"
                     onClick={handleCopyOriginal}
                   >
                     {copiedOriginal ? (
                       <>
-                        <Check className="h-3 w-3 text-emerald-500" />
+                        <Check className="h-3 w-3 text-[#166534]" />
                         <span>Copied</span>
                       </>
                     ) : (
@@ -301,18 +299,18 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
                   </Button>
                 )}
               </div>
-            </CardHeader>
-            <CardContent className="pt-4">
+            </div>
+            <div className="p-5">
               {originalText ? (
-                <div className="max-h-[680px] overflow-y-auto rounded-md border bg-muted/20 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap select-text text-foreground">
+                <div className="max-h-[680px] overflow-y-auto rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap select-text text-[#1C1917]/85">
                   {originalText}
                 </div>
               ) : (
-                <div className="py-12 text-center space-y-2 text-muted-foreground">
+                <div className="py-12 text-center space-y-2 text-[#1C1917]/55">
                   <FileText className="mx-auto h-8 w-8 opacity-40" />
                   <p className="text-sm">Original text not stored separately.</p>
                   {summary.resource_id && (
-                    <Button asChild variant="link" size="sm">
+                    <Button asChild variant="link" size="sm" className="text-[#166534]">
                       <Link href={`/resources/${summary.resource_id}`}>
                         Open resource page
                       </Link>
@@ -320,66 +318,66 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
                   )}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Right Panel: AI-Generated Summary */}
         <div className="lg:col-span-7 space-y-6">
           {/* Key Concepts Callout */}
           {summary.key_points && summary.key_points.length > 0 && (
-            <Card className="border-primary/20 bg-primary/5">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base flex items-center gap-2 text-primary font-semibold">
-                  <Lightbulb className="h-4 w-4 text-amber-500 shrink-0" />
+            <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+              <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+                <h2 className="font-serif font-normal text-lg flex items-center gap-2 text-[#1C1917]">
+                  <Lightbulb className="h-4 w-4 text-[#D97706] shrink-0" />
                   Key Concepts & Highlights
-                </CardTitle>
-                <CardDescription className="text-xs">
+                </h2>
+                <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
                   Critical concepts extracted by Gemini AI for student review.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <ul className="space-y-2">
+                </p>
+              </div>
+              <div className="p-6">
+                <ul className="space-y-2.5">
                   {summary.key_points.map((point, index) => (
                     <li
                       key={index}
-                      className="flex items-start gap-2.5 text-sm leading-relaxed"
+                      className="flex items-start gap-3 text-sm leading-relaxed"
                     >
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-semibold mt-0.5">
-                        {index + 1}
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border border-[#166534]/30 bg-[#166534]/10 text-[#166534] text-[10px] font-mono font-semibold mt-0.5">
+                        {String(index + 1).padStart(2, "0")}
                       </span>
-                      <span className="text-foreground">{point}</span>
+                      <span className="text-[#1C1917]/85">{point}</span>
                     </li>
                   ))}
                 </ul>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           )}
 
           {/* Structured Markdown Summary */}
-          <Card>
-            <CardHeader className="pb-3 border-b bg-muted/10">
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-primary" />
+          <div className="border border-[#E5DEC9] bg-[#FDFCFA]">
+            <div className="px-6 py-4 border-b border-[#E5DEC9] bg-[#F7EEDB]">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <h2 className="font-serif font-normal text-lg flex items-center gap-2 text-[#1C1917]">
+                    <Sparkles className="h-4 w-4 text-[#166534]" />
                     AI Academic Summary
-                  </CardTitle>
-                  <CardDescription className="text-xs">
+                  </h2>
+                  <p className="text-[11px] font-mono text-[#1C1917]/60 mt-0.5">
                     Structured analysis and high-yield notes.
-                  </CardDescription>
+                  </p>
                 </div>
-                <Badge variant="outline" className="text-xs">
+                <span className="inline-flex items-center rounded-sm border border-[#166534]/30 bg-[#FDFCFA] px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider text-[#166534]">
                   Grounded in Document
-                </Badge>
+                </span>
               </div>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="prose prose-sm dark:prose-invert max-w-none">
+            </div>
+            <div className="p-6">
+              <div className="prose prose-sm max-w-none text-[#1C1917]">
                 <MarkdownPreview content={summary.content} />
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -418,3 +416,4 @@ export function SummarySplitView({ summary }: SummarySplitViewProps) {
     </div>
   );
 }
+

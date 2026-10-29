@@ -23,7 +23,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -49,8 +48,13 @@ interface NoteEditorPaneProps {
 function SaveSubmitButton({ isNew }: { isNew: boolean }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" disabled={pending} size="sm" className="gap-1.5">
-      <Save className="h-4 w-4" />
+    <Button
+      type="submit"
+      disabled={pending}
+      size="sm"
+      className="gap-1.5 h-8 rounded-sm bg-[#166534] text-[#FAF8F4] hover:bg-[#166534]/90 text-xs shadow-none"
+    >
+      <Save className="h-3.5 w-3.5" />
       {pending ? "Saving…" : isNew ? "Create note" : "Save changes"}
     </Button>
   );
@@ -122,7 +126,7 @@ export function NoteEditorPane({
   const selectedResource = resources.find((r) => r.id === resourceId);
 
   return (
-    <div className="flex h-full flex-col rounded-lg border bg-card text-card-foreground shadow-xs">
+    <div className="flex h-full flex-col bg-[#FDFCFA] text-[#1C1917]">
       <form
         action={isNew ? createAction : updateAction}
         className="flex flex-1 flex-col overflow-hidden"
@@ -132,14 +136,14 @@ export function NoteEditorPane({
         <input type="hidden" name="content" value={content} />
 
         {/* Top Editor Toolbar */}
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 bg-muted/20">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              {isNew ? "New Note" : "Editing Note"}
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E5DEC9] px-5 py-3.5 bg-[#F7EEDB]">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] font-mono font-medium uppercase tracking-wider text-[#166534]">
+              {isNew ? "NEW MANUSCRIPT NOTE" : "EDITING MANUSCRIPT NOTE"}
             </span>
 
             {!isNew && note.updated_at && (
-              <span className="flex items-center gap-1 text-xs text-muted-foreground border-l pl-2">
+              <span className="flex items-center gap-1 text-[11px] font-mono text-[#1C1917]/55 border-l border-[#E5DEC9] pl-2.5">
                 <Calendar className="h-3 w-3" />
                 Updated {formatDate(note.updated_at)}
               </span>
@@ -153,10 +157,10 @@ export function NoteEditorPane({
                 variant="ghost"
                 size="sm"
                 onClick={() => setDeleteDialogOpen(true)}
-                className="h-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                className="h-8 rounded-sm text-destructive hover:text-destructive hover:bg-destructive/10"
                 aria-label="Delete this note"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline ml-1 text-xs">Delete</span>
               </Button>
             )}
@@ -167,18 +171,18 @@ export function NoteEditorPane({
 
         {/* Status / Error feedback banner */}
         {activeState.error && (
-          <div className="bg-destructive/10 border-b border-destructive/20 px-4 py-2 text-xs font-medium text-destructive">
+          <div className="bg-destructive/10 border-b border-destructive/20 px-5 py-2 text-xs font-medium text-destructive">
             {activeState.error}
           </div>
         )}
         {activeState.message && (
-          <div className="bg-emerald-500/10 border-b border-emerald-500/20 px-4 py-2 text-xs font-medium text-emerald-700 dark:text-emerald-400">
+          <div className="bg-[#166534]/10 border-b border-[#166534]/25 px-5 py-2 text-xs font-mono text-[#166534]">
             {activeState.message}
           </div>
         )}
 
         {/* Form Body */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Note Title Input */}
           <div className="space-y-1">
             <Input
@@ -186,7 +190,7 @@ export function NoteEditorPane({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Note title (e.g. Dynamic Programming Principles)..."
-              className="text-lg font-semibold h-11 border-none shadow-none focus-visible:ring-1 px-1"
+              className="font-serif font-normal text-2xl h-11 rounded-sm border-[#E5DEC9] bg-[#FAF8F4] px-3 shadow-none focus-visible:ring-[#166534]/30"
               required
               aria-invalid={Boolean(activeState.fieldErrors?.title)}
             />
@@ -196,11 +200,11 @@ export function NoteEditorPane({
           </div>
 
           {/* Metadata Controls: Linked Resource & Tags */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-[#E5DEC9]">
             {/* Resource Link Dropdown */}
             <div className="space-y-1.5">
-              <Label htmlFor="note-resource" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <BookOpen className="h-3.5 w-3.5" />
+              <Label htmlFor="note-resource" className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-[#1C1917]/65">
+                <BookOpen className="h-3 w-3 text-[#166534]" />
                 Linked resource
               </Label>
               <select
@@ -208,7 +212,7 @@ export function NoteEditorPane({
                 name="resource_id"
                 value={resourceId}
                 onChange={(e) => setResourceId(e.target.value)}
-                className="flex h-8 w-full rounded-md border border-input bg-transparent px-2.5 py-1 text-xs shadow-xs focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-ring"
+                className="flex h-8 w-full rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] px-2.5 py-1 text-xs text-[#1C1917] focus-visible:outline-hidden focus-visible:ring-1 focus-visible:ring-[#166534]/40"
               >
                 <option value="">None (Independent note)</option>
                 {resources.map((r) => (
@@ -218,11 +222,11 @@ export function NoteEditorPane({
                 ))}
               </select>
               {selectedResource && (
-                <div className="flex items-center gap-2 pt-0.5">
+                <div className="flex items-center gap-2 pt-1">
                   <ResourceTypeBadge type={selectedResource.type} />
                   <Link
                     href={`/resources/${selectedResource.id}`}
-                    className="inline-flex items-center gap-1 text-xs text-primary hover:underline truncate"
+                    className="inline-flex items-center gap-1 text-xs font-mono text-[#166534] hover:underline truncate"
                   >
                     View resource <ExternalLink className="h-3 w-3" />
                   </Link>
@@ -232,8 +236,8 @@ export function NoteEditorPane({
 
             {/* Tags Input */}
             <div className="space-y-1.5">
-              <Label htmlFor="note-tags" className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                <Tag className="h-3.5 w-3.5" />
+              <Label htmlFor="note-tags" className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-[#1C1917]/65">
+                <Tag className="h-3 w-3 text-[#166534]" />
                 Tags (comma separated)
               </Label>
               <Input
@@ -242,18 +246,21 @@ export function NoteEditorPane({
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
                 placeholder="e.g. algorithms, cs201, exam"
-                className="h-8 text-xs"
+                className="h-8 text-xs rounded-sm border-[#E5DEC9] bg-[#FAF8F4] shadow-none"
               />
               {tagsInput.trim() && (
-                <div className="flex flex-wrap gap-1 pt-0.5">
+                <div className="flex flex-wrap gap-1 pt-1">
                   {tagsInput
                     .split(",")
                     .map((t) => t.trim())
                     .filter(Boolean)
                     .map((t, idx) => (
-                      <Badge key={idx} variant="secondary" className="text-[10px] px-1.5 py-0">
+                      <span
+                        key={idx}
+                        className="inline-flex items-center rounded-sm border border-[#E5DEC9] bg-[#FAF8F4] text-[10px] font-mono text-[#1C1917]/70 px-1.5 py-0.5"
+                      >
                         #{t}
-                      </Badge>
+                      </span>
                     ))}
                 </div>
               )}
@@ -261,37 +268,37 @@ export function NoteEditorPane({
           </div>
 
           {/* Editor vs Preview Tabs */}
-          <div className="flex flex-col flex-1 pt-2 border-t">
-            <div className="flex items-center justify-between border-b pb-2 mb-3">
-              <div className="flex items-center gap-1">
+          <div className="flex flex-col flex-1 pt-3 border-t border-[#E5DEC9]">
+            <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-2.5 mb-3">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => setActiveTab("write")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                  className={`inline-flex items-center gap-1.5 rounded-sm border px-3 py-1 text-[11px] font-mono uppercase tracking-wider transition-colors ${
                     activeTab === "write"
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "border-[#166534] bg-[#166534] text-[#FAF8F4]"
+                      : "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/70 hover:bg-[#F7EEDB] hover:text-[#166534]"
                   }`}
                 >
-                  <PenLine className="h-3.5 w-3.5" />
+                  <PenLine className="h-3 w-3" />
                   Write
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("preview")}
-                  className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                  className={`inline-flex items-center gap-1.5 rounded-sm border px-3 py-1 text-[11px] font-mono uppercase tracking-wider transition-colors ${
                     activeTab === "preview"
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      ? "border-[#166534] bg-[#166534] text-[#FAF8F4]"
+                      : "border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917]/70 hover:bg-[#F7EEDB] hover:text-[#166534]"
                   }`}
                 >
-                  <Eye className="h-3.5 w-3.5" />
+                  <Eye className="h-3 w-3" />
                   Preview
                 </button>
               </div>
 
-              <span className="text-[11px] text-muted-foreground">
-                Markdown supported (`#`, `**bold**`, `- list`, ```code```)
+              <span className="text-[11px] font-mono text-[#1C1917]/50 hidden sm:inline">
+                Markdown (`#`, `**bold**`, `- list`, ```code```)
               </span>
             </div>
 
@@ -301,11 +308,11 @@ export function NoteEditorPane({
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Write your study notes here in markdown..."
-                  className="min-h-[380px] w-full resize-y font-mono text-sm leading-relaxed p-3 border-muted focus-visible:ring-1"
+                  className="min-h-[380px] w-full resize-y font-mono text-sm leading-relaxed p-4 rounded-sm border-[#E5DEC9] bg-[#FAF8F4] text-[#1C1917] shadow-none focus-visible:ring-[#166534]/30"
                 />
               </div>
             ) : (
-              <div className="min-h-[380px] rounded-md border p-4 bg-muted/10">
+              <div className="min-h-[380px] rounded-sm border border-[#E5DEC9] p-5 bg-[#FAF8F4]">
                 <MarkdownPreview content={content} />
               </div>
             )}
