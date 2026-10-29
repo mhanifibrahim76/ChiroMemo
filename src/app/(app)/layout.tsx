@@ -1,30 +1,9 @@
 import Link from "next/link";
-import {
-  LayoutDashboard,
-  Target,
-  Map,
-  BookOpen,
-  FileText,
-  Sparkles,
-  Search,
-  Lightbulb,
-} from "lucide-react";
-
 import { logoutAction } from "@/lib/auth/actions";
 import { requireUser } from "@/lib/auth/session";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { ChiroMemoLogo } from "@/components/brand/chiromemo-logo";
-
-const navLinks = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/goals", label: "Goals", icon: Target },
-  { href: "/roadmaps", label: "Roadmaps", icon: Map },
-  { href: "/resources", label: "Resources", icon: BookOpen },
-  { href: "/notes", label: "Notes", icon: FileText },
-  { href: "/summaries", label: "Summaries", icon: Sparkles },
-  { href: "/search", label: "Search", icon: Search },
-  { href: "/recommendations", label: "Advisory", icon: Lightbulb },
-];
+import { WorkspaceNavbar } from "@/components/layout/workspace-navbar";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   // The Proxy already redirects unauthenticated visitors, but the check is
@@ -41,22 +20,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <ChiroMemoLogo size="sm" />
           </Link>
 
-          {/* Navigation Items (Overflow Scrollable on Small Screens) */}
-          <nav className="flex items-center gap-1 sm:gap-2 overflow-x-auto py-1 px-2 no-scrollbar">
-            {navLinks.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="flex items-center gap-1.5 rounded-sm px-2.5 py-1 text-xs font-medium text-[#1C1917]/70 hover:text-[#1C1917] hover:bg-[#F7EEDB] transition-colors shrink-0"
-                >
-                  <Icon className="h-3.5 w-3.5" />
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
-          </nav>
+          {/* Interactive Navigation with Active Page Indicators */}
+          <WorkspaceNavbar />
 
           {/* User Session & Sign Out */}
           <div className="flex items-center gap-3 shrink-0">

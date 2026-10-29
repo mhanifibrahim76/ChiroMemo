@@ -13,13 +13,6 @@ import {
   CartesianGrid,
 } from "recharts";
 import { TrendingUp, BarChart2, Activity } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { DailyLearningActivity, RoadmapProgressSummary } from "@/lib/dashboard";
 
@@ -28,7 +21,6 @@ interface LearningProgressChartProps {
   roadmaps: RoadmapProgressSummary[];
 }
 
-// Hydration helper using useSyncExternalStore
 const emptySubscribe = () => () => {};
 function useIsClient(): boolean {
   return useSyncExternalStore(
@@ -48,18 +40,22 @@ export function LearningProgressChart({
   const totalWeeklyActivities = dailyActivity.reduce((acc, d) => acc + d.total, 0);
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
-        <div>
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Activity className="h-4 w-4 text-primary" />
-            Learning Progress
-          </CardTitle>
-          <CardDescription>
+    <div className="h-full flex flex-col justify-between border border-[#E5DEC9] bg-[#FDFCFA]">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-5 border-b border-[#E5DEC9] gap-3">
+        <div className="space-y-1">
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#166534]">
+            ANALYTICS // 7-DAY TRAJECTORY
+          </div>
+          <h3 className="font-serif font-normal text-2xl tracking-[-0.02em] text-[#1C1917] flex items-center gap-2">
+            <Activity className="h-4 w-4 text-[#166534]" />
+            Study Momentum
+          </h3>
+          <p className="font-mono text-[11px] text-[#1C1917]/60">
             {view === "activity"
-              ? `${totalWeeklyActivities} activities recorded in the last 7 days`
-              : `${roadmaps.length} learning roadmaps tracked`}
-          </CardDescription>
+              ? `${totalWeeklyActivities} cumulative study actions this week`
+              : `${roadmaps.length} active syllabus roadmaps mapped`}
+          </p>
         </div>
 
         {roadmaps.length > 0 && (
@@ -68,35 +64,39 @@ export function LearningProgressChart({
             onValueChange={(val) => setView(val as "activity" | "roadmaps")}
             className="w-auto"
           >
-            <TabsList className="h-8">
-              <TabsTrigger value="activity" className="text-xs px-2.5 h-6">
-                <TrendingUp className="h-3.5 w-3.5 mr-1" />
+            <TabsList className="h-8 rounded-sm bg-[#F7EEDB] border border-[#E5DEC9] p-0.5">
+              <TabsTrigger
+                value="activity"
+                className="text-[11px] font-mono uppercase tracking-wider px-2.5 h-6 rounded-none data-[state=active]:bg-[#166534] data-[state=active]:text-[#FAF8F4]"
+              >
+                <TrendingUp className="h-3 w-3 mr-1" />
                 Activity
               </TabsTrigger>
-              <TabsTrigger value="roadmaps" className="text-xs px-2.5 h-6">
-                <BarChart2 className="h-3.5 w-3.5 mr-1" />
+              <TabsTrigger
+                value="roadmaps"
+                className="text-[11px] font-mono uppercase tracking-wider px-2.5 h-6 rounded-none data-[state=active]:bg-[#166534] data-[state=active]:text-[#FAF8F4]"
+              >
+                <BarChart2 className="h-3 w-3 mr-1" />
                 Roadmaps
               </TabsTrigger>
             </TabsList>
           </Tabs>
         )}
-      </CardHeader>
+      </div>
 
-      <CardContent className="flex-1 min-h-[260px] pt-2">
+      {/* Chart Canvas */}
+      <div className="flex-1 min-h-[260px] p-5">
         {!isClient ? (
-          <div className="flex h-[260px] items-center justify-center text-muted-foreground text-xs">
-            Loading chart visualization...
+          <div className="flex h-[260px] items-center justify-center font-mono text-xs text-[#1C1917]/50">
+            Rendering academic diagram...
           </div>
         ) : view === "activity" ? (
           totalWeeklyActivities === 0 ? (
-            <div className="flex h-[260px] flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
-              <Activity className="h-8 w-8 text-muted-foreground/50 mb-2" />
-              <p className="text-sm font-medium text-muted-foreground">
-                No activity recorded yet this week
-              </p>
-              <p className="text-xs text-muted-foreground/80 mt-1 max-w-sm">
-                Add learning resources, write notes, or update roadmap steps to
-                track your learning trajectory here.
+            <div className="flex h-[260px] flex-col items-center justify-center border border-dashed border-[#E5DEC9] p-6 text-center bg-[#F7EEDB]/30">
+              <Activity className="h-6 w-6 text-[#1C1917]/30 mb-2" />
+              <p className="font-serif text-base text-[#1C1917]">No activity logged this week</p>
+              <p className="font-mono text-[11px] text-[#1C1917]/60 mt-1 max-w-sm">
+                Add learning resources, write notes, or check off roadmap steps to plot your rhythm.
               </p>
             </div>
           ) : (
@@ -107,40 +107,40 @@ export function LearningProgressChart({
                   margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
                 >
                   <defs>
-                    <linearGradient id="activityGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#2563eb" stopOpacity={0.35} />
-                      <stop offset="95%" stopColor="#2563eb" stopOpacity={0.0} />
+                    <linearGradient id="editorialActivityGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#166534" stopOpacity={0.25} />
+                      <stop offset="95%" stopColor="#166534" stopOpacity={0.0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5DEC9" opacity={0.7} />
                   <XAxis
                     dataKey="day"
                     tickLine={false}
-                    axisLine={false}
-                    tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                    axisLine={{ stroke: "#E5DEC9" }}
+                    tick={{ fontSize: 11, fill: "#57534E", fontFamily: "var(--font-mono)" }}
                   />
                   <YAxis
                     allowDecimals={false}
                     tickLine={false}
-                    axisLine={false}
-                    tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                    axisLine={{ stroke: "#E5DEC9" }}
+                    tick={{ fontSize: 11, fill: "#57534E", fontFamily: "var(--font-mono)" }}
                   />
                   <Tooltip
                     content={({ active, payload }) => {
                       if (!active || !payload || !payload.length) return null;
                       const data = payload[0].payload as DailyLearningActivity;
                       return (
-                        <div className="rounded-lg border bg-popover px-3 py-2 text-xs shadow-md">
-                          <p className="font-semibold text-popover-foreground mb-1">
+                        <div className="border border-[#E5DEC9] bg-[#FAF8F4] px-3 py-2 text-xs shadow-none">
+                          <p className="font-serif font-medium text-[#1C1917] mb-1">
                             {data.label} ({data.day})
                           </p>
-                          <p className="text-primary font-medium">
-                            Total actions: {data.total}
+                          <p className="font-mono text-[#166534] font-semibold text-[11px]">
+                            TOTAL ACTIONS: {data.total}
                           </p>
-                          <div className="mt-1 space-y-0.5 text-muted-foreground">
+                          <div className="mt-1 space-y-0.5 font-mono text-[10px] text-[#1C1917]/70">
                             <p>• Notes updated: {data.notes}</p>
                             <p>• Resources added: {data.resources}</p>
-                            <p>• Roadmaps touched: {data.roadmaps}</p>
+                            <p>• Roadmaps updated: {data.roadmaps}</p>
                           </div>
                         </div>
                       );
@@ -149,10 +149,10 @@ export function LearningProgressChart({
                   <Area
                     type="monotone"
                     dataKey="total"
-                    stroke="#2563eb"
+                    stroke="#166534"
                     strokeWidth={2}
                     fillOpacity={1}
-                    fill="url(#activityGradient)"
+                    fill="url(#editorialActivityGradient)"
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -165,12 +165,12 @@ export function LearningProgressChart({
                 data={roadmaps}
                 margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} opacity={0.2} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5DEC9" opacity={0.7} />
                 <XAxis
                   dataKey="title"
                   tickLine={false}
-                  axisLine={false}
-                  tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                  axisLine={{ stroke: "#E5DEC9" }}
+                  tick={{ fontSize: 11, fill: "#57534E", fontFamily: "var(--font-mono)" }}
                   tickFormatter={(val: string) =>
                     val.length > 12 ? `${val.slice(0, 12)}…` : val
                   }
@@ -178,8 +178,8 @@ export function LearningProgressChart({
                 <YAxis
                   domain={[0, 100]}
                   tickLine={false}
-                  axisLine={false}
-                  tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+                  axisLine={{ stroke: "#E5DEC9" }}
+                  tick={{ fontSize: 11, fill: "#57534E", fontFamily: "var(--font-mono)" }}
                   tickFormatter={(val: number) => `${val}%`}
                 />
                 <Tooltip
@@ -187,12 +187,12 @@ export function LearningProgressChart({
                     if (!active || !payload || !payload.length) return null;
                     const data = payload[0].payload as RoadmapProgressSummary;
                     return (
-                      <div className="rounded-lg border bg-popover px-3 py-2 text-xs shadow-md">
-                        <p className="font-semibold text-popover-foreground">
+                      <div className="border border-[#E5DEC9] bg-[#FAF8F4] px-3 py-2 text-xs shadow-none">
+                        <p className="font-serif font-medium text-[#1C1917]">
                           {data.title}
                         </p>
-                        <p className="text-emerald-500 font-medium mt-1">
-                          Completion: {data.progressPercent}%
+                        <p className="font-mono text-[#D97706] text-[11px] font-semibold mt-1">
+                          COMPLETION: {data.progressPercent}%
                         </p>
                       </div>
                     );
@@ -200,16 +200,15 @@ export function LearningProgressChart({
                 />
                 <Bar
                   dataKey="progressPercent"
-                  fill="#10b981"
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={48}
+                  fill="#D97706"
+                  radius={[0, 0, 0, 0]}
+                  maxBarSize={36}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
-

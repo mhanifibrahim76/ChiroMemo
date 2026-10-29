@@ -8,58 +8,25 @@ import {
   ArrowRight,
   Sparkles,
 } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import type { ActivityItem, ActivityEntityType } from "@/lib/dashboard";
 
 interface RecentActivityListProps {
   activities: ActivityItem[];
 }
 
-function getActivityIcon(type: ActivityEntityType) {
+function getActivityBadge(type: ActivityEntityType) {
   switch (type) {
     case "NOTE":
-      return {
-        icon: FileText,
-        color: "text-purple-500",
-        bgColor: "bg-purple-500/10",
-        badge: "Note",
-      };
+      return { icon: FileText, label: "Note" };
     case "RESOURCE":
-      return {
-        icon: BookOpen,
-        color: "text-amber-500",
-        bgColor: "bg-amber-500/10",
-        badge: "Resource",
-      };
+      return { icon: BookOpen, label: "Resource" };
     case "ROADMAP":
     case "STEP":
-      return {
-        icon: Compass,
-        color: "text-emerald-500",
-        bgColor: "bg-emerald-500/10",
-        badge: "Roadmap",
-      };
+      return { icon: Compass, label: "Roadmap" };
     case "GOAL":
-      return {
-        icon: Target,
-        color: "text-blue-500",
-        bgColor: "bg-blue-500/10",
-        badge: "Goal",
-      };
+      return { icon: Target, label: "Goal" };
     default:
-      return {
-        icon: Clock,
-        color: "text-muted-foreground",
-        bgColor: "bg-muted",
-        badge: "Activity",
-      };
+      return { icon: Clock, label: "Log" };
   }
 }
 
@@ -86,71 +53,65 @@ function formatRelativeTime(dateString: string): string {
 
 export function RecentActivityList({ activities }: RecentActivityListProps) {
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader className="flex flex-row items-center justify-between pb-3 space-y-0">
-        <div>
-          <CardTitle className="text-base font-semibold flex items-center gap-2">
-            <Clock className="h-4 w-4 text-primary" />
+    <div className="h-full flex flex-col justify-between border border-[#E5DEC9] bg-[#FDFCFA]">
+      {/* Header */}
+      <div className="flex items-center justify-between p-5 border-b border-[#E5DEC9]">
+        <div className="space-y-1">
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#166534]">
+            TIMELINE // LOG
+          </div>
+          <h3 className="font-serif font-normal text-2xl tracking-[-0.02em] text-[#1C1917]">
             Recent Activity
-          </CardTitle>
-          <CardDescription>Latest learning and study updates</CardDescription>
+          </h3>
         </div>
-        <Badge variant="outline" className="text-xs">
-          {activities.length} items
-        </Badge>
-      </CardHeader>
+        <span className="font-mono text-[11px] text-[#1C1917]/55 uppercase">
+          {activities.length} entries
+        </span>
+      </div>
 
-      <CardContent className="flex-1 flex flex-col justify-between pt-2">
+      {/* Body List */}
+      <div className="flex-1 p-5">
         {activities.length === 0 ? (
-          <div className="flex flex-1 flex-col items-center justify-center rounded-lg border border-dashed p-6 text-center">
-            <Sparkles className="h-8 w-8 text-muted-foreground/50 mb-2" />
-            <p className="text-sm font-medium text-muted-foreground">
-              No recent activity
-            </p>
-            <p className="text-xs text-muted-foreground/80 mt-1 max-w-xs">
-              Actions you take across your goals, roadmaps, resources, and notes
-              will appear here.
+          <div className="flex h-full min-h-[220px] flex-col items-center justify-center border border-dashed border-[#E5DEC9] p-6 text-center bg-[#F7EEDB]/30">
+            <Sparkles className="h-6 w-6 text-[#1C1917]/30 mb-2" />
+            <p className="font-serif text-base text-[#1C1917]">No study activities recorded yet</p>
+            <p className="font-mono text-[11px] text-[#1C1917]/60 mt-1 max-w-xs">
+              Actions taken across your goals, roadmaps, and notes will be journaled here.
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-border/60">
+          <ul className="divide-y divide-[#E5DEC9]">
             {activities.map((item) => {
-              const meta = getActivityIcon(item.type);
+              const meta = getActivityBadge(item.type);
               const Icon = meta.icon;
               return (
-                <li key={item.id} className="py-3 first:pt-0 last:pb-1">
+                <li key={item.id} className="py-3 first:pt-0 last:pb-0">
                   <Link
                     href={item.href}
-                    className="group flex items-start gap-3 rounded-lg p-1.5 -mx-1.5 transition-colors hover:bg-muted/60"
+                    className="group flex items-start justify-between gap-3 p-1.5 -mx-1.5 transition-colors hover:bg-[#F7EEDB]"
                   >
-                    <div
-                      className={`p-2 rounded-lg shrink-0 mt-0.5 ${meta.bgColor} ${meta.color}`}
-                    >
-                      <Icon className="h-4 w-4" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-medium truncate text-foreground group-hover:text-primary transition-colors">
+                    <div className="flex items-start gap-2.5 min-w-0">
+                      <Icon className="h-4 w-4 mt-0.5 text-[#166534] shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-[#1C1917] truncate group-hover:underline underline-offset-4">
                           {item.title}
-                        </span>
-                        <span
-                          className="text-[11px] text-muted-foreground shrink-0"
-                          suppressHydrationWarning
-                        >
-                          {formatRelativeTime(item.timestamp)}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-xs text-muted-foreground truncate">
+                        </p>
+                        <p className="font-mono text-[11px] text-[#1C1917]/60 truncate mt-0.5">
                           {item.description}
-                        </span>
-                        <Badge
-                          variant="secondary"
-                          className="text-[10px] px-1.5 py-0 h-4 font-normal"
-                        >
-                          {meta.badge}
-                        </Badge>
+                        </p>
                       </div>
+                    </div>
+
+                    <div className="flex flex-col items-end shrink-0 pl-2">
+                      <span
+                        className="font-mono text-[10px] text-[#1C1917]/50"
+                        suppressHydrationWarning
+                      >
+                        {formatRelativeTime(item.timestamp)}
+                      </span>
+                      <span className="font-mono text-[9px] uppercase tracking-wider text-[#166534] mt-1">
+                        [{meta.label}]
+                      </span>
                     </div>
                   </Link>
                 </li>
@@ -158,25 +119,19 @@ export function RecentActivityList({ activities }: RecentActivityListProps) {
             })}
           </ul>
         )}
+      </div>
 
-        <div className="pt-4 mt-auto border-t flex items-center justify-between text-xs text-muted-foreground">
-          <Link
-            href="/notes"
-            className="flex items-center gap-1 hover:text-foreground transition-colors"
-          >
-            All notes
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-          <Link
-            href="/resources"
-            className="flex items-center gap-1 hover:text-foreground transition-colors"
-          >
-            All resources
-            <ArrowRight className="h-3 w-3" />
-          </Link>
-        </div>
-      </CardContent>
-    </Card>
+      {/* Footer Links */}
+      <div className="border-t border-[#E5DEC9] px-5 py-3 flex items-center justify-between font-mono text-[11px] text-[#1C1917]/65">
+        <Link href="/notes" className="hover:text-[#166534] flex items-center gap-1 transition-colors">
+          <span>ALL NOTES</span>
+          <ArrowRight className="h-3 w-3" />
+        </Link>
+        <Link href="/resources" className="hover:text-[#166534] flex items-center gap-1 transition-colors">
+          <span>ALL RESOURCES</span>
+          <ArrowRight className="h-3 w-3" />
+        </Link>
+      </div>
+    </div>
   );
 }
-
