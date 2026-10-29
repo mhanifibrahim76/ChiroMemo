@@ -13,6 +13,7 @@ import {
 import { logoutAction } from "@/lib/auth/actions";
 import { requireUser } from "@/lib/auth/session";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { ChiroMemoLogo } from "@/components/brand/chiromemo-logo";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   // The Proxy already redirects unauthenticated visitors, but the check is
@@ -23,8 +24,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="flex min-h-full flex-col">
       <header className="border-b">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-4">
-          <Link href="/dashboard" className="font-semibold text-base tracking-tight">
-            ChiroMemo
+          <Link href="/dashboard" className="inline-flex items-center">
+            <ChiroMemoLogo size="sm" />
           </Link>
           <nav className="flex items-center gap-4">
             <Link

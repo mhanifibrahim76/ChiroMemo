@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { ChiroMemoLogo } from "@/components/brand/chiromemo-logo";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
       <div className="w-full max-w-md space-y-6">
-        <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight">ChiroMemo</h1>
+        <div className="flex flex-col items-center space-y-2 text-center">
+          <Link href="/">
+            <ChiroMemoLogo size="lg" />
+          </Link>
           <p className="text-muted-foreground text-sm">
             Your personal learning and knowledge management system.
           </p>

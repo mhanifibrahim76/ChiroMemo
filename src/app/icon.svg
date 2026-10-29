@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Scholarly Forest Green Badge -->
+  <rect width="64" height="64" rx="14" fill="#166534" />
+  <rect x="1" y="1" width="62" height="62" rx="13" stroke="#FAF8F4" stroke-opacity="0.16" stroke-width="2" />
+
+  <!-- Open Manuscript Book Pages ("Memo") -->
+  <path
+    d="M11 49C18 45.8 25.5 45.8 32 49.6C38.5 45.8 46 45.8 53 49"
+    stroke="#FAF8F4"
+    stroke-width="4.2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M15 41.5C20.8 39.2 26.5 39.5 32 42.6C37.5 39.5 43.2 39.2 49 41.5"
+    stroke="#F59E0B"
+    stroke-width="3.8"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+
+  <!-- Fountain Pen Nib Centerpiece ("Chiro") -->
+  <path
+    d="M32 10L20.5 30.5L25.5 40.5H38.5L43.5 30.5L32 10Z"
+    fill="#FAF8F4"
+    fill-opacity="0.16"
+    stroke="#FAF8F4"
+    stroke-width="4.2"
+    stroke-linejoin="round"
+  />
+  <!-- Nib Slit & Amber Breather Hole -->
+  <path
+    d="M32 10V26.5"
+    stroke="#FAF8F4"
+    stroke-width="3.8"
+    stroke-linecap="round"
+  />
+  <circle cx="32" cy="28.5" r="3.4" fill="#F59E0B" />
+</svg>
+

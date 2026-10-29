@@ -1169,3 +1169,33 @@ Phase 13 — Testing, security review, performance optimization, and Vercel depl
 ### Project Roadmap Status
 
 **ALL 13 PHASES OF CHIROMEMO ARE COMPLETE.** The application is fully built, tested, and ready for production deployment.
+
+
+---
+
+## 2026-10-29 — Brand Identity, Editorial Design System (`DESIGN.md`), and Landing Page Overhaul
+
+### Completed
+
+- **Editorial Design System (`DESIGN.md` & `src/app/globals.css`)**:
+  - Established "The Warm Academic Studio" visual direction adhering strictly to `antislop-ui` and `antislop-copywriting` rules.
+  - Replaced sterile pure-white tokens with Warm Alabaster Paper (`#FAF8F4`), Illustration Cream Canvas (`#F7EEDB`), Deep Espresso Ink (`#1C1917`), Scholarly Forest Green (`#166534`), Warm Amber Ochre (`#D97706`), and Warm Stone Hairline Rules (`#E5DEC9`), plus `--radius: 0.125rem` (`2px`).
+  - Integrated Google Font `Newsreader` (`300`, `400`, normal & italic) alongside `Geist Sans` and `Geist Mono` in `src/app/layout.tsx`.
+- **Brand Logo & Vector Assets**:
+  - Created standalone SVG brand assets (`public/logo-mark.svg`, `public/logo.svg`, and App Router favicon `src/app/icon.svg`).
+  - Built reusable `<ChiroMemoLogo />` component (`src/components/brand/chiromemo-logo.tsx`) and integrated it across Landing Page, Auth Layout, and Workspace App Layout.
+- **Editorial Landing Page (`src/app/page.tsx`) & Custom Illustrations**:
+  - Integrated 6 custom editorial ink-and-risograph illustrations in `public/illustrations/` with seamless `#F7EEDB` canvas blending, exposed hairline grids, print crosshairs (`+`), and numbered academic figure captions (`FIG. 0.1` – `FIG. 3.1`).
+
+### Files Changed
+
+- Created: `DESIGN.md`, `public/logo-mark.svg`, `public/logo.svg`, `src/app/icon.svg`, `src/components/brand/chiromemo-logo.tsx`, `public/illustrations/*.jpg`.
+- Modified: `src/app/globals.css`, `src/app/layout.tsx`, `src/app/page.tsx`, `src/app/(auth)/layout.tsx`, `src/app/(app)/layout.tsx`, `docs/SESSION_LOG.md`.
+
+### Verification
+
+- `npm run typecheck` (PASS), `npm run lint` (PASS), `npm run test` (12/12 PASS).
+
+### Next Task
+
+- Lock each landing page section strictly to exact viewport height (`h-[calc(100vh-4rem)]` / `100dvh` on desktop) so every section fits completely within one screen without vertical overflow, then roll out illustrations to Auth and App pages.
