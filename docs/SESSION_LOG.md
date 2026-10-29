@@ -1199,3 +1199,37 @@ Phase 13 — Testing, security review, performance optimization, and Vercel depl
 ### Next Task
 
 - Lock each landing page section strictly to exact viewport height (`h-[calc(100vh-4rem)]` / `100dvh` on desktop) so every section fits completely within one screen without vertical overflow, then roll out illustrations to Auth and App pages.
+
+
+---
+
+## 2026-10-29 — App-Wide Editorial Layout & Contextual Illustration Headers
+
+### Completed
+
+- **Auth Pages Split-Screen Layout (`src/app/(auth)/layout.tsx`)**:
+  - Transformed `/login` and `/register` into an asymmetric two-pane editorial layout featuring `auth-library-window.jpg` (`FIG. 3.1`), calm study quote, and Newsreader serif typography.
+- **Unified Workspace Header & Navigation (`src/app/(app)/layout.tsx`)**:
+  - Upgraded AppLayout with sticky `h-14` hairline header (`#E5DEC9`), horizontal overflow-safe navigation, user session info, and academic colophon footer.
+- **Contextual Editorial Vignette Component (`src/components/layout/editorial-page-header.tsx`)**:
+  - Created a compact, responsive header combining chapter metadata, Newsreader serif titles, and right-aligned illustration vignettes on `#F7EEDB` canvases.
+- **Rollout Across All 8 Main Internal Pages**:
+  - `/dashboard`: Added `FIG. 0.2 — STUDY MOMENTUM` (`dashboard-progress.jpg`).
+  - `/goals`: Added `FIG. 1.1 — SYLLABUS COMPASS` (`goals-roadmap-compass.jpg`).
+  - `/roadmaps`: Added `FIG. 1.2 — MILESTONE SEQUENCE` (`goals-roadmap-compass.jpg`).
+  - `/resources`: Added `FIG. 2.1 — ARCHIVE PLATE` (`notes-resources-journal.jpg`).
+  - `/notes`: Added `FIG. 2.2 — MANUSCRIPT NOTEBOOK` (`notes-resources-journal.jpg`).
+  - `/summaries`: Added `FIG. 2.3 — DISTILLED READING` (`notes-resources-journal.jpg`).
+  - `/search`: Added `FIG. 3.1 — KNOWLEDGE DISCOVERY` (`ai-search-discovery.jpg`).
+  - `/recommendations`: Added `FIG. 3.2 — STUDY STRATEGY` (`ai-search-discovery.jpg`).
+
+### Files Changed
+
+- Created: `src/components/layout/editorial-page-header.tsx`
+- Modified: `src/app/(auth)/layout.tsx`, `src/app/(auth)/login/page.tsx`, `src/app/(auth)/register/page.tsx`, `src/app/(app)/layout.tsx`, `src/app/(app)/dashboard/page.tsx`, `src/app/(app)/goals/page.tsx`, `src/app/(app)/roadmaps/page.tsx`, `src/app/(app)/resources/page.tsx`, `src/app/(app)/notes/page.tsx`, `src/app/(app)/summaries/page.tsx`, `src/app/(app)/search/page.tsx`, `src/app/(app)/recommendations/page.tsx`, `docs/SESSION_LOG.md`.
+
+### Verification
+
+- `npm run typecheck` (PASS — 0 errors)
+- `npm run lint` (PASS — 0 errors, 0 warnings)
+- `npm run test` (PASS — 12/12 tests passing)

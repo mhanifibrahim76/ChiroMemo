@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Sparkles } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { getPersonalizedRecommendations } from "@/lib/recommendations";
 import { RecommendationsOverview } from "@/components/recommendations/recommendations-overview";
 import { RecommendationCard } from "@/components/recommendations/recommendation-card";
 import { RecommendationsPageSkeleton } from "@/components/recommendations/recommendations-skeleton";
+import { EditorialPageHeader } from "@/components/layout/editorial-page-header";
 
 export const metadata: Metadata = {
-  title: "AI Recommendations · ChiroMemo",
+  title: "AI recommendations · ChiroMemo",
   description:
     "Personalized study advice, milestone next steps, and knowledge gap detection powered by Gemini AI.",
 };
@@ -22,8 +22,8 @@ async function RecommendationsContent() {
       <RecommendationsOverview data={data} />
 
       {/* Recommendations Cards Header */}
-      <div className="flex items-center justify-between border-b pb-2">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+      <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-2">
+        <h2 className="text-xs font-mono font-medium text-[#1C1917]/70 uppercase tracking-wider">
           Actionable Study Priorities ({data.recommendations.length})
         </h2>
       </div>
@@ -43,19 +43,15 @@ export default async function RecommendationsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight">Personalized Recommendations</h1>
-          <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-            <Sparkles className="h-3 w-3" />
-            Gemini AI
-          </span>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Tailored study plans, milestone advancements, and active recall reminders synthesized from your academic progress.
-        </p>
-      </div>
+      {/* Editorial Page Header */}
+      <EditorialPageHeader
+        chapter="CHAPTER 03.2 // ACADEMIC ADVISORY"
+        title="Personalized Study"
+        italicWord="Strategy."
+        description="Tailored milestone progressions, active recall reviews, and curriculum gap alerts synthesized from your study activity and roadmaps by Gemini AI."
+        illustrationSrc="/illustrations/ai-search-discovery.jpg"
+        figureCaption="FIG. 3.2 — STUDY STRATEGY"
+      />
 
       {/* Streaming Content Boundary */}
       <Suspense fallback={<RecommendationsPageSkeleton />}>
@@ -64,4 +60,3 @@ export default async function RecommendationsPage() {
     </div>
   );
 }
-

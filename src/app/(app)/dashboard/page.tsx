@@ -23,6 +23,7 @@ import {
   DashboardRecommendationsWidget,
   DashboardRecommendationsWidgetSkeleton,
 } from "@/components/recommendations/dashboard-recommendations-widget";
+import { EditorialPageHeader } from "@/components/layout/editorial-page-header";
 
 export const metadata: Metadata = {
   title: "Dashboard · ChiroMemo",
@@ -57,43 +58,42 @@ async function DashboardActivitySection() {
 
 export default async function DashboardPage() {
   const user = await requireUser();
-
   const displayName = user.name || user.email?.split("@")[0] || "Student";
 
   return (
     <div className="space-y-6">
-      {/* Header with Greeting & Quick Action CTAs */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">
-            Dashboard
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Welcome back, <span className="font-medium text-foreground">{displayName}</span>. Track your academic objectives, roadmaps, and personal knowledge base.
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <Button asChild variant="outline" size="sm">
-            <Link href="/goals">
-              <Target className="mr-1.5 h-3.5 w-3.5" />
-              Goals
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/resources">
-              <BookOpen className="mr-1.5 h-3.5 w-3.5" />
-              Resources
-            </Link>
-          </Button>
-          <Button asChild size="sm">
-            <Link href="/notes">
-              <FileText className="mr-1.5 h-3.5 w-3.5" />
-              New Note
-            </Link>
-          </Button>
-        </div>
-      </div>
+      {/* Editorial Page Header with Vignette Illustration */}
+      <EditorialPageHeader
+        chapter="CHAPTER 00 // MISSION CONTROL"
+        title="Welcome back,"
+        italicWord={`${displayName}.`}
+        description="Track active semester objectives, observe roadmap completion velocity, and synthesize study notes in one focused room."
+        illustrationSrc="/illustrations/dashboard-progress.jpg"
+        figureCaption="FIG. 0.2 — STUDY MOMENTUM"
+        aspectRatio="landscape"
+        action={
+          <div className="flex flex-wrap items-center gap-2 pt-1">
+            <Button asChild variant="outline" size="sm" className="h-8 rounded-sm text-xs bg-card">
+              <Link href="/goals">
+                <Target className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                Goals
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm" className="h-8 rounded-sm text-xs bg-card">
+              <Link href="/resources">
+                <BookOpen className="mr-1.5 h-3.5 w-3.5 text-primary" />
+                Resources
+              </Link>
+            </Button>
+            <Button asChild size="sm" className="h-8 rounded-sm text-xs bg-primary text-primary-foreground shadow-none">
+              <Link href="/notes">
+                <FileText className="mr-1.5 h-3.5 w-3.5" />
+                New Note
+              </Link>
+            </Button>
+          </div>
+        }
+      />
 
       {/* 1. Summary Cards: Independent Granular Suspense Boundary */}
       <Suspense fallback={<DashboardMetricsSkeleton />}>

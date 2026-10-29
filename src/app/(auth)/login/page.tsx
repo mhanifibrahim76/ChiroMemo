@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { LoginForm } from "@/components/auth/login-form";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = {
   title: "Sign in",
@@ -13,20 +12,35 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const redirectTo = typeof params.redirectTo === "string" ? params.redirectTo : undefined;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Sign in</CardTitle>
-        <CardDescription>Welcome back. Enter your details to continue.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <LoginForm redirectTo={redirectTo} />
-        <p className="text-muted-foreground text-sm">
-          No account yet?{" "}
-          <Link href="/register" className="underline underline-offset-4">
-            Create one
-          </Link>
+    <div className="space-y-6">
+      {/* Editorial Header */}
+      <div className="space-y-2 border-b border-[#E5DEC9] pb-4">
+        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#166534]">
+          STUDENT AUTHENTICATION
+        </span>
+        <h1 className="font-serif font-normal text-3xl sm:text-4xl tracking-[-0.03em] leading-tight text-[#1C1917]">
+          Sign in to your <em className="italic text-[#166534]">workspace</em>.
+        </h1>
+        <p className="text-xs sm:text-sm text-[#1C1917]/70 leading-relaxed">
+          Welcome back. Enter your student credentials to resume your courses.
         </p>
-      </CardContent>
-    </Card>
+      </div>
+
+      {/* Form Content */}
+      <div className="pt-2">
+        <LoginForm redirectTo={redirectTo} />
+      </div>
+
+      {/* Footer Switcher */}
+      <div className="border-t border-[#E5DEC9] pt-4 flex items-center justify-between text-xs">
+        <span className="text-[#1C1917]/70">No study account yet?</span>
+        <Link
+          href="/register"
+          className="font-medium text-[#166534] hover:underline underline-offset-4"
+        >
+          Create account →
+        </Link>
+      </div>
+    </div>
   );
 }

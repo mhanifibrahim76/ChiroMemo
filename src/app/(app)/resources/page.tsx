@@ -4,9 +4,10 @@ import { Suspense } from "react";
 import { listResources } from "@/lib/resources";
 import { listGoals } from "@/lib/goals";
 import { ResourceList, ResourceCardsSkeleton } from "@/components/resources/resource-list";
+import { EditorialPageHeader } from "@/components/layout/editorial-page-header";
 
 export const metadata: Metadata = {
-  title: "Learning resources | ChiroMemo",
+  title: "Learning resources · ChiroMemo",
   description: "Collect, organize, and attach study materials to your goals and roadmaps.",
 };
 
@@ -26,13 +27,15 @@ async function ResourcesContent() {
 export default function ResourcesPage() {
   return (
     <div className="space-y-6">
-      {/* Stable Header toolbar */}
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Learning resources</h1>
-        <p className="text-muted-foreground text-sm">
-          Collect, organize, and link textbooks, video lectures, web documentation, and course materials.
-        </p>
-      </div>
+      {/* Editorial Page Header */}
+      <EditorialPageHeader
+        chapter="CHAPTER 02.1 // PRIMARY SOURCES"
+        title="Document & Resource"
+        italicWord="Library."
+        description="Store lecture PDFs, slide decks, research papers, and textbook chapters in private student storage, linked to your roadmap milestones."
+        illustrationSrc="/illustrations/notes-resources-journal.jpg"
+        figureCaption="FIG. 2.1 — ARCHIVE PLATE"
+      />
 
       {/* Content skeleton during streaming/loading */}
       <Suspense fallback={<ResourceCardsSkeleton />}>

@@ -12,6 +12,7 @@ import {
 import { SummariesListSkeleton } from "@/components/summaries/summaries-skeleton";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { EditorialPageHeader } from "@/components/layout/editorial-page-header";
 
 interface SummariesPageProps {
   searchParams: Promise<{
@@ -38,24 +39,16 @@ async function SummariesContent({ search }: { search?: string }) {
 
   return (
     <div className="space-y-6">
-      {/* Header toolbar */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold tracking-tight">AI Summaries</h1>
-            <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-              {summaries.length}
-            </span>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Generate and review concise academic summaries of your study documents with Gemini AI.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <GenerateSummaryDialog resources={summarizableResources} />
-        </div>
-      </div>
+      {/* Editorial Page Header */}
+      <EditorialPageHeader
+        chapter="CHAPTER 02.3 // AI COMPREHENSION"
+        title="Document Exam"
+        italicWord="Summaries."
+        description="Distill dense university readings into exam-focused overviews, high-yield conceptual points, and actionable study takeaways using Gemini AI."
+        illustrationSrc="/illustrations/notes-resources-journal.jpg"
+        figureCaption="FIG. 2.3 — DISTILLED READING"
+        action={<GenerateSummaryDialog resources={summarizableResources} />}
+      />
 
       {/* Filter and Search Bar */}
       <div className="flex items-center gap-3">
@@ -64,23 +57,23 @@ async function SummariesContent({ search }: { search?: string }) {
           <Input
             name="search"
             defaultValue={search ?? ""}
-            placeholder="Search summaries by topic, keyword, or key points..."
-            className="pl-9 h-9 text-sm"
+            placeholder="Search summaries by topic or keyword..."
+            className="pl-9 h-9 text-sm rounded-sm bg-card border-[#E5DEC9]"
           />
         </form>
       </div>
 
       {/* Grid or Empty State */}
       {summaries.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-12 text-center space-y-4 bg-muted/10">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <div className="rounded-none border border-dashed border-[#E5DEC9] p-12 text-center space-y-4 bg-[#F7EEDB]/40">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-none border border-[#166534]/20 bg-[#166534]/10 text-[#166534]">
             <Sparkles className="h-7 w-7" />
           </div>
           <div className="space-y-1 max-w-md mx-auto">
-            <h3 className="text-lg font-semibold">
+            <h3 className="text-base font-semibold text-[#1C1917]">
               {search ? "No matching summaries found" : "No AI summaries generated yet"}
             </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-xs text-[#1C1917]/70 leading-relaxed">
               {search
                 ? `No summaries matched "${search}". Try searching for a different keyword or reset filters.`
                 : "Upload lecture slides, research papers, or syllabus documents to automatically distill them into key points, executive overviews, and study takeaways."}
@@ -89,7 +82,7 @@ async function SummariesContent({ search }: { search?: string }) {
 
           <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
             {search ? (
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="sm" className="rounded-sm">
                 <Link href="/summaries">Clear search</Link>
               </Button>
             ) : (
@@ -97,13 +90,13 @@ async function SummariesContent({ search }: { search?: string }) {
                 <GenerateSummaryDialog
                   resources={summarizableResources}
                   trigger={
-                    <Button className="gap-2">
+                    <Button className="rounded-sm bg-[#166534] text-[#FAF8F4] gap-2">
                       <Sparkles className="h-4 w-4" />
                       Generate First Summary
                     </Button>
                   }
                 />
-                <Button asChild variant="outline" className="gap-2">
+                <Button asChild variant="outline" className="rounded-sm gap-2">
                   <Link href="/resources">
                     <BookOpen className="h-4 w-4" />
                     Browse Resources

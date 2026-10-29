@@ -4,9 +4,10 @@ import { Suspense } from "react";
 import { listGoals } from "@/lib/goals";
 import { CreateGoalDialog } from "@/components/goals/create-goal-dialog";
 import { GoalList, GoalCardsSkeleton } from "@/components/goals/goal-list";
+import { EditorialPageHeader } from "@/components/layout/editorial-page-header";
 
 export const metadata: Metadata = {
-  title: "Learning goals",
+  title: "Learning goals · ChiroMemo",
 };
 
 async function GoalsContent() {
@@ -17,13 +18,16 @@ async function GoalsContent() {
 export default function GoalsPage() {
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Learning goals</h1>
-          <p className="text-muted-foreground text-sm">Ordered by creation date (newest first).</p>
-        </div>
-        <CreateGoalDialog />
-      </div>
+      {/* Editorial Page Header */}
+      <EditorialPageHeader
+        chapter="CHAPTER 01.1 // COURSE OBJECTIVES"
+        title="Semester Learning"
+        italicWord="Goals."
+        description="Establish target completion dates, rank overlapping subjects by priority, and bind sequential roadmaps directly to your curriculum."
+        illustrationSrc="/illustrations/goals-roadmap-compass.jpg"
+        figureCaption="FIG. 1.1 — SYLLABUS COMPASS"
+        action={<CreateGoalDialog />}
+      />
 
       <Suspense fallback={<GoalCardsSkeleton />}>
         <GoalsContent />

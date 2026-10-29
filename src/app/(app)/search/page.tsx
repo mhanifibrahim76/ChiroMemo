@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Sparkles, SearchX } from "lucide-react";
+import { SearchX } from "lucide-react";
 import { requireUser } from "@/lib/auth/session";
 import { searchKnowledgeBase } from "@/lib/search";
 import { searchEntityTypeSchema, type SearchEntityType } from "@/lib/validations/search";
@@ -9,9 +9,10 @@ import { SearchFilters } from "@/components/search/search-filters";
 import { AiSynthesisCard } from "@/components/search/ai-synthesis-card";
 import { SearchResultCard } from "@/components/search/search-result-card";
 import { SearchPageSkeleton } from "@/components/search/search-skeleton";
+import { EditorialPageHeader } from "@/components/layout/editorial-page-header";
 
 export const metadata: Metadata = {
-  title: "Intelligent Search · ChiroMemo",
+  title: "Intelligent search · ChiroMemo",
   description:
     "Semantic and natural-language search across notes, PDFs, roadmaps, and summaries.",
 };
@@ -43,11 +44,11 @@ async function SearchResultsContent({
       )}
 
       {/* Results Header */}
-      <div className="flex items-center justify-between border-b pb-2">
-        <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+      <div className="flex items-center justify-between border-b border-[#E5DEC9] pb-2">
+        <h2 className="text-xs font-mono font-medium text-[#1C1917]/70 uppercase tracking-wider">
           {query ? (
             <>
-              Matches for <span className="text-foreground font-bold">&ldquo;{query}&rdquo;</span> ({result.totalMatches})
+              Matches for <span className="text-[#1C1917] font-bold">&ldquo;{query}&rdquo;</span> ({result.totalMatches})
             </>
           ) : (
             <>Recently Updated Knowledge Items ({result.totalMatches})</>
@@ -57,12 +58,12 @@ async function SearchResultsContent({
 
       {/* Results List or Empty State */}
       {result.items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted text-muted-foreground mb-4">
+        <div className="flex flex-col items-center justify-center rounded-none border border-dashed border-[#E5DEC9] p-12 text-center bg-[#F7EEDB]/30">
+          <div className="flex h-12 w-12 items-center justify-center rounded-none border border-[#1C1917]/15 bg-card text-[#1C1917]/60 mb-4">
             <SearchX className="h-6 w-6" />
           </div>
-          <h3 className="text-base font-semibold">No matching materials found</h3>
-          <p className="mt-1 text-sm text-muted-foreground max-w-sm">
+          <h3 className="text-base font-semibold text-[#1C1917]">No matching materials found</h3>
+          <p className="mt-1 text-xs text-[#1C1917]/70 max-w-sm">
             We couldn&apos;t find any notes, resources, or summaries matching &ldquo;{query}&rdquo;. Try checking for typos or searching a broader topic.
           </p>
         </div>
@@ -87,19 +88,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <h1 className="text-2xl font-bold tracking-tight">Intelligent Search</h1>
-          <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">
-            <Sparkles className="h-3 w-3" />
-            AI-Powered
-          </span>
-        </div>
-        <p className="text-sm text-muted-foreground">
-          Natural-language semantic search across personal study notes, documents, AI summaries, and goals.
-        </p>
-      </div>
+      {/* Editorial Page Header */}
+      <EditorialPageHeader
+        chapter="CHAPTER 03.1 // RETRIEVAL & CONSTELLATION"
+        title="Intelligent Semantic"
+        italicWord="Search."
+        description="Query your entire semester knowledge base in natural language. Gemini synthesizes answers directly from your study notes, goals, and PDF summaries."
+        illustrationSrc="/illustrations/ai-search-discovery.jpg"
+        figureCaption="FIG. 3.1 — KNOWLEDGE DISCOVERY"
+      />
 
       {/* Search Input Bar */}
       <SearchBar />
@@ -114,4 +111,3 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     </div>
   );
 }
-
