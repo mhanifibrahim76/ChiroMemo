@@ -1,7 +1,6 @@
-# Roadmap
+# Development Milestones & Implementation Log
 
-Phases are sequential. **Only work on the current phase.** Do not start the next
-phase automatically, and do not implement features from later phases early.
+This document outlines the sequential development phases, architectural transitions, and milestone completion status for the **ChiroMemo** system.
 
 | #   | Phase                                | Status      | Commit                     |
 | --- | ------------------------------------ | ----------- | -------------------------- |

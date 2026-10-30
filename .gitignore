@@ -46,3 +46,11 @@ next-env.d.ts
 
 # supabase cli local state (e.g. cli-latest, linked-project.json)
 /supabase/.temp/
+
+# Private development notes, prompts & personal academic drafts
+AGENTS.md
+docs/SESSION_LOG.md
+docs/LEARNING_GOALS_PLAN.md
+docs/LAPORAN_*.md
+*.pdf
+

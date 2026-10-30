@@ -1,7 +1,7 @@
 # Laporan Penutupan Defect Audit Statis & Rekonsiliasi Migrasi 20261002000000
 
 **Target Migrasi**: [`supabase/migrations/20261002000000_learning_goals_relationships_and_priority.sql`](file:///c:/Users/mhanifibrahim7890/Documents/Aeu/CPP401/ChiroMemo/supabase/migrations/20261002000000_learning_goals_relationships_and_priority.sql)  
-**Dokumen Acuan**: [`AGENTS.md`](file:///c:/Users/mhanifibrahim7890/Documents/Aeu/CPP401/ChiroMemo/AGENTS.md), [`docs/ROADMAP.md`](file:///c:/Users/mhanifibrahim7890/Documents/Aeu/CPP401/ChiroMemo/docs/ROADMAP.md)  
+**Dokumen Acuan**: [`docs/PROJECT_CONTEXT.md`](file:///c:/Users/mhanifibrahim7890/Documents/Aeu/CPP401/ChiroMemo/docs/PROJECT_CONTEXT.md), [`docs/ROADMAP.md`](file:///c:/Users/mhanifibrahim7890/Documents/Aeu/CPP401/ChiroMemo/docs/ROADMAP.md)  
 **Status**: 100% Inspeksi Statis & Kode SQL Teruji Sintaksis  
 **Supabase Reference**: `fyqkemhkcoomeifstijh`  
 
